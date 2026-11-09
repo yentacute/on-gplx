@@ -13,8 +13,8 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 type RevealOption = { id: ExamReveal; title: string; hint: string; icon: IconName };
 
 const REVEAL_OPTIONS: RevealOption[] = [
-  { id: 'instant', title: 'Sau mỗi câu', hint: 'Biết đúng sai ngay, hợp khi mới luyện.', icon: 'flash' },
-  { id: 'end', title: 'Khi nộp bài', hint: 'Chỉ xem kết quả ở cuối, giống thi thật.', icon: 'flag' },
+  { id: 'instant', title: 'Sau mỗi câu', hint: 'Biết đúng sai ngay, hợp để luyện', icon: 'flash' },
+  { id: 'end', title: 'Khi nộp bài', hint: 'Xem kết quả ở cuối, như thi thật', icon: 'flag' },
 ];
 
 const SectionTitle = ({ children }: { children: string }) => (
@@ -29,51 +29,10 @@ const HeroFact = ({ icon, text }: { icon: IconName; text: string }) => (
   </View>
 );
 
-/** Two-option segmented control with a one-line hint for the selected option. */
-const RevealSwitch = ({ value, onChange }: { value: ExamReveal; onChange: (value: ExamReveal) => void }) => {
-  const selected = REVEAL_OPTIONS.find((o) => o.id === value) ?? REVEAL_OPTIONS[0]!;
-  return (
-    <View className="gap-2">
-      <View className="flex-row rounded-xl bg-slate-200/70 p-1">
-        {REVEAL_OPTIONS.map((option) => {
-          const active = option.id === value;
-          return (
-            <Pressable
-              key={option.id}
-              onPress={() => onChange(option.id)}
-              accessibilityRole="button"
-              accessibilityState={{ selected: active }}
-              className={
-                'flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2 ' + (active ? 'bg-white' : '')
-              }
-              style={
-                active
-                  ? {
-                      shadowColor: '#0f172a',
-                      shadowOpacity: 0.08,
-                      shadowRadius: 4,
-                      shadowOffset: { width: 0, height: 1 },
-                      elevation: 1,
-                    }
-                  : undefined
-              }
-            >
-              <Ionicons name={option.icon} size={15} color={active ? '#2563eb' : '#64748b'} />
-              <Text className={'text-sm font-semibold ' + (active ? 'text-primary' : 'text-slate-500')}>
-                {option.title}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      <Text className="px-1 text-xs text-slate-500">{selected.hint}</Text>
-    </View>
-  );
-};
-
 type StartExamDialogProps = {
   /** Fixed exam number, or undefined for a random exam. */
   examId?: number;
+  licenseClass: string;
   rules: ExamRules;
   reveal: ExamReveal;
   onRevealChange: (value: ExamReveal) => void;
@@ -81,8 +40,56 @@ type StartExamDialogProps = {
   onCancel: () => void;
 };
 
-/** Asked before a new exam starts: how answers are shown. */
-const StartExamDialog = ({ examId, rules, reveal, onRevealChange, onStart, onCancel }: StartExamDialogProps) => (
+const DialogStat = ({ value, label }: { value: string; label: string }) => (
+  <View className="flex-1 items-center gap-0.5 rounded-2xl bg-slate-50 py-2.5">
+    <Text className="text-lg font-bold text-slate-900">{value}</Text>
+    <Text className="text-xs text-slate-500">{label}</Text>
+  </View>
+);
+
+const RevealChoice = ({
+  option,
+  selected,
+  onPress,
+}: {
+  option: RevealOption;
+  selected: boolean;
+  onPress: () => void;
+}) => (
+  <Pressable
+    onPress={onPress}
+    accessibilityRole="radio"
+    accessibilityState={{ checked: selected }}
+    className={
+      'flex-row items-center gap-3 rounded-2xl border-2 px-3 py-2.5 ' +
+      (selected ? 'border-primary bg-primary-light' : 'border-slate-200 bg-white')
+    }
+  >
+    <View className={'h-9 w-9 items-center justify-center rounded-full ' + (selected ? 'bg-primary' : 'bg-slate-100')}>
+      <Ionicons name={option.icon} size={18} color={selected ? '#ffffff' : '#64748b'} />
+    </View>
+    <View className="flex-1">
+      <Text className="text-[15px] font-semibold text-slate-900">{option.title}</Text>
+      <Text className="text-xs text-slate-500">{option.hint}</Text>
+    </View>
+    <Ionicons
+      name={selected ? 'radio-button-on' : 'radio-button-off'}
+      size={22}
+      color={selected ? '#2563eb' : '#cbd5e1'}
+    />
+  </Pressable>
+);
+
+/** Asked before a new exam starts: shows the exam structure and how answers are revealed. */
+const StartExamDialog = ({
+  examId,
+  licenseClass,
+  rules,
+  reveal,
+  onRevealChange,
+  onStart,
+  onCancel,
+}: StartExamDialogProps) => (
   <Modal visible transparent animationType="fade" onRequestClose={onCancel}>
     <Pressable
       onPress={onCancel}
@@ -91,29 +98,45 @@ const StartExamDialog = ({ examId, rules, reveal, onRevealChange, onStart, onCan
         backgroundColor: 'rgba(15,23,42,0.55)',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 24,
+        padding: 20,
       }}
     >
       {/* Swallow taps inside the card so only the backdrop closes the dialog. */}
-      <Pressable onPress={() => {}} className="w-full max-w-[360px] gap-4 rounded-3xl bg-white p-5">
-        <View className="items-center gap-1">
-          <Text className="text-lg font-semibold text-slate-900">
-            {examId === undefined ? 'Đề ngẫu nhiên' : `Đề số ${examId}`}
-          </Text>
-          <Text className="text-sm text-slate-500">
-            {rules.questionCount} câu · {rules.durationSec / 60} phút · đạt {rules.passCount}/{rules.questionCount}
-          </Text>
-        </View>
-        <View className="gap-2">
-          <Text className="text-sm font-semibold text-slate-700">Xem đáp án</Text>
-          <RevealSwitch value={reveal} onChange={onRevealChange} />
-        </View>
-        <View className="gap-1">
-          <AppButton label="Bắt đầu thi" icon="play" onPress={onStart} />
-          <Pressable onPress={onCancel} className="h-10 items-center justify-center">
-            <Text className="text-sm font-semibold text-slate-500">Hủy</Text>
+      <Pressable onPress={() => {}} className="w-full max-w-[380px] gap-4 rounded-3xl bg-white p-5">
+        <View className="flex-row items-center gap-3">
+          <View className="h-12 w-12 items-center justify-center rounded-2xl bg-primary-light">
+            <Ionicons name={examId === undefined ? 'shuffle' : 'document-text'} size={24} color="#2563eb" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-lg font-semibold text-slate-900">
+              {examId === undefined ? 'Đề ngẫu nhiên' : `Đề số ${examId}`}
+            </Text>
+            <Text className="text-sm text-slate-500">Thi thử hạng {licenseClass}</Text>
+          </View>
+          <Pressable onPress={onCancel} hitSlop={10} accessibilityLabel="Đóng">
+            <Ionicons name="close" size={22} color="#94a3b8" />
           </Pressable>
         </View>
+
+        <View className="flex-row gap-2">
+          <DialogStat value={String(rules.questionCount)} label="câu hỏi" />
+          <DialogStat value={String(rules.durationSec / 60)} label="phút" />
+          <DialogStat value={`${rules.passCount}/${rules.questionCount}`} label="để đạt" />
+        </View>
+
+        <View className="gap-2">
+          <Text className="text-sm font-semibold text-slate-700">Cách xem đáp án</Text>
+          {REVEAL_OPTIONS.map((option) => (
+            <RevealChoice
+              key={option.id}
+              option={option}
+              selected={option.id === reveal}
+              onPress={() => onRevealChange(option.id)}
+            />
+          ))}
+        </View>
+
+        <AppButton label="Bắt đầu thi" icon="play" onPress={onStart} />
       </Pressable>
     </Pressable>
   </Modal>
@@ -254,6 +277,7 @@ const ExamScreen = () => {
       {pending ? (
         <StartExamDialog
           examId={pending.examId}
+          licenseClass={licenseClass}
           rules={classRules}
           reveal={examReveal}
           onRevealChange={setExamReveal}
