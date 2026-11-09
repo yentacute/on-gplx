@@ -9,52 +9,68 @@ import { FIXED_EXAM_RULES, examRulesFor, formatTime } from '@/lib/exam';
 import { useSettings } from '@/store/settings';
 import type { Exam, ExamDraft, ExamReveal, ExamScore } from '@/types';
 
-type RevealOption = { id: ExamReveal; title: string; description: string; icon: ComponentProps<typeof Ionicons>['name'] };
+type IconName = ComponentProps<typeof Ionicons>['name'];
+
+type RevealOption = { id: ExamReveal; title: string; hint: string; icon: IconName };
 
 const REVEAL_OPTIONS: RevealOption[] = [
-  {
-    id: 'instant',
-    title: 'Sau mỗi câu',
-    description: 'Hợp khi mới luyện',
-    icon: 'flash',
-  },
-  {
-    id: 'end',
-    title: 'Khi nộp bài',
-    description: 'Giống thi thật',
-    icon: 'flag',
-  },
+  { id: 'instant', title: 'Sau mỗi câu', hint: 'Biết đúng sai ngay, hợp khi mới luyện.', icon: 'flash' },
+  { id: 'end', title: 'Khi nộp bài', hint: 'Chỉ xem kết quả ở cuối, giống thi thật.', icon: 'flag' },
 ];
 
 const SectionTitle = ({ children }: { children: string }) => (
   <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
 );
 
-/** One of the two side-by-side result options: icon and radio on top, text below. */
-const RevealRow = ({ option, selected, onPress }: { option: RevealOption; selected: boolean; onPress: () => void }) => (
-  <Pressable onPress={onPress} style={{ flex: 1 }}>
-    <View
-      className={
-        'h-full gap-2 rounded-2xl border-2 p-3 ' + (selected ? 'border-primary bg-primary-light' : 'border-slate-200 bg-white')
-      }
-    >
-      <View className="flex-row items-center justify-between">
-        <View className={'h-9 w-9 items-center justify-center rounded-full ' + (selected ? 'bg-primary' : 'bg-slate-100')}>
-          <Ionicons name={option.icon} size={18} color={selected ? '#ffffff' : '#64748b'} />
-        </View>
-        <Ionicons
-          name={selected ? 'radio-button-on' : 'radio-button-off'}
-          size={22}
-          color={selected ? '#2563eb' : '#94a3b8'}
-        />
-      </View>
-      <View className="gap-0.5">
-        <Text className="text-base font-semibold text-slate-900">{option.title}</Text>
-        <Text className="text-sm text-slate-500">{option.description}</Text>
-      </View>
-    </View>
-  </Pressable>
+/** Small icon + value pill in the hero, e.g. "30 câu". */
+const HeroFact = ({ icon, text }: { icon: IconName; text: string }) => (
+  <View className="flex-row items-center gap-1 rounded-full bg-white/15 px-2.5 py-1">
+    <Ionicons name={icon} size={13} color="#ffffff" />
+    <Text className="text-xs font-semibold text-white">{text}</Text>
+  </View>
 );
+
+/** Two-option segmented control with a one-line hint for the selected option. */
+const RevealSwitch = ({ value, onChange }: { value: ExamReveal; onChange: (value: ExamReveal) => void }) => {
+  const selected = REVEAL_OPTIONS.find((o) => o.id === value) ?? REVEAL_OPTIONS[0]!;
+  return (
+    <View className="gap-2">
+      <View className="flex-row rounded-xl bg-slate-200/70 p-1">
+        {REVEAL_OPTIONS.map((option) => {
+          const active = option.id === value;
+          return (
+            <Pressable
+              key={option.id}
+              onPress={() => onChange(option.id)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              className={
+                'flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2 ' + (active ? 'bg-white' : '')
+              }
+              style={
+                active
+                  ? {
+                      shadowColor: '#0f172a',
+                      shadowOpacity: 0.08,
+                      shadowRadius: 4,
+                      shadowOffset: { width: 0, height: 1 },
+                      elevation: 1,
+                    }
+                  : undefined
+              }
+            >
+              <Ionicons name={option.icon} size={15} color={active ? '#2563eb' : '#64748b'} />
+              <Text className={'text-sm font-semibold ' + (active ? 'text-primary' : 'text-slate-500')}>
+                {option.title}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Text className="px-1 text-xs text-slate-500">{selected.hint}</Text>
+    </View>
+  );
+};
 
 const examStatus = (score?: ExamScore, draft?: ExamDraft) => {
   if (draft) return { text: `⏱ ${formatTime(draft.remainingSec)}`, color: '#2563eb', tint: '#eff6ff' };
@@ -63,7 +79,17 @@ const examStatus = (score?: ExamScore, draft?: ExamDraft) => {
   return { text: `${score.correct}/${score.total} Trượt`, color: '#dc2626', tint: '#fef2f2' };
 };
 
-const ExamTile = ({ exam, score, draft, onPress }: { exam: Exam; score?: ExamScore; draft?: ExamDraft; onPress: () => void }) => {
+const ExamTile = ({
+  exam,
+  score,
+  draft,
+  onPress,
+}: {
+  exam: Exam;
+  score?: ExamScore;
+  draft?: ExamDraft;
+  onPress: () => void;
+}) => {
   const status = examStatus(score, draft);
   return (
     <View style={{ width: '25%', paddingHorizontal: 5, paddingVertical: 5 }}>
@@ -103,24 +129,33 @@ const ExamScreen = () => {
 
   const passedCount = EXAMS.filter((e) => examScores[e.id]?.passed).length;
   // Resume a saved exam first, otherwise suggest the first one not passed yet.
-  const nextExam =
-    EXAMS.find((e) => examDrafts[e.id]) ?? EXAMS.find((e) => !examScores[e.id]?.passed) ?? EXAMS[0];
+  const nextExam = EXAMS.find((e) => examDrafts[e.id]) ?? EXAMS.find((e) => !examScores[e.id]?.passed) ?? EXAMS[0];
   const hasDraft = nextExam ? Boolean(examDrafts[nextExam.id]) : false;
 
   return (
     <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-3 p-3">
       <View className="gap-3 rounded-2xl bg-primary p-4">
-        <View className="gap-1">
-          <Text className="text-xl font-semibold text-white">Thi thử lý thuyết</Text>
-          <Text className="text-white/85">
-            {EXAMS.length} đề mẫu{licenseClass === 'B' ? '' : ' hạng B'} · {fixed.questionCount} câu · {fixed.durationSec / 60}{' '}
-            phút. Đạt khi đúng từ {fixed.passCount} câu và không sai câu điểm liệt.
-          </Text>
+        <View className="flex-row items-start justify-between gap-2">
+          <View className="flex-1 gap-0.5">
+            <Text className="text-xl font-semibold text-white">Thi thử lý thuyết</Text>
+            <Text className="text-sm text-white/80">
+              {EXAMS.length} đề mẫu{licenseClass === 'B' ? '' : ' hạng B'} · sai câu điểm liệt là trượt
+            </Text>
+          </View>
+          <View className="items-end">
+            <Text className="text-xl font-bold text-white">
+              {passedCount}/{EXAMS.length}
+            </Text>
+            <Text className="text-xs text-white/80">đề đã đạt</Text>
+          </View>
         </View>
-        <View className="self-start rounded-full bg-white/20 px-3 py-1">
-          <Text className="text-sm font-semibold text-white">
-            Đã đạt {passedCount}/{EXAMS.length} đề
-          </Text>
+        <View className="h-1.5 overflow-hidden rounded-full bg-white/20">
+          <View className="h-full rounded-full bg-white" style={{ width: `${(passedCount / EXAMS.length) * 100}%` }} />
+        </View>
+        <View className="flex-row flex-wrap gap-2">
+          <HeroFact icon="document-text" text={`${fixed.questionCount} câu`} />
+          <HeroFact icon="time" text={`${fixed.durationSec / 60} phút`} />
+          <HeroFact icon="checkmark-circle" text={`Đạt ${fixed.passCount}/${fixed.questionCount}`} />
         </View>
         {nextExam ? (
           <AppButton
@@ -134,7 +169,7 @@ const ExamScreen = () => {
 
       <MenuCard
         title="Đề ngẫu nhiên"
-        description={`Hạng ${licenseClass} · ${classRules.questionCount} câu, đạt từ ${classRules.passCount} câu · mỗi lần một đề mới`}
+        description={`Hạng ${licenseClass} · ${classRules.questionCount} câu · đạt ${classRules.passCount}/${classRules.questionCount}`}
         icon="shuffle"
         color="#7c3aed"
         badge={`${classRules.durationSec / 60} phút`}
@@ -142,16 +177,7 @@ const ExamScreen = () => {
       />
 
       <SectionTitle>Xem đáp án</SectionTitle>
-      <View className="flex-row gap-3">
-        {REVEAL_OPTIONS.map((option) => (
-          <RevealRow
-            key={option.id}
-            option={option}
-            selected={examReveal === option.id}
-            onPress={() => setExamReveal(option.id)}
-          />
-        ))}
-      </View>
+      <RevealSwitch value={examReveal} onChange={setExamReveal} />
 
       <SectionTitle>Danh sách đề thi</SectionTitle>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -5, marginVertical: -5 }}>
