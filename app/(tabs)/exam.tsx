@@ -31,26 +31,28 @@ const SectionTitle = ({ children }: { children: string }) => (
   <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
 );
 
+/** One of the two side-by-side result options: icon and radio on top, text below. */
 const RevealRow = ({ option, selected, onPress }: { option: RevealOption; selected: boolean; onPress: () => void }) => (
-  <Pressable onPress={onPress}>
+  <Pressable onPress={onPress} style={{ flex: 1 }}>
     <View
       className={
-        'flex-row items-center gap-3 rounded-2xl border-2 p-3 ' +
-        (selected ? 'border-primary bg-primary-light' : 'border-slate-200 bg-white')
+        'h-full gap-2 rounded-2xl border-2 p-3 ' + (selected ? 'border-primary bg-primary-light' : 'border-slate-200 bg-white')
       }
     >
-      <View className={'h-10 w-10 items-center justify-center rounded-full ' + (selected ? 'bg-primary' : 'bg-slate-100')}>
-        <Ionicons name={option.icon} size={20} color={selected ? '#ffffff' : '#64748b'} />
+      <View className="flex-row items-center justify-between">
+        <View className={'h-9 w-9 items-center justify-center rounded-full ' + (selected ? 'bg-primary' : 'bg-slate-100')}>
+          <Ionicons name={option.icon} size={18} color={selected ? '#ffffff' : '#64748b'} />
+        </View>
+        <Ionicons
+          name={selected ? 'radio-button-on' : 'radio-button-off'}
+          size={22}
+          color={selected ? '#2563eb' : '#94a3b8'}
+        />
       </View>
-      <View className="flex-1 gap-0.5">
+      <View className="gap-0.5">
         <Text className="text-base font-semibold text-slate-900">{option.title}</Text>
         <Text className="text-sm text-slate-500">{option.description}</Text>
       </View>
-      <Ionicons
-        name={selected ? 'radio-button-on' : 'radio-button-off'}
-        size={22}
-        color={selected ? '#2563eb' : '#94a3b8'}
-      />
     </View>
   </Pressable>
 );
@@ -143,14 +145,16 @@ const ExamScreen = () => {
       />
 
       <SectionTitle>Cách hiện kết quả</SectionTitle>
-      {REVEAL_OPTIONS.map((option) => (
-        <RevealRow
-          key={option.id}
-          option={option}
-          selected={examReveal === option.id}
-          onPress={() => setExamReveal(option.id)}
-        />
-      ))}
+      <View className="flex-row gap-3">
+        {REVEAL_OPTIONS.map((option) => (
+          <RevealRow
+            key={option.id}
+            option={option}
+            selected={examReveal === option.id}
+            onPress={() => setExamReveal(option.id)}
+          />
+        ))}
+      </View>
 
       <SectionTitle>Danh sách đề thi</SectionTitle>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -5, marginVertical: -5 }}>
