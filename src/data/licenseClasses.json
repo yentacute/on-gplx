@@ -1,0 +1,182 @@
+[
+  {
+    "id": "A1",
+    "group": "moto",
+    "title": "Mô tô hai bánh nhỏ",
+    "minAge": 16,
+    "description": "Xi-lanh ≤ 125cm³ hoặc động cơ điện ≤ 11kW",
+    "exam": {
+      "questionCount": 25,
+      "timeMinutes": 19,
+      "passingScore": 21
+    }
+  },
+  {
+    "id": "A",
+    "group": "moto",
+    "title": "Mô tô hai bánh lớn",
+    "minAge": 18,
+    "description": "Xi-lanh > 125cm³ hoặc động cơ điện > 11kW",
+    "exam": {
+      "questionCount": 25,
+      "timeMinutes": 19,
+      "passingScore": 23
+    }
+  },
+  {
+    "id": "B1",
+    "group": "moto",
+    "title": "Mô tô ba bánh",
+    "minAge": 16,
+    "description": "Xe mô tô ba bánh",
+    "exam": {
+      "questionCount": 25,
+      "timeMinutes": 19,
+      "passingScore": 23
+    }
+  },
+  {
+    "id": "B",
+    "group": "car",
+    "title": "Ô tô con",
+    "minAge": 18,
+    "description": "Ô tô chở người đến 8 chỗ, ô tô tải ≤ 3.500kg",
+    "exam": {
+      "questionCount": 30,
+      "timeMinutes": 20,
+      "passingScore": 27
+    }
+  },
+  {
+    "id": "C1",
+    "group": "car",
+    "title": "Ô tô tải trung",
+    "minAge": 18,
+    "description": "Ô tô tải > 3.500kg đến 7.500kg",
+    "exam": {
+      "questionCount": 35,
+      "timeMinutes": 22,
+      "passingScore": 32
+    }
+  },
+  {
+    "id": "C",
+    "group": "car",
+    "title": "Ô tô tải nặng",
+    "minAge": 21,
+    "description": "Ô tô tải > 7.500kg",
+    "exam": {
+      "questionCount": 40,
+      "timeMinutes": 24,
+      "passingScore": 36
+    }
+  },
+  {
+    "id": "D1",
+    "group": "car",
+    "title": "Ô tô khách nhỏ",
+    "minAge": 21,
+    "description": "Chở người > 8 đến 16 chỗ",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "D2",
+    "group": "car",
+    "title": "Ô tô khách trung",
+    "minAge": 24,
+    "description": "Chở người > 16 đến 29 chỗ",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "D",
+    "group": "car",
+    "title": "Ô tô khách lớn",
+    "minAge": 27,
+    "description": "Chở người > 29 chỗ, xe giường nằm",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "BE",
+    "group": "car",
+    "title": "Ô tô con kéo rơ-moóc",
+    "minAge": 18,
+    "description": "Hạng B kéo rơ-moóc > 750kg",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "C1E",
+    "group": "car",
+    "title": "C1 kéo rơ-moóc",
+    "minAge": 18,
+    "description": "Hạng C1 kéo rơ-moóc > 750kg",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "CE",
+    "group": "car",
+    "title": "C kéo rơ-moóc",
+    "minAge": 21,
+    "description": "Hạng C kéo rơ-moóc > 750kg, xe đầu kéo",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "D1E",
+    "group": "car",
+    "title": "D1 kéo rơ-moóc",
+    "minAge": 21,
+    "description": "Hạng D1 kéo rơ-moóc > 750kg",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "D2E",
+    "group": "car",
+    "title": "D2 kéo rơ-moóc",
+    "minAge": 24,
+    "description": "Hạng D2 kéo rơ-moóc > 750kg",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  },
+  {
+    "id": "DE",
+    "group": "car",
+    "title": "D kéo rơ-moóc",
+    "minAge": 27,
+    "description": "Hạng D kéo rơ-moóc > 750kg, xe nối toa",
+    "exam": {
+      "questionCount": 45,
+      "timeMinutes": 26,
+      "passingScore": 41
+    }
+  }
+]

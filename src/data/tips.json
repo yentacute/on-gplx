@@ -1,0 +1,795 @@
+[
+  {
+    "id": "principle",
+    "short": "Cách dùng",
+    "title": "Dùng mẹo đúng cách",
+    "summary": "Hiểu trước, mẹo để kiểm tra lại",
+    "icon": "compass",
+    "color": "#2563eb",
+    "tips": [
+      {
+        "title": "3 bước làm một câu",
+        "takeaway": "Đừng chọn ngay: đọc kỹ, loại phương án sai, rồi mới chốt.",
+        "points": [
+          {
+            "text": "Bước 1 · Đọc kỹ câu hỏi, chú ý các từ “không được”, “đúng”, “trước tiên”."
+          },
+          {
+            "text": "Bước 2 · Loại phương án liều lĩnh: tăng tốc, nhanh chóng, phanh gấp, bấm còi liên tục."
+          },
+          {
+            "text": "Bước 3 · Chọn ý an toàn và đầy đủ nhất; thấy từ 2 ý đúng thì chọn “Cả…”."
+          }
+        ]
+      },
+      {
+        "title": "Con số chỉ là thống kê",
+        "takeaway": "Tỉ lệ được đếm trên chính 600 câu trong app, chỉ cho biết xu hướng.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Dùng mẹo khi phân vân giữa hai phương án."
+          },
+          {
+            "kind": "dont",
+            "text": "Không dùng mẹo để đoán thay cho việc học; đề thi có thể thay đổi."
+          }
+        ]
+      },
+      {
+        "title": "Câu điểm liệt: đừng đoán",
+        "takeaway": "Sai 1 câu điểm liệt là rớt cả bài.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Học chắc theo 7 nhóm ở mục “Điểm liệt”."
+          },
+          {
+            "kind": "dont",
+            "text": "Không dựa vào mẹo từ khóa cho nhóm câu này."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "options",
+    "short": "Đọc đáp án",
+    "title": "Đọc nhanh các phương án",
+    "summary": "Xu hướng thống kê trong bộ 600 câu",
+    "icon": "eye",
+    "color": "#d97706",
+    "tips": [
+      {
+        "title": "Có phương án “Cả hai / Cả ba ý trên”",
+        "takeaway": "Ở câu lý thuyết, hơn 6/10 lần đáp án chính là phương án gộp.",
+        "stats": [
+          {
+            "label": "Câu lý thuyết (chương I–IV)",
+            "value": 66,
+            "detail": "67/101 câu",
+            "chance": 30
+          },
+          {
+            "label": "Câu biển báo, sa hình",
+            "value": 23,
+            "detail": "18/78 câu",
+            "chance": 30
+          }
+        ],
+        "points": [
+          {
+            "kind": "do",
+            "text": "Đọc từng ý; thấy từ 2 ý đúng trở lên thì chọn phương án gộp."
+          },
+          {
+            "kind": "dont",
+            "text": "Chỉ 1 ý đúng rõ ràng, các ý còn lại sai thì đừng chọn."
+          },
+          {
+            "kind": "info",
+            "text": "Với câu biển báo, sa hình mẹo này không hiệu quả: so từng biển, từng xe."
+          }
+        ]
+      },
+      {
+        "title": "“Không được…” và “Được…”",
+        "takeaway": "Phương án mở đầu “Không được” hay đúng; mở đầu “Được” ít khi đúng.",
+        "stats": [
+          {
+            "label": "Mở đầu “Không được…”",
+            "value": 80,
+            "detail": "20/25 phương án",
+            "chance": 41
+          },
+          {
+            "label": "Mở đầu “Được…”",
+            "value": 15,
+            "detail": "6/39 phương án",
+            "chance": 35
+          }
+        ],
+        "points": [
+          {
+            "kind": "info",
+            "text": "Hay gặp ở câu hỏi “có được… không?” về vượt xe, lùi xe, xe máy."
+          }
+        ],
+        "questions": [
+          47,
+          63,
+          67,
+          74,
+          86
+        ]
+      },
+      {
+        "title": "Ngoại lệ “nếu…”, “tùy…”, “không cần…”",
+        "takeaway": "Phương án đặt điều kiện ngoại lệ thường là phương án nhiễu.",
+        "stats": [
+          {
+            "label": "Có “nếu”, “tùy”, “không cần”",
+            "value": 21,
+            "detail": "12/57 phương án",
+            "chance": 33
+          }
+        ],
+        "points": [
+          {
+            "kind": "dont",
+            "text": "Ví dụ sai: “Tùy trường hợp”, “Được sử dụng nếu không có áo mưa”, “Chỉ được phép nếu…”."
+          }
+        ],
+        "questions": [
+          63,
+          67,
+          73,
+          74
+        ]
+      },
+      {
+        "title": "Vội vã thì sai, thận trọng thì đúng",
+        "takeaway": "Phương án khuyên tăng tốc, “nhanh chóng” gần như luôn sai.",
+        "stats": [
+          {
+            "label": "Có “tăng tốc”",
+            "value": 5,
+            "detail": "2/42 phương án",
+            "chance": 35
+          },
+          {
+            "label": "Có “nhanh chóng”",
+            "value": 9,
+            "detail": "2/22 phương án",
+            "chance": 38
+          },
+          {
+            "label": "Có “giảm tốc độ”",
+            "value": 58,
+            "detail": "37/64 phương án",
+            "chance": 35
+          }
+        ],
+        "points": [
+          {
+            "kind": "do",
+            "text": "Ưu tiên: quan sát, giảm tốc độ, nhường đường, dừng lại."
+          },
+          {
+            "kind": "info",
+            "text": "Ngoại lệ: tăng tốc khi nhập làn cao tốc hoặc vượt xe lúc đã đủ điều kiện an toàn."
+          }
+        ],
+        "questions": [
+          248,
+          552
+        ]
+      },
+      {
+        "title": "Phương án dài, đủ ý",
+        "takeaway": "Câu lý thuyết không có “Cả…”: đáp án hay là phương án dài nhất.",
+        "stats": [
+          {
+            "label": "Câu lý thuyết không có “Cả…”",
+            "value": 56,
+            "detail": "94/169 câu",
+            "chance": 35
+          }
+        ],
+        "points": [
+          {
+            "kind": "info",
+            "text": "Đáp án đúng thường kể đủ điều kiện nên dài hơn."
+          },
+          {
+            "kind": "dont",
+            "text": "Không áp dụng cho câu có 4 phương án (chỉ 21%)."
+          }
+        ]
+      },
+      {
+        "title": "Vị trí đáp án và câu 2 phương án",
+        "takeaway": "Đáp án rải đều các vị trí, đừng đoán theo số thứ tự.",
+        "stats": [
+          {
+            "label": "Ý 1 (câu 3 phương án)",
+            "value": 33,
+            "detail": "107/326 câu"
+          },
+          {
+            "label": "Ý 2",
+            "value": 33,
+            "detail": "109/326 câu"
+          },
+          {
+            "label": "Ý 3",
+            "value": 34,
+            "detail": "110/326 câu"
+          }
+        ],
+        "points": [
+          {
+            "kind": "info",
+            "text": "Câu 4 phương án: “Cả ba ý trên” thường nằm ở vị trí cuối (71/164 câu)."
+          },
+          {
+            "kind": "info",
+            "text": "110 câu chỉ có 2 phương án (nhiều nhất ở biển báo và sa hình): loại 1 phương án sai là chắc 50%."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "critical",
+    "short": "Điểm liệt",
+    "title": "Câu điểm liệt theo nhóm",
+    "summary": "60 câu, nhớ theo 7 nhóm chủ đề",
+    "icon": "alert-circle",
+    "color": "#dc2626",
+    "tips": [
+      {
+        "title": "Rượu bia, ma túy, đua xe",
+        "takeaway": "Đã lái xe là tuyệt đối không rượu bia, ma túy.",
+        "points": [
+          {
+            "kind": "dont",
+            "text": "Lái xe khi có nồng độ cồn hoặc ma túy: bị nghiêm cấm."
+          },
+          {
+            "kind": "info",
+            "text": "Vi phạm bị phạt tiền và có thể bị tước bằng → chọn “Cả hai ý trên” (câu 23, 25)."
+          },
+          {
+            "kind": "dont",
+            "text": "Người lái ô tô, mô tô, xe đạp, xe gắn máy đều không được dùng rượu bia (câu 26)."
+          },
+          {
+            "kind": "do",
+            "text": "Đua xe chỉ khi được cơ quan có thẩm quyền cấp phép (câu 21)."
+          },
+          {
+            "kind": "dont",
+            "text": "Đua xe trái phép: xử lý hành chính hoặc hình sự (câu 22). Bỏ trốn sau tai nạn: nghiêm cấm (câu 197)."
+          }
+        ],
+        "questions": [
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          197
+        ]
+      },
+      {
+        "title": "Hành vi bị nghiêm cấm",
+        "takeaway": "Câu hỏi “hành vi nào bị cấm?” thường có đáp án gộp “Cả hai/ba ý trên”.",
+        "points": [
+          {
+            "kind": "dont",
+            "text": "Rải vật sắc nhọn, đổ chất gây trơn trượt trên đường (câu 19)."
+          },
+          {
+            "kind": "dont",
+            "text": "Lạng lách, đánh võng, rú ga liên tục (câu 32)."
+          },
+          {
+            "kind": "dont",
+            "text": "Cầm điện thoại khi lái; cần gọi thì dừng xe ở nơi cho phép rồi mới dùng (câu 52, 254)."
+          },
+          {
+            "kind": "dont",
+            "text": "Giao xe cho người chưa đủ tuổi, không có bằng hoặc đã bị trừ hết điểm (câu 27)."
+          },
+          {
+            "kind": "dont",
+            "text": "Đưa xe chưa kiểm định hoặc hết niên hạn ra đường (câu 20)."
+          },
+          {
+            "kind": "info",
+            "text": "Câu 20, 27, 28, 30: đáp án là “Cả hai/ba ý trên”."
+          }
+        ],
+        "questions": [
+          19,
+          20,
+          27,
+          28,
+          30,
+          32,
+          52,
+          254
+        ]
+      },
+      {
+        "title": "Xe mô tô, xe máy",
+        "takeaway": "Hỏi “có được… không?” thì đáp án thường là “Không được phép”.",
+        "points": [
+          {
+            "kind": "dont",
+            "text": "Buông cả hai tay; đứng, nằm trên xe để lái; quệt chân chống xuống đường (câu 64, 65)."
+          },
+          {
+            "kind": "dont",
+            "text": "Đi dàn hàng ngang, đi vào phần đường của người đi bộ (câu 71, 72)."
+          },
+          {
+            "kind": "dont",
+            "text": "Kéo, đẩy xe khác; người ngồi sau bám, kéo, đẩy phương tiện khác (câu 63, 66, 67, 74)."
+          },
+          {
+            "kind": "dont",
+            "text": "Người ngồi sau dùng ô khi trời mưa (câu 73)."
+          },
+          {
+            "kind": "do",
+            "text": "Cả người lái và người ngồi sau đội mũ bảo hiểm đúng chuẩn, cài quai (câu 68)."
+          }
+        ],
+        "questions": [
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          70,
+          71,
+          72,
+          73,
+          74
+        ]
+      },
+      {
+        "title": "Vượt xe",
+        "takeaway": "Chỉ vượt khi an toàn; xe ưu tiên đang phát tín hiệu thì không được vượt.",
+        "points": [
+          {
+            "kind": "dont",
+            "text": "Cầu hẹp một làn, đường cong khuất tầm nhìn, nơi giao nhau, chỗ giao đường sắt (câu 47, 53)."
+          },
+          {
+            "kind": "dont",
+            "text": "Xe ưu tiên đang phát tín hiệu, như xe cứu thương (câu 98)."
+          },
+          {
+            "kind": "do",
+            "text": "Xe Cảnh sát giao thông không phát tín hiệu ưu tiên: được vượt khi an toàn (câu 97)."
+          },
+          {
+            "kind": "do",
+            "text": "Xin vượt bằng đèn nhấp nháy phía trước hoặc còi (câu 48)."
+          }
+        ],
+        "questions": [
+          47,
+          48,
+          53,
+          97,
+          98
+        ]
+      },
+      {
+        "title": "Lùi xe, quay đầu, mở cửa",
+        "takeaway": "Quan sát đủ các hướng trước khi lùi, quay đầu hay mở cửa xe.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Lùi xe: quan sát hai bên và phía sau, có tín hiệu, chỉ lùi khi an toàn (câu 85, 246)."
+          },
+          {
+            "kind": "dont",
+            "text": "Nơi tầm nhìn bị che khuất: không được lùi (câu 86)."
+          },
+          {
+            "kind": "dont",
+            "text": "Không lùi ở đường một chiều, nơi giao nhau, trong hầm, trên cao tốc… (câu 58: “Cả ba ý trên”)."
+          },
+          {
+            "kind": "dont",
+            "text": "Không quay đầu ở phần đường người đi bộ, trên cầu, đầu cầu, cao tốc, đường hẹp, dốc (câu 55)."
+          },
+          {
+            "kind": "do",
+            "text": "Xuống ô tô: quan sát, mở hé cửa rồi mới mở vừa đủ (câu 234)."
+          }
+        ],
+        "questions": [
+          55,
+          58,
+          85,
+          86,
+          234,
+          246
+        ]
+      },
+      {
+        "title": "Nhường đường",
+        "takeaway": "Nhánh nhường chính · xuống dốc nhường lên dốc · vòng xuyến nhường trái · còn lại nhường phải.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Đường nhánh nhường xe trên đường chính, ưu tiên từ mọi hướng (câu 91, 253)."
+          },
+          {
+            "kind": "do",
+            "text": "Xe xuống dốc nhường xe lên dốc (câu 89)."
+          },
+          {
+            "kind": "do",
+            "text": "Có vòng xuyến: nhường xe đến từ bên trái (câu 92)."
+          },
+          {
+            "kind": "do",
+            "text": "Không có vòng xuyến: nhường xe đến từ bên phải (câu 93)."
+          },
+          {
+            "kind": "do",
+            "text": "Người đi bộ đang qua đường: giảm tốc độ, nhường đường (câu 34, 198)."
+          },
+          {
+            "kind": "info",
+            "text": "Tránh xe ngược chiều, dừng trước đường sắt, nhập làn cao tốc: “Cả ba ý trên” (câu 88, 102, 117)."
+          }
+        ],
+        "questions": [
+          34,
+          87,
+          88,
+          89,
+          91,
+          92,
+          93,
+          102,
+          117,
+          198,
+          253
+        ]
+      },
+      {
+        "title": "Quan sát, giảm tốc và kỹ thuật lái",
+        "takeaway": "Gặp nguy hiểm: quan sát, giảm tốc độ, dừng nếu cần, không bao giờ tăng tốc vượt qua.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Đường cong khuất, biển nguy hiểm, nơi đông người: quan sát, giảm tốc độ hoặc dừng (câu 35, 90, 163, 165)."
+          },
+          {
+            "kind": "do",
+            "text": "Gặp xe buýt đang dừng đón, trả khách: quan sát, giảm tốc độ hoặc dừng lại (câu 167)."
+          },
+          {
+            "kind": "do",
+            "text": "Trời mưa: giảm tốc độ, không phanh gấp, bật đèn chiếu gần (câu 245)."
+          },
+          {
+            "kind": "do",
+            "text": "Đường trơn: giữ vững tay lái, dùng số thấp, không đánh lái ngoặt (câu 226)."
+          },
+          {
+            "kind": "do",
+            "text": "Xuống dốc dài: giữ ga phù hợp hoặc về số thấp, phanh vừa phải (câu 206, 252)."
+          },
+          {
+            "kind": "do",
+            "text": "Mô tô: tăng ga từ từ, giảm ga thật nhanh (câu 260)."
+          },
+          {
+            "kind": "dont",
+            "text": "Chỉ dùng phanh trước (câu 255)."
+          }
+        ],
+        "questions": [
+          35,
+          90,
+          163,
+          165,
+          167,
+          206,
+          216,
+          226,
+          245,
+          252,
+          255,
+          260
+        ]
+      }
+    ]
+  },
+  {
+    "id": "signs",
+    "short": "Biển báo",
+    "title": "Biển báo và vạch kẻ",
+    "summary": "Chương V có 185 câu, gần một phần ba bộ đề",
+    "icon": "warning",
+    "color": "#ea580c",
+    "tips": [
+      {
+        "title": "Nhìn hình dạng và màu trước",
+        "takeaway": "Hình dạng và màu nền cho biết ngay nhóm biển.",
+        "points": [
+          {
+            "text": "Tam giác viền đỏ, nền vàng → biển nguy hiểm."
+          },
+          {
+            "text": "Tròn viền đỏ, nền trắng → biển cấm."
+          },
+          {
+            "text": "Tròn nền xanh → biển hiệu lệnh, bắt buộc làm theo."
+          },
+          {
+            "text": "Vuông, chữ nhật nền xanh → biển chỉ dẫn."
+          },
+          {
+            "text": "Chữ nhật trắng đen dưới biển chính → biển phụ, đọc cùng biển chính."
+          }
+        ]
+      },
+      {
+        "title": "Câu “Biển nào…?”",
+        "takeaway": "Đa số đáp án là một biển duy nhất; “Cả ba biển” hầu như không đúng.",
+        "stats": [
+          {
+            "label": "Đáp án là một biển",
+            "value": 70,
+            "detail": "80/115 câu"
+          },
+          {
+            "label": "Có phương án “hai biển”, đáp án là nó",
+            "value": 59,
+            "detail": "34/58 câu"
+          },
+          {
+            "label": "Có phương án “Cả ba biển”, đáp án là nó",
+            "value": 4,
+            "detail": "1/25 câu"
+          }
+        ],
+        "points": [
+          {
+            "kind": "do",
+            "text": "So từng biển với từ khóa của câu hỏi: “báo hiệu”, “cấm”, “hết”."
+          }
+        ],
+        "questions": [
+          327,
+          328,
+          373,
+          374,
+          378,
+          436
+        ]
+      },
+      {
+        "title": "Gạch chéo trên biển",
+        "takeaway": "Có vạch chéo thường nghĩa là “hết” hoặc “cấm”.",
+        "points": [
+          {
+            "text": "Vạch xiên trên biển → biển “Hết…”: hết cấm vượt, hết hạn chế tốc độ, hết khu đông dân cư."
+          },
+          {
+            "text": "Tròn viền đỏ nền xanh, một gạch chéo → cấm đỗ xe."
+          },
+          {
+            "text": "Tròn viền đỏ nền xanh, hai gạch chéo cắt nhau → cấm dừng và đỗ xe."
+          }
+        ]
+      },
+      {
+        "title": "Con số trên biển",
+        "takeaway": "Màu nền quyết định ý nghĩa của con số.",
+        "points": [
+          {
+            "text": "Số trong vòng tròn viền đỏ → tốc độ tối đa."
+          },
+          {
+            "text": "Số trên nền xanh → tốc độ tối thiểu."
+          },
+          {
+            "text": "Số kèm “m” ở biển phụ → phạm vi tác dụng hoặc khoảng cách đến nơi nguy hiểm."
+          }
+        ]
+      },
+      {
+        "title": "Vạch kẻ đường",
+        "takeaway": "Màu vạch cho biết chiều xe; liền hay đứt cho biết được đè hay không.",
+        "points": [
+          {
+            "text": "Vạch vàng → chia hai chiều xe ngược nhau."
+          },
+          {
+            "text": "Vạch trắng → chia các làn cùng chiều."
+          },
+          {
+            "kind": "dont",
+            "text": "Vạch liền → không được đè lên."
+          },
+          {
+            "kind": "do",
+            "text": "Vạch đứt → được đè khi cần."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "situations",
+    "short": "Sa hình",
+    "title": "Sa hình: ai đi trước",
+    "summary": "Chương VI có 115 câu tình huống",
+    "icon": "git-merge",
+    "color": "#7c3aed",
+    "tips": [
+      {
+        "title": "Hỏi lần lượt 4 câu",
+        "takeaway": "Ưu tiên → hiệu lệnh → đường chính → bên phải.",
+        "points": [
+          {
+            "text": "1 · Có xe ưu tiên đang làm nhiệm vụ (chữa cháy, công an, cứu thương…)? → cho đi trước."
+          },
+          {
+            "text": "2 · Có đèn tín hiệu hay Cảnh sát giao thông? → đi theo hiệu lệnh."
+          },
+          {
+            "text": "3 · Xe nào ở đường ưu tiên, đường chính? → đi trước xe ở đường nhánh."
+          },
+          {
+            "text": "4 · Không có các điều trên? → nhường xe đến từ bên phải."
+          },
+          {
+            "kind": "info",
+            "text": "Giữa các xe ưu tiên: xe chữa cháy đi trước xe cứu thương (câu 494). Luôn nhìn kỹ hình."
+          }
+        ],
+        "questions": [
+          91,
+          93,
+          488,
+          489,
+          494,
+          495
+        ]
+      },
+      {
+        "title": "Cùng đi qua nơi giao nhau",
+        "takeaway": "Xe rẽ trái thường phải nhường xe đi thẳng và xe rẽ phải.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Tự đặt mình vào vị trí từng xe: ai có xe khác đến từ bên phải hoặc đi thẳng chắn trước thì phải nhường."
+          }
+        ]
+      },
+      {
+        "title": "Ghi thứ tự ra trước",
+        "takeaway": "Tự xếp thứ tự các xe rồi mới đối chiếu với đáp án.",
+        "points": [
+          {
+            "kind": "do",
+            "text": "Ghi nhanh ra nháp, vd “Công an → tải → khách → con”, tránh bị rối khi các phương án gần giống nhau."
+          }
+        ],
+        "questions": [
+          487,
+          488,
+          489,
+          490
+        ]
+      }
+    ]
+  },
+  {
+    "id": "numbers",
+    "short": "Số liệu",
+    "title": "Số liệu hay gặp",
+    "summary": "Tốc độ, khoảng cách, độ tuổi",
+    "icon": "speedometer",
+    "color": "#16a34a",
+    "tips": [
+      {
+        "title": "Tốc độ trong khu đông dân cư",
+        "takeaway": "Đường đôi 60 · đường hai chiều 50 · xe gắn máy 40 (km/h).",
+        "points": [
+          {
+            "text": "Đường đôi hoặc một chiều từ 2 làn xe cơ giới: 60 km/h."
+          },
+          {
+            "text": "Đường hai chiều hoặc một chiều 1 làn: 50 km/h."
+          },
+          {
+            "text": "Xe gắn máy, xe máy chuyên dùng (trừ cao tốc): 40 km/h."
+          }
+        ],
+        "questions": [
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "title": "Khoảng cách an toàn",
+        "takeaway": "Nhớ dãy 35 – 55 – 70 – 100 m.",
+        "points": [
+          {
+            "text": "60 km/h → 35 m."
+          },
+          {
+            "text": "Trên 60 đến 80 km/h → 55 m."
+          },
+          {
+            "text": "Trên 80 đến 100 km/h → 70 m."
+          },
+          {
+            "text": "Trên 100 đến 120 km/h → 100 m."
+          }
+        ],
+        "questions": [
+          158,
+          159,
+          160,
+          161
+        ]
+      },
+      {
+        "title": "Dừng, đỗ xe",
+        "takeaway": "Sát lề 0,25 m · cách xe đỗ ngược chiều 20 m.",
+        "points": [
+          {
+            "text": "Bánh xe gần nhất cách lề đường, vỉa hè không quá 0,25 m."
+          },
+          {
+            "text": "Đường phố hẹp: cách xe đang đỗ ngược chiều tối thiểu 20 m."
+          }
+        ],
+        "questions": [
+          60,
+          61
+        ]
+      },
+      {
+        "title": "Độ tuổi",
+        "takeaway": "18 · 24 · 27 tuổi; tuổi tối đa lái xe trên 29 chỗ: nam 57, nữ 55.",
+        "points": [
+          {
+            "text": "Mô tô đến 125 cm³, ô tô đến 8 chỗ, ô tô tải 3,5–7,5 tấn: 18 tuổi."
+          },
+          {
+            "text": "Ô tô chở người trên 16 đến 29 chỗ: 24 tuổi."
+          },
+          {
+            "text": "Ô tô chở người trên 29 chỗ, xe giường nằm: 27 tuổi."
+          }
+        ],
+        "questions": [
+          118,
+          119,
+          120,
+          121,
+          122
+        ]
+      }
+    ]
+  }
+]
