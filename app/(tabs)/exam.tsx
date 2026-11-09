@@ -1,12 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import type { ComponentProps } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { type ComponentProps, useState } from 'react';
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
 import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime } from '@/lib/exam';
 import { useSettings } from '@/store/settings';
-import type { Exam, ExamDraft, ExamReveal, ExamScore } from '@/types';
+import type { Exam, ExamDraft, ExamReveal, ExamRules, ExamScore } from '@/types';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -71,6 +71,54 @@ const RevealSwitch = ({ value, onChange }: { value: ExamReveal; onChange: (value
   );
 };
 
+type StartExamDialogProps = {
+  /** Fixed exam number, or undefined for a random exam. */
+  examId?: number;
+  rules: ExamRules;
+  reveal: ExamReveal;
+  onRevealChange: (value: ExamReveal) => void;
+  onStart: () => void;
+  onCancel: () => void;
+};
+
+/** Asked before a new exam starts: how answers are shown. */
+const StartExamDialog = ({ examId, rules, reveal, onRevealChange, onStart, onCancel }: StartExamDialogProps) => (
+  <Modal visible transparent animationType="fade" onRequestClose={onCancel}>
+    <Pressable
+      onPress={onCancel}
+      style={{
+        flex: 1,
+        backgroundColor: 'rgba(15,23,42,0.55)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      {/* Swallow taps inside the card so only the backdrop closes the dialog. */}
+      <Pressable onPress={() => {}} className="w-full max-w-[360px] gap-4 rounded-3xl bg-white p-5">
+        <View className="items-center gap-1">
+          <Text className="text-lg font-semibold text-slate-900">
+            {examId === undefined ? 'Đề ngẫu nhiên' : `Đề số ${examId}`}
+          </Text>
+          <Text className="text-sm text-slate-500">
+            {rules.questionCount} câu · {rules.durationSec / 60} phút · đạt {rules.passCount}/{rules.questionCount}
+          </Text>
+        </View>
+        <View className="gap-2">
+          <Text className="text-sm font-semibold text-slate-700">Xem đáp án</Text>
+          <RevealSwitch value={reveal} onChange={onRevealChange} />
+        </View>
+        <View className="gap-1">
+          <AppButton label="Bắt đầu thi" icon="play" onPress={onStart} />
+          <Pressable onPress={onCancel} className="h-10 items-center justify-center">
+            <Text className="text-sm font-semibold text-slate-500">Hủy</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Pressable>
+  </Modal>
+);
+
 const examStatus = (score?: ExamScore, draft?: ExamDraft) => {
   if (draft) return { text: `⏱ ${formatTime(draft.remainingSec)}`, color: '#2563eb', tint: '#eff6ff' };
   if (!score) return { text: 'Chưa làm', color: '#64748b', tint: '#ffffff' };
@@ -125,8 +173,21 @@ const ExamScreen = () => {
   const exams = fixedExamsFor(licenseClass);
   const scoreOf = (exam: Exam) => examScores[fixedExamKey(licenseClass, exam.id)];
   const draftOf = (exam: Exam) => examDrafts[fixedExamKey(licenseClass, exam.id)];
-  const openExam = (examId: number) =>
-    router.push({ pathname: '/quiz', params: { mode: 'exam', examId: String(examId) } });
+  // `examId: undefined` means a random exam; null means the dialog is closed.
+  const [pending, setPending] = useState<{ examId?: number } | null>(null);
+
+  const startExam = (examId?: number) =>
+    router.push({
+      pathname: '/quiz',
+      params: examId === undefined ? { mode: 'exam' } : { mode: 'exam', examId: String(examId) },
+    });
+
+  // A saved draft resumes straight away; a new exam first asks how to show answers.
+  const openExam = (examId?: number) => {
+    const exam = examId === undefined ? undefined : exams.find((e) => e.id === examId);
+    if (exam && draftOf(exam)) startExam(examId);
+    else setPending({ examId });
+  };
 
   const passedCount = exams.filter((e) => scoreOf(e)?.passed).length;
   // Resume a saved exam first, otherwise suggest the first one not passed yet.
@@ -174,11 +235,8 @@ const ExamScreen = () => {
         icon="shuffle"
         color="#7c3aed"
         badge={`${classRules.durationSec / 60} phút`}
-        onPress={() => router.push({ pathname: '/quiz', params: { mode: 'exam' } })}
+        onPress={() => openExam()}
       />
-
-      <SectionTitle>Xem đáp án</SectionTitle>
-      <RevealSwitch value={examReveal} onChange={setExamReveal} />
 
       <SectionTitle>Danh sách đề thi</SectionTitle>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -5, marginVertical: -5 }}>
@@ -192,6 +250,20 @@ const ExamScreen = () => {
           />
         ))}
       </View>
+
+      {pending ? (
+        <StartExamDialog
+          examId={pending.examId}
+          rules={classRules}
+          reveal={examReveal}
+          onRevealChange={setExamReveal}
+          onCancel={() => setPending(null)}
+          onStart={() => {
+            setPending(null);
+            startExam(pending.examId);
+          }}
+        />
+      ) : null}
     </ScrollView>
   );
 };
