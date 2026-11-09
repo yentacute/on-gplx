@@ -4,8 +4,9 @@ import type { ComponentProps } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
+import { useQuestions } from '@/api/queries';
 import { EXAMS } from '@/data';
-import { EXAM_DURATION_SEC, EXAM_SIZE, PASS_COUNT, formatTime } from '@/lib/exam';
+import { FIXED_EXAM_RULES, examRulesFor, formatTime } from '@/lib/exam';
 import { useSettings } from '@/store/settings';
 import type { Exam, ExamDraft, ExamReveal, ExamScore } from '@/types';
 
@@ -93,7 +94,10 @@ const ExamTile = ({ exam, score, draft, onPress }: { exam: Exam; score?: ExamSco
 
 const ExamScreen = () => {
   const router = useRouter();
-  const { examReveal, setExamReveal, examScores, examDrafts } = useSettings();
+  const { licenseClass, examReveal, setExamReveal, examScores, examDrafts } = useSettings();
+  const { data: questions } = useQuestions();
+  const classRules = examRulesFor(licenseClass);
+  const fixed = FIXED_EXAM_RULES;
   const openExam = (examId: number) =>
     router.push({ pathname: '/quiz', params: { mode: 'exam', examId: String(examId) } });
 
@@ -109,8 +113,9 @@ const ExamScreen = () => {
         <View className="gap-1">
           <Text className="text-xl font-semibold text-white">Thi thử lý thuyết</Text>
           <Text className="text-white/85">
-            {EXAMS.length} đề · mỗi đề {EXAM_SIZE} câu trong {EXAM_DURATION_SEC / 60} phút, không trùng nhau. Đạt khi
-            đúng ≥ {PASS_COUNT}/{EXAM_SIZE} câu và không sai câu điểm liệt.
+            {EXAMS.length} đề mẫu theo cấu trúc hạng B · mỗi đề {fixed.questionCount} câu trong{' '}
+            {fixed.durationSec / 60} phút, không trùng nhau. Đạt khi đúng ≥ {fixed.passCount}/{fixed.questionCount} câu
+            và không sai câu điểm liệt.
           </Text>
         </View>
         <View className="self-start rounded-full bg-white/20 px-3 py-1">
@@ -130,10 +135,10 @@ const ExamScreen = () => {
 
       <MenuCard
         title="Thi đề ngẫu nhiên"
-        description={`${EXAM_SIZE} câu rút ngẫu nhiên từ 600 câu, có câu điểm liệt, mỗi lần một đề khác`}
+        description={`Đúng cấu trúc hạng ${licenseClass}: ${classRules.questionCount} câu rút ngẫu nhiên từ ${questions?.length ?? '…'} câu, đạt ${classRules.passCount}/${classRules.questionCount}, có câu điểm liệt`}
         icon="shuffle"
         color="#7c3aed"
-        badge={`${EXAM_DURATION_SEC / 60} phút`}
+        badge={`${classRules.durationSec / 60} phút`}
         onPress={() => router.push({ pathname: '/quiz', params: { mode: 'exam' } })}
       />
 

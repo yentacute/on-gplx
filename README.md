@@ -17,6 +17,25 @@ npm run typecheck
 npm run web              # hoặc: npm run android / npm run ios
 ```
 
+## Build cho Google Play
+
+```bash
+npm i -g eas-cli && eas login
+eas build -p android --profile preview      # APK để cài thử
+eas build -p android --profile production   # AAB để tải lên Play Console
+eas submit -p android --profile production  # đẩy lên kênh thử nghiệm nội bộ (bản nháp)
+```
+
+Số `versionCode` do EAS tự quản lý và tự tăng mỗi lần build production (`appVersionSource: remote`).
+Mã gói Android là `com.sammy2309.gplx`; sau khi tải bản đầu tiên lên Play thì không đổi được nữa.
+
+## Câu hỏi theo hạng bằng
+
+Mỗi câu trong `src/data/questions.json` có `licenseTypes`. App chỉ hiện các câu của hạng đang chọn, và thi ngẫu nhiên
+theo đúng số câu, thời gian, điểm đạt của hạng đó (`src/data/licenseClasses.json`). 20 đề cố định giữ cấu trúc hạng B
+(30 câu, 20 phút, đạt 27). Dữ liệu hiện chưa có câu nào gắn cho hạng xe máy (A1, A, B1) nên các hạng này bị khóa
+cho đến khi bổ sung `licenseTypes`.
+
 ## Cấu trúc
 
 ```

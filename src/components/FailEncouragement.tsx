@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, Modal, Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { PASS_COUNT } from '@/lib/exam';
 import { AppButton } from './AppButton';
 
 const USE_NATIVE_DRIVER = false;
@@ -130,12 +129,13 @@ type Props = {
   visible: boolean;
   correct: number;
   total: number;
+  passCount: number;
   criticalFailed: boolean;
   onReview: () => void;
   onClose: () => void;
 };
 
-export const FailEncouragement = ({ visible, correct, total, criticalFailed, onReview, onClose }: Props) => {
+export const FailEncouragement = ({ visible, correct, total, passCount, criticalFailed, onReview, onClose }: Props) => {
   const { height } = useWindowDimensions();
   const rain = useMemo(makeRain, []);
   const pop = useRef(new Animated.Value(0)).current;
@@ -146,7 +146,7 @@ export const FailEncouragement = ({ visible, correct, total, criticalFailed, onR
     Animated.spring(pop, { toValue: 1, friction: 6, tension: 60, useNativeDriver: USE_NATIVE_DRIVER }).start();
   }, [visible, pop]);
 
-  const reason = criticalFailed ? 'Bạn đã sai câu điểm liệt' : `Cần đúng ít nhất ${PASS_COUNT}/${total} câu`;
+  const reason = criticalFailed ? 'Bạn đã sai câu điểm liệt' : `Cần đúng ít nhất ${passCount}/${total} câu`;
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>

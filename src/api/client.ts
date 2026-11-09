@@ -1,16 +1,9 @@
-import { QUESTIONS, SIGNS } from '@/data';
+import { SIGNS, questionsForClass } from '@/data';
 import type { ExamVersion, LicenseClassId } from '@/types';
 
-// Data is bundled with the app for now; the delay keeps the loading states honest
-// so swapping in a real API later needs no UI changes.
-const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
+// Data is bundled with the app, so these resolve immediately. They stay async so a
+// real API can replace them later without UI changes.
+export const fetchQuestions = async (licenseClass: LicenseClassId, _version: ExamVersion) =>
+  questionsForClass(licenseClass);
 
-export const fetchQuestions = async (_licenseClass: LicenseClassId, _version: ExamVersion) => {
-  await delay();
-  return QUESTIONS;
-};
-
-export const fetchSigns = async () => {
-  await delay();
-  return SIGNS;
-};
+export const fetchSigns = async () => SIGNS;

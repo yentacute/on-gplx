@@ -3,6 +3,7 @@ import { type Href, useRouter } from 'expo-router';
 import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useQuestions } from '@/api/queries';
+import { classHasQuestions } from '@/data';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
 import { useSettings } from '@/store/settings';
 import type { LicenseClass, LicenseClassId } from '@/types';
@@ -32,8 +33,10 @@ const HeroStat = ({ value, label, icon, color }: { value: number | string; label
   </View>
 );
 
-const LicenseRow = ({ item, active, onPress }: { item: LicenseClass; active: boolean; onPress: () => void }) => (
-  <Pressable onPress={onPress}>
+type LicenseRowProps = { item: LicenseClass; active: boolean; available: boolean; onPress: () => void };
+
+const LicenseRow = ({ item, active, available, onPress }: LicenseRowProps) => (
+  <Pressable onPress={onPress} disabled={!available} style={available ? undefined : { opacity: 0.55 }}>
     <View
       className={
         'flex-row items-center gap-3 rounded-2xl border-2 px-3 py-2.5 ' +
@@ -54,9 +57,10 @@ const LicenseRow = ({ item, active, onPress }: { item: LicenseClass; active: boo
             {item.exam.questionCount}
           </Text>
         </View>
+        {available ? null : <Text className="text-xs font-medium text-amber-600">Sắp có bộ câu hỏi cho hạng này</Text>}
       </View>
       <Ionicons
-        name={active ? 'checkmark-circle' : 'ellipse-outline'}
+        name={active ? 'checkmark-circle' : available ? 'ellipse-outline' : 'lock-closed-outline'}
         size={24}
         color={active ? '#2563eb' : '#cbd5e1'}
       />
@@ -78,7 +82,13 @@ const HomeScreen = () => {
 
   const renderClasses = (classes: LicenseClass[]) =>
     classes.map((c) => (
-      <LicenseRow key={c.id} item={c} active={c.id === licenseClass} onPress={() => chooseClass(c.id)} />
+      <LicenseRow
+        key={c.id}
+        item={c}
+        active={c.id === licenseClass}
+        available={classHasQuestions(c.id)}
+        onPress={() => chooseClass(c.id)}
+      />
     ));
 
   return (

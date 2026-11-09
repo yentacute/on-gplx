@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { classHasQuestions } from '@/data';
 import type { ExamDraft, ExamReveal, ExamScore, ExamVersion, LicenseClassId } from '@/types';
 
 type SettingsData = {
@@ -65,7 +66,15 @@ export const useSettings = create<SettingsData & SettingsActions>()(
       removeWrong: (ids) => set((state) => ({ wrongIds: state.wrongIds.filter((id) => !ids.includes(id)) })),
       reset: () => set(DEFAULTS),
     }),
-    { name: 'gplx-settings', storage: createJSONStorage(() => AsyncStorage) },
+    {
+      name: 'gplx-settings',
+      storage: createJSONStorage(() => AsyncStorage),
+      // A saved class with no bundled questions yet (motorbike classes) falls back to B.
+      merge: (persisted, current) => {
+        const merged = { ...current, ...(persisted as Partial<SettingsData>) };
+        return classHasQuestions(merged.licenseClass) ? merged : { ...merged, licenseClass: DEFAULTS.licenseClass };
+      },
+    },
   ),
 );
 

@@ -1,10 +1,18 @@
-import type { ExamResult, Question } from '@/types';
+import { LICENSE_CLASSES } from '@/data/licenseClasses';
+import type { ExamResult, ExamRules, LicenseClassId, Question } from '@/types';
 
-export const EXAM_SIZE = 30;
-export const PASS_RATIO = 0.9;
-export const PASS_COUNT = Math.ceil(EXAM_SIZE * PASS_RATIO);
-export const EXAM_DURATION_SEC = 20 * 60;
+/** The 20 fixed exams follow the class B structure: 30 questions, 20 minutes, pass at 27. */
+export const FIXED_EXAM_RULES: ExamRules = { questionCount: 30, durationSec: 20 * 60, passCount: 27 };
+
 const CRITICAL_PER_EXAM = 3;
+const PRACTICE_PASS_RATIO = 0.9;
+
+/** Exam structure for a license class, from licenseClasses.json. */
+export const examRulesFor = (licenseClass: LicenseClassId): ExamRules => {
+  const exam = LICENSE_CLASSES.find((c) => c.id === licenseClass)?.exam;
+  if (!exam) return FIXED_EXAM_RULES;
+  return { questionCount: exam.questionCount, durationSec: exam.timeMinutes * 60, passCount: exam.passingScore };
+};
 
 /** Seconds to `mm:ss`. */
 export const formatTime = (seconds: number) => {
@@ -21,16 +29,17 @@ export const shuffle = <T,>(items: readonly T[]): T[] => {
   return result;
 };
 
-/** A random exam with a few critical questions mixed in. */
-export const makeRandomExam = (questions: Question[]) => {
+/** A random exam of `size` questions with a few critical (điểm liệt) questions mixed in. */
+export const makeRandomExam = (questions: Question[], size: number) => {
   const critical = shuffle(questions.filter((q) => q.isCritical)).slice(0, CRITICAL_PER_EXAM);
-  const rest = shuffle(questions.filter((q) => !q.isCritical)).slice(0, EXAM_SIZE - critical.length);
+  const rest = shuffle(questions.filter((q) => !q.isCritical)).slice(0, size - critical.length);
   return shuffle([...critical, ...rest]);
 };
 
-export const gradeExam = (questions: Question[], picked: Record<number, number>): ExamResult => {
+/** Grades answers. Without `passCount` (practice) the pass mark is 90%. */
+export const gradeExam = (questions: Question[], picked: Record<number, number>, passCount?: number): ExamResult => {
   const correct = questions.filter((q) => picked[q.id] === q.answer).length;
   const criticalFailed = questions.some((q) => q.isCritical && picked[q.id] !== q.answer);
-  const passed = !criticalFailed && correct >= Math.ceil(questions.length * PASS_RATIO - 1e-9);
-  return { total: questions.length, correct, criticalFailed, passed };
+  const needed = passCount ?? Math.ceil(questions.length * PRACTICE_PASS_RATIO - 1e-9);
+  return { total: questions.length, correct, passCount: needed, criticalFailed, passed: !criticalFailed && correct >= needed };
 };
