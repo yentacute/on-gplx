@@ -22,6 +22,14 @@ const optionClass = (index: number, { selected, showAnswer, question }: Props) =
   return 'border-slate-200 bg-white';
 };
 
+// State is shown by color only: changing weight on select would widen the text and re-wrap lines.
+const optionTextClass = (index: number, { selected, showAnswer, question }: Props) => {
+  if (showAnswer && index === question.answer) return 'text-green-800';
+  if (showAnswer && index === selected) return 'text-red-800';
+  if (index === selected) return 'text-primary-dark';
+  return 'text-slate-800';
+};
+
 export const QuestionCard = (props: Props) => {
   const { question, showAnswer, onSelect } = props;
   const { height: screenHeight } = useWindowDimensions();
@@ -70,13 +78,24 @@ export const QuestionCard = (props: Props) => {
           onPress={() => onSelect(i)}
           className={`rounded-xl border px-3 py-2.5 ${optionClass(i, props)}`}
         >
-          <Text style={{ fontFamily: INTER.regular }} className="text-sm font-normal text-slate-800">
-            {i + 1}. {option}
+          <Text
+            style={{ fontFamily: INTER.regular }}
+            className={`text-[15px] font-normal leading-6 ${optionTextClass(i, props)}`}
+          >
+            <Text style={{ fontFamily: INTER.semibold }} className="font-semibold">
+              {i + 1}.{' '}
+            </Text>
+            {option}
           </Text>
         </Pressable>
       ))}
       {showAnswer && question.explanation ? (
-        <Text className="text-sm text-slate-600">Giải thích: {question.explanation}</Text>
+        <Text style={{ fontFamily: INTER.regular }} className="text-sm font-normal leading-6 text-slate-600">
+          <Text style={{ fontFamily: INTER.semibold }} className="font-semibold text-slate-800">
+            Giải thích:{' '}
+          </Text>
+          {question.explanation}
+        </Text>
       ) : null}
     </View>
   );
