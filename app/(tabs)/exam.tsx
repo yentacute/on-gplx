@@ -4,8 +4,7 @@ import type { ComponentProps } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
-import { EXAMS } from '@/data';
-import { FIXED_EXAM_RULES, examRulesFor, formatTime } from '@/lib/exam';
+import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime } from '@/lib/exam';
 import { useSettings } from '@/store/settings';
 import type { Exam, ExamDraft, ExamReveal, ExamScore } from '@/types';
 
@@ -123,14 +122,16 @@ const ExamScreen = () => {
   const router = useRouter();
   const { licenseClass, examReveal, setExamReveal, examScores, examDrafts } = useSettings();
   const classRules = examRulesFor(licenseClass);
-  const fixed = FIXED_EXAM_RULES;
+  const exams = fixedExamsFor(licenseClass);
+  const scoreOf = (exam: Exam) => examScores[fixedExamKey(licenseClass, exam.id)];
+  const draftOf = (exam: Exam) => examDrafts[fixedExamKey(licenseClass, exam.id)];
   const openExam = (examId: number) =>
     router.push({ pathname: '/quiz', params: { mode: 'exam', examId: String(examId) } });
 
-  const passedCount = EXAMS.filter((e) => examScores[e.id]?.passed).length;
+  const passedCount = exams.filter((e) => scoreOf(e)?.passed).length;
   // Resume a saved exam first, otherwise suggest the first one not passed yet.
-  const nextExam = EXAMS.find((e) => examDrafts[e.id]) ?? EXAMS.find((e) => !examScores[e.id]?.passed) ?? EXAMS[0];
-  const hasDraft = nextExam ? Boolean(examDrafts[nextExam.id]) : false;
+  const nextExam = exams.find((e) => draftOf(e)) ?? exams.find((e) => !scoreOf(e)?.passed) ?? exams[0];
+  const hasDraft = nextExam ? Boolean(draftOf(nextExam)) : false;
 
   return (
     <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-3 p-3">
@@ -139,23 +140,23 @@ const ExamScreen = () => {
           <View className="flex-1 gap-0.5">
             <Text className="text-xl font-semibold text-white">Thi thử lý thuyết</Text>
             <Text className="text-sm text-white/80">
-              {EXAMS.length} đề mẫu{licenseClass === 'B' ? '' : ' hạng B'} · sai câu điểm liệt là trượt
+              Hạng {licenseClass} · {exams.length} đề · sai câu điểm liệt là trượt
             </Text>
           </View>
           <View className="items-end">
             <Text className="text-xl font-bold text-white">
-              {passedCount}/{EXAMS.length}
+              {passedCount}/{exams.length}
             </Text>
             <Text className="text-xs text-white/80">đề đã đạt</Text>
           </View>
         </View>
         <View className="h-1.5 overflow-hidden rounded-full bg-white/20">
-          <View className="h-full rounded-full bg-white" style={{ width: `${(passedCount / EXAMS.length) * 100}%` }} />
+          <View className="h-full rounded-full bg-white" style={{ width: `${(passedCount / exams.length) * 100}%` }} />
         </View>
         <View className="flex-row flex-wrap gap-2">
-          <HeroFact icon="document-text" text={`${fixed.questionCount} câu`} />
-          <HeroFact icon="time" text={`${fixed.durationSec / 60} phút`} />
-          <HeroFact icon="checkmark-circle" text={`Đạt ${fixed.passCount}/${fixed.questionCount}`} />
+          <HeroFact icon="document-text" text={`${classRules.questionCount} câu`} />
+          <HeroFact icon="time" text={`${classRules.durationSec / 60} phút`} />
+          <HeroFact icon="checkmark-circle" text={`Đạt ${classRules.passCount}/${classRules.questionCount}`} />
         </View>
         {nextExam ? (
           <AppButton
@@ -169,7 +170,7 @@ const ExamScreen = () => {
 
       <MenuCard
         title="Đề ngẫu nhiên"
-        description={`Hạng ${licenseClass} · ${classRules.questionCount} câu · đạt ${classRules.passCount}/${classRules.questionCount}`}
+        description="Mỗi lần một đề mới"
         icon="shuffle"
         color="#7c3aed"
         badge={`${classRules.durationSec / 60} phút`}
@@ -181,12 +182,12 @@ const ExamScreen = () => {
 
       <SectionTitle>Danh sách đề thi</SectionTitle>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -5, marginVertical: -5 }}>
-        {EXAMS.map((exam) => (
+        {exams.map((exam) => (
           <ExamTile
             key={exam.id}
             exam={exam}
-            score={examScores[exam.id]}
-            draft={examDrafts[exam.id]}
+            score={scoreOf(exam)}
+            draft={draftOf(exam)}
             onPress={() => openExam(exam.id)}
           />
         ))}

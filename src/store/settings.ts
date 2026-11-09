@@ -10,19 +10,19 @@ type SettingsData = {
   version: ExamVersion;
   wrongIds: number[];
   examReveal: ExamReveal;
-  /** Best score per fixed exam id. */
-  examScores: Record<number, ExamScore>;
+  /** Best score per fixed exam, keyed by fixedExamKey(). */
+  examScores: Record<string, ExamScore>;
   /** Unfinished exams the user saved to continue later. */
-  examDrafts: Record<number, ExamDraft>;
+  examDrafts: Record<string, ExamDraft>;
 };
 
 type SettingsActions = {
   setLicenseClass: (licenseClass: LicenseClassId) => void;
   setVersion: (version: ExamVersion) => void;
   setExamReveal: (reveal: ExamReveal) => void;
-  saveExamScore: (examId: number, score: ExamScore) => void;
-  saveExamDraft: (examId: number, draft: ExamDraft) => void;
-  clearExamDraft: (examId: number) => void;
+  saveExamScore: (examKey: string, score: ExamScore) => void;
+  saveExamDraft: (examKey: string, draft: ExamDraft) => void;
+  clearExamDraft: (examKey: string) => void;
   addWrong: (ids: number[]) => void;
   removeWrong: (ids: number[]) => void;
   reset: () => void;
@@ -50,16 +50,16 @@ export const useSettings = create<SettingsData & SettingsActions>()(
       setLicenseClass: (licenseClass) => set({ licenseClass }),
       setVersion: (version) => set({ version }),
       setExamReveal: (examReveal) => set({ examReveal }),
-      saveExamScore: (examId, score) =>
+      saveExamScore: (examKey, score) =>
         set((state) =>
-          isBetterScore(score, state.examScores[examId])
-            ? { examScores: { ...state.examScores, [examId]: score } }
+          isBetterScore(score, state.examScores[examKey])
+            ? { examScores: { ...state.examScores, [examKey]: score } }
             : {},
         ),
-      saveExamDraft: (examId, draft) => set((state) => ({ examDrafts: { ...state.examDrafts, [examId]: draft } })),
-      clearExamDraft: (examId) =>
+      saveExamDraft: (examKey, draft) => set((state) => ({ examDrafts: { ...state.examDrafts, [examKey]: draft } })),
+      clearExamDraft: (examKey) =>
         set((state) => {
-          const { [examId]: _removed, ...rest } = state.examDrafts;
+          const { [examKey]: _removed, ...rest } = state.examDrafts;
           return { examDrafts: rest };
         }),
       addWrong: (ids) => set((state) => ({ wrongIds: Array.from(new Set([...state.wrongIds, ...ids])) })),
