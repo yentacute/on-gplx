@@ -4,7 +4,6 @@ import type { ComponentProps } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
-import { useQuestions } from '@/api/queries';
 import { EXAMS } from '@/data';
 import { FIXED_EXAM_RULES, examRulesFor, formatTime } from '@/lib/exam';
 import { useSettings } from '@/store/settings';
@@ -15,14 +14,14 @@ type RevealOption = { id: ExamReveal; title: string; description: string; icon: 
 const REVEAL_OPTIONS: RevealOption[] = [
   {
     id: 'instant',
-    title: 'Hiện đáp án ngay',
-    description: 'Biết đúng/sai sau mỗi câu, phù hợp khi mới luyện',
+    title: 'Sau mỗi câu',
+    description: 'Hợp khi mới luyện',
     icon: 'flash',
   },
   {
     id: 'end',
-    title: 'Hiện khi nộp bài',
-    description: 'Giống thi thật: chỉ xem kết quả và câu sai ở cuối',
+    title: 'Khi nộp bài',
+    description: 'Giống thi thật',
     icon: 'flag',
   },
 ];
@@ -97,7 +96,6 @@ const ExamTile = ({ exam, score, draft, onPress }: { exam: Exam; score?: ExamSco
 const ExamScreen = () => {
   const router = useRouter();
   const { licenseClass, examReveal, setExamReveal, examScores, examDrafts } = useSettings();
-  const { data: questions } = useQuestions();
   const classRules = examRulesFor(licenseClass);
   const fixed = FIXED_EXAM_RULES;
   const openExam = (examId: number) =>
@@ -115,9 +113,8 @@ const ExamScreen = () => {
         <View className="gap-1">
           <Text className="text-xl font-semibold text-white">Thi thử lý thuyết</Text>
           <Text className="text-white/85">
-            {EXAMS.length} đề mẫu theo cấu trúc hạng B · mỗi đề {fixed.questionCount} câu trong{' '}
-            {fixed.durationSec / 60} phút, không trùng nhau. Đạt khi đúng ≥ {fixed.passCount}/{fixed.questionCount} câu
-            và không sai câu điểm liệt.
+            {EXAMS.length} đề mẫu{licenseClass === 'B' ? '' : ' hạng B'} · {fixed.questionCount} câu · {fixed.durationSec / 60}{' '}
+            phút. Đạt khi đúng từ {fixed.passCount} câu và không sai câu điểm liệt.
           </Text>
         </View>
         <View className="self-start rounded-full bg-white/20 px-3 py-1">
@@ -136,15 +133,15 @@ const ExamScreen = () => {
       </View>
 
       <MenuCard
-        title="Thi đề ngẫu nhiên"
-        description={`Đúng cấu trúc hạng ${licenseClass}: ${classRules.questionCount} câu rút ngẫu nhiên từ ${questions?.length ?? '…'} câu, đạt ${classRules.passCount}/${classRules.questionCount}, có câu điểm liệt`}
+        title="Đề ngẫu nhiên"
+        description={`Hạng ${licenseClass} · ${classRules.questionCount} câu, đạt từ ${classRules.passCount} câu · mỗi lần một đề mới`}
         icon="shuffle"
         color="#7c3aed"
         badge={`${classRules.durationSec / 60} phút`}
         onPress={() => router.push({ pathname: '/quiz', params: { mode: 'exam' } })}
       />
 
-      <SectionTitle>Cách hiện kết quả</SectionTitle>
+      <SectionTitle>Xem đáp án</SectionTitle>
       <View className="flex-row gap-3">
         {REVEAL_OPTIONS.map((option) => (
           <RevealRow
