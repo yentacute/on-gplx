@@ -13,8 +13,7 @@ import { PassCelebration } from '@/components/PassCelebration';
 import { QuestionCard } from '@/components/QuestionCard';
 import { QuizProgress } from '@/components/QuizProgress';
 import { ResultSummary } from '@/components/ResultSummary';
-import { EXAMS } from '@/data';
-import { EXAM_DURATION_SEC, formatTime, gradeExam, makeRandomExam } from '@/lib/exam';
+import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime, gradeExam, makeRandomExam } from '@/lib/exam';
 import { useSettings, useSettingsHydrated } from '@/store/settings';
 import type { Question, QuizMode } from '@/types';
 
@@ -62,12 +61,16 @@ const QuizScreen = () => {
   const router = useRouter();
   const { mode = 'practice', examId, ids, category } = useLocalSearchParams<Params>();
   const { data: allQuestions, isLoading } = useQuestions();
-  const { wrongIds, addWrong, removeWrong, saveExamScore, saveExamDraft, clearExamDraft, examReveal } =
+  const { licenseClass, wrongIds, addWrong, removeWrong, saveExamScore, saveExamDraft, clearExamDraft, examReveal } =
     useSettings();
   const hydrated = useSettingsHydrated();
 
   const isExam = mode === 'exam';
   const fixedExamId = isExam && examId ? Number(examId) : undefined;
+  // Fixed and random exams both follow the chosen class's question count, time and pass mark.
+  const rules = examRulesFor(licenseClass);
+  const examKey = fixedExamId !== undefined ? fixedExamKey(licenseClass, fixedExamId) : undefined;
+  const passCount = isExam ? rules.passCount : undefined;
 
   const questions = useMemo(() => {
     if (!allQuestions || !hydrated) return [];
@@ -79,15 +82,15 @@ const QuizScreen = () => {
     if (mode === 'wrong') return allQuestions.filter((q) => wrongIds.includes(q.id));
     if (category) return allQuestions.filter((q) => q.category === category);
     if (isExam) {
-      const exam = EXAMS.find((e) => e.id === fixedExamId);
-      if (!exam) return makeRandomExam(allQuestions);
+      const exam = fixedExamsFor(licenseClass).find((e) => e.id === fixedExamId);
+      if (!exam) return makeRandomExam(allQuestions, rules.questionCount);
       const byId = new Map(allQuestions.map((q) => [q.id, q]));
       return exam.questionIds.flatMap((id) => byId.get(id) ?? []);
     }
     return allQuestions;
     // wrongIds is read once when the quiz starts, so answering doesn't reshuffle the list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allQuestions, mode, fixedExamId, ids, category, hydrated]);
+  }, [allQuestions, mode, fixedExamId, ids, category, hydrated, rules.questionCount, licenseClass]);
 
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<Picked>({});
@@ -95,7 +98,7 @@ const QuizScreen = () => {
   const [finished, setFinished] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [showFail, setShowFail] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_SEC);
+  const [timeLeft, setTimeLeft] = useState(rules.durationSec);
   const [timedOut, setTimedOut] = useState(false);
   const [dialog, setDialog] = useState<'finish' | 'exit' | null>(null);
   const draftRestored = useRef(false);
@@ -104,23 +107,23 @@ const QuizScreen = () => {
 
   // Resume a saved draft of a fixed exam once settings are loaded.
   useEffect(() => {
-    if (!hydrated || draftRestored.current || fixedExamId === undefined) return;
+    if (!hydrated || draftRestored.current || examKey === undefined) return;
     draftRestored.current = true;
-    const draft = useSettings.getState().examDrafts[fixedExamId];
+    const draft = useSettings.getState().examDrafts[examKey];
     if (draft) {
       setPicked(draft.picked);
       setIndex(draft.index);
       setTimeLeft(draft.remainingSec);
     }
-  }, [hydrated, fixedExamId]);
+  }, [hydrated, examKey]);
 
   const submit = (reason: 'submit' | 'timeout' = 'submit') => {
     addWrong(questions.filter((q) => picked[q.id] !== q.answer).map((q) => q.id));
     removeWrong(questions.filter((q) => picked[q.id] === q.answer).map((q) => q.id));
-    const result = gradeExam(questions, picked);
-    if (fixedExamId !== undefined) {
-      saveExamScore(fixedExamId, { correct: result.correct, total: result.total, passed: result.passed });
-      clearExamDraft(fixedExamId);
+    const result = gradeExam(questions, picked, passCount);
+    if (examKey !== undefined) {
+      saveExamScore(examKey, { correct: result.correct, total: result.total, passed: result.passed });
+      clearExamDraft(examKey);
     }
     if (isExam && result.passed) setShowPass(true);
     if (isExam && !result.passed) setShowFail(true);
@@ -182,7 +185,7 @@ const QuizScreen = () => {
   }
 
   if (finished) {
-    const result = gradeExam(questions, picked);
+    const result = gradeExam(questions, picked, passCount);
     const wrongQuestionIds = questions.filter((q) => picked[q.id] !== q.answer).map((q) => q.id);
     const reviewWrong = () => {
       setShowFail(false);
@@ -195,7 +198,9 @@ const QuizScreen = () => {
           result={result}
           answered={Object.keys(picked).length}
           isExam={isExam}
-          timeText={isExam ? (timedOut ? 'Hết giờ' : `Làm trong ${formatTime(EXAM_DURATION_SEC - timeLeft)}`) : undefined}
+          timeText={
+            isExam ? (timedOut ? 'Hết giờ' : `Làm trong ${formatTime(rules.durationSec - timeLeft)}`) : undefined
+          }
           timedOut={timedOut}
           onBack={() => router.back()}
           onReview={isExam && wrongQuestionIds.length > 0 ? reviewWrong : undefined}
@@ -211,6 +216,7 @@ const QuizScreen = () => {
           visible={showFail}
           correct={result.correct}
           total={result.total}
+          passCount={result.passCount}
           criticalFailed={result.criticalFailed}
           onClose={() => setShowFail(false)}
           onReview={reviewWrong}
@@ -293,11 +299,11 @@ const QuizScreen = () => {
             answered={answeredCount}
             total={questions.length}
             timeLeft={timeLeft}
-            canSave={fixedExamId !== undefined}
+            canSave={examKey !== undefined}
             onFinish={() => submit()}
             onSaveAndExit={() => {
-              if (fixedExamId !== undefined) {
-                saveExamDraft(fixedExamId, { picked, index, remainingSec: timeLeft });
+              if (examKey !== undefined) {
+                saveExamDraft(examKey, { picked, index, remainingSec: timeLeft });
               }
               setDialog(null);
               setAllowLeave(true);

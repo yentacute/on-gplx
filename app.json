@@ -10,10 +10,10 @@
     "icon": "./assets/icon.png",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "vn.gplx.app"
+      "bundleIdentifier": "com.sammy2309.gplx"
     },
     "android": {
-      "package": "vn.gplx.app",
+      "package": "com.sammy2309.gplx",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2563eb"

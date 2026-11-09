@@ -29,6 +29,8 @@ export type Question = {
   isCritical: boolean;
   category: string;
   topic: Topic;
+  /** License classes this question is used for, e.g. `B`, `C1`. */
+  licenseTypes: string[];
   /** Keys into QUESTION_IMAGES, e.g. `q227.jpg`. */
   images?: string[];
 };
@@ -66,7 +68,17 @@ export type TrafficSign = {
 
 export type Exam = { id: number; questionIds: number[] };
 
-export type ExamResult = { total: number; correct: number; criticalFailed: boolean; passed: boolean };
+export type ExamResult = {
+  total: number;
+  correct: number;
+  /** Correct answers needed to pass. */
+  passCount: number;
+  criticalFailed: boolean;
+  passed: boolean;
+};
+
+/** Exam structure: number of questions, time limit and pass mark. */
+export type ExamRules = { questionCount: number; durationSec: number; passCount: number };
 
 export type ExamScore = { correct: number; total: number; passed: boolean };
 

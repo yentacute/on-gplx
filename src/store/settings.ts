@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { classHasQuestions } from '@/data';
 import type { ExamDraft, ExamReveal, ExamScore, ExamVersion, LicenseClassId } from '@/types';
 
 type SettingsData = {
@@ -9,19 +10,19 @@ type SettingsData = {
   version: ExamVersion;
   wrongIds: number[];
   examReveal: ExamReveal;
-  /** Best score per fixed exam id. */
-  examScores: Record<number, ExamScore>;
+  /** Best score per fixed exam, keyed by fixedExamKey(). */
+  examScores: Record<string, ExamScore>;
   /** Unfinished exams the user saved to continue later. */
-  examDrafts: Record<number, ExamDraft>;
+  examDrafts: Record<string, ExamDraft>;
 };
 
 type SettingsActions = {
   setLicenseClass: (licenseClass: LicenseClassId) => void;
   setVersion: (version: ExamVersion) => void;
   setExamReveal: (reveal: ExamReveal) => void;
-  saveExamScore: (examId: number, score: ExamScore) => void;
-  saveExamDraft: (examId: number, draft: ExamDraft) => void;
-  clearExamDraft: (examId: number) => void;
+  saveExamScore: (examKey: string, score: ExamScore) => void;
+  saveExamDraft: (examKey: string, draft: ExamDraft) => void;
+  clearExamDraft: (examKey: string) => void;
   addWrong: (ids: number[]) => void;
   removeWrong: (ids: number[]) => void;
   reset: () => void;
@@ -49,23 +50,31 @@ export const useSettings = create<SettingsData & SettingsActions>()(
       setLicenseClass: (licenseClass) => set({ licenseClass }),
       setVersion: (version) => set({ version }),
       setExamReveal: (examReveal) => set({ examReveal }),
-      saveExamScore: (examId, score) =>
+      saveExamScore: (examKey, score) =>
         set((state) =>
-          isBetterScore(score, state.examScores[examId])
-            ? { examScores: { ...state.examScores, [examId]: score } }
+          isBetterScore(score, state.examScores[examKey])
+            ? { examScores: { ...state.examScores, [examKey]: score } }
             : {},
         ),
-      saveExamDraft: (examId, draft) => set((state) => ({ examDrafts: { ...state.examDrafts, [examId]: draft } })),
-      clearExamDraft: (examId) =>
+      saveExamDraft: (examKey, draft) => set((state) => ({ examDrafts: { ...state.examDrafts, [examKey]: draft } })),
+      clearExamDraft: (examKey) =>
         set((state) => {
-          const { [examId]: _removed, ...rest } = state.examDrafts;
+          const { [examKey]: _removed, ...rest } = state.examDrafts;
           return { examDrafts: rest };
         }),
       addWrong: (ids) => set((state) => ({ wrongIds: Array.from(new Set([...state.wrongIds, ...ids])) })),
       removeWrong: (ids) => set((state) => ({ wrongIds: state.wrongIds.filter((id) => !ids.includes(id)) })),
       reset: () => set(DEFAULTS),
     }),
-    { name: 'gplx-settings', storage: createJSONStorage(() => AsyncStorage) },
+    {
+      name: 'gplx-settings',
+      storage: createJSONStorage(() => AsyncStorage),
+      // A saved class with no bundled questions yet (motorbike classes) falls back to B.
+      merge: (persisted, current) => {
+        const merged = { ...current, ...(persisted as Partial<SettingsData>) };
+        return classHasQuestions(merged.licenseClass) ? merged : { ...merged, licenseClass: DEFAULTS.licenseClass };
+      },
+    },
   ),
 );
 

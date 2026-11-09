@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Text, View } from 'react-native';
-import { PASS_COUNT } from '@/lib/exam';
 import type { ExamResult } from '@/types';
 import { AppButton } from './AppButton';
 
@@ -48,7 +47,7 @@ export const ResultSummary = ({ result, answered, isExam, timeText, timedOut, on
   const wrong = answered - result.correct;
   const skipped = result.total - answered;
   const percent = Math.round((result.correct / result.total) * 100);
-  const passMarkPercent = (PASS_COUNT / result.total) * 100;
+  const passMarkPercent = (result.passCount / result.total) * 100;
 
   return (
     <View className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
@@ -94,7 +93,7 @@ export const ResultSummary = ({ result, answered, isExam, timeText, timedOut, on
           </View>
           {isExam ? (
             <Text className="text-xs text-slate-400">
-              Vạch đậm: mức đạt {PASS_COUNT}/{result.total} câu
+              Vạch đậm: mức đạt {result.passCount}/{result.total} câu
             </Text>
           ) : null}
         </View>
@@ -109,7 +108,7 @@ export const ResultSummary = ({ result, answered, isExam, timeText, timedOut, on
           <View className="flex-row flex-wrap justify-center gap-2">
             {result.criticalFailed ? <Chip icon="alert-circle" text="Sai câu điểm liệt" color="#dc2626" /> : null}
             {result.passed || result.criticalFailed ? null : (
-              <Chip icon="trending-down" text={`Thiếu ${PASS_COUNT - result.correct} câu để đạt`} color="#ea580c" />
+              <Chip icon="trending-down" text={`Thiếu ${result.passCount - result.correct} câu để đạt`} color="#ea580c" />
             )}
             {timeText ? (
               <Chip
