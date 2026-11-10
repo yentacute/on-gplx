@@ -57,6 +57,7 @@ const RootLayout = () => {
               <Stack.Screen name="quiz" options={{ title: 'Làm bài', headerLeft: backButton }} />
               <Stack.Screen name="tips" options={{ title: 'Mẹo ghi nhớ', headerLeft: backButton }} />
               <Stack.Screen name="topics" options={{ title: 'Ôn theo danh mục', headerLeft: backButton }} />
+              <Stack.Screen name="privacy" options={{ title: 'Quyền riêng tư', headerLeft: backButton }} />
             </Stack>
           </AntdProvider>
         </QueryClientProvider>

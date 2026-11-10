@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { router } from 'expo-router';
 import { ScrollView, Text } from 'react-native';
 import { MenuCard } from '@/components/MenuCard';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
@@ -50,6 +51,18 @@ const ProfileScreen = () => {
         color="#dc2626"
         onPress={resetProgress}
       />
+      <SectionTitle>Giới thiệu</SectionTitle>
+      <MenuCard
+        title="Chính sách quyền riêng tư"
+        description="Ứng dụng không thu thập dữ liệu cá nhân"
+        icon="shield-checkmark"
+        color="#059669"
+        onPress={() => router.push('/privacy')}
+      />
+      <Text className="px-1 text-xs leading-5 text-slate-500">
+        Ứng dụng cá nhân, không thuộc cơ quan nhà nước. Câu hỏi lấy từ bộ đề sát hạch lý thuyết lái xe được công bố công
+        khai; phần giải thích do chúng tôi tự biên soạn để tham khảo.
+      </Text>
     </ScrollView>
   );
 };
