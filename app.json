@@ -7,15 +7,16 @@
     "orientation": "portrait",
     "scheme": "gplx",
     "userInterfaceStyle": "light",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sammy2309.gplx"
     },
     "android": {
       "package": "com.sammy2309.gplx",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#2563eb"
       }
     },
@@ -30,7 +31,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#2563eb"
