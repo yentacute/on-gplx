@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ScrollView, Text } from 'react-native';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import { MenuCard } from '@/components/MenuCard';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
 import { useResetProgress } from '@/hooks/useResetProgress';
@@ -50,6 +51,8 @@ const ProfileScreen = () => {
         color="#dc2626"
         onPress={resetProgress}
       />
+      <SectionTitle>Về ứng dụng</SectionTitle>
+      <AppInfoCard />
     </ScrollView>
   );
 };
