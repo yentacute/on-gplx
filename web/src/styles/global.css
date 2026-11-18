@@ -313,6 +313,7 @@
 .hub-feature-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .hub-feature-icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 14px; background: #2563eb; color: #fff; box-shadow: 0 8px 18px -8px #2563ebaa; }
 .hub-feature-tag { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 9px; background: #fff; color: #1d5ebd; font-size: .68rem; font-weight: 700; box-shadow: 0 1px 2px #0f172a14; }
+.hub-feature-icon-glass { background: #ffffff26; box-shadow: inset 0 0 0 1px #ffffff40; }
 .hub-feature-progress { position: relative; display: block; margin-top: 14px; }
 .hub-feature-progress > span { display: block; height: 5px; min-width: 6px; border-radius: 999px; background: #fff; }
 .hub-feature-progress::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; border-radius: 999px; background: #ffffff33; }
@@ -352,6 +353,11 @@
   .hub-feature-tag { display: none; }
   .hub-feature-button { padding: 10px 12px; font-size: .8rem; white-space: nowrap; }
   .hub-head h2 { font-size: 1.15rem; }
+  .hub-head { margin-bottom: 10px; }
+  .hub-head-spaced { margin-top: 22px; }
+  .home-section { margin-top: 24px; }
+  .home-section-heading { margin-bottom: 16px; }
+  .hub-head p { font-size: .8rem; }
   .hub-head > a { font-size: .75rem; }
   .hub-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .hub-tile { align-items: flex-start; gap: 9px; padding: 12px; }
