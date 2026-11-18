@@ -1,7 +1,7 @@
 import type { GenerateMetadataFunction, Metadata } from 'expo-server';
 
 /** Public address of the web build. Canonical URLs, Open Graph and the sitemap use it. */
-export const SITE_URL = 'https://gplx-app.expo.app';
+export const SITE_URL = 'https://ontaplaixe.com';
 export const SITE_NAME = 'Ôn thi GPLX';
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 

@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "fix-deps": "expo install --fix"
+    "fix-deps": "expo install --fix",
+    "deploy": "npx expo export -p web && wrangler deploy",
+    "preview": "npx expo export -p web && wrangler dev"
   },
   "dependencies": {
     "@ant-design/icons-react-native": "^2.3.2",
@@ -42,6 +44,7 @@
     "@types/react": "~19.3.0",
     "babel-preset-expo": "~58.0.0",
     "tailwindcss": "^3.4.17",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "wrangler": "^4.164.0"
   }
 }

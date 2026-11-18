@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /_sitemap
 
-Sitemap: https://gplx-app.expo.app/sitemap.xml
+Sitemap: https://ontaplaixe.com/sitemap.xml

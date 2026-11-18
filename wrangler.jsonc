@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "on-gplx",
+  "compatibility_date": "2026-11-17",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "dist"
+  },
+  "routes": [
+    { "pattern": "ontaplaixe.com", "custom_domain": true },
+    { "pattern": "www.ontaplaixe.com", "custom_domain": true }
+  ]
+}
