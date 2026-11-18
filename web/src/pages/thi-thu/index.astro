@@ -23,8 +23,22 @@ const extraClasses = CAR_CLASSES.filter((c) => !LANDING_CLASSES.some((featured) 
     </div>
 
     <div class="exam-section-heading"><div><p class="exam-section-label">CHỌN HẠNG BẰNG</p><h2>Bạn muốn thi thử hạng nào?</h2><p>Mỗi hạng có số câu, thời gian và điểm đạt riêng.</p></div></div>
-    <ul class="exam-class-grid">
-      {LANDING_CLASSES.map((c) => <li><a href={paths.licenseClass(c.id)} class="exam-class-card"><span class="exam-class-top"><span class="exam-class-icon"><Icon name="car" size={24} /></span><span class="exam-class-arrow"><Icon name="arrow-right" size={19} /></span></span><span class="exam-class-eyebrow">BẰNG LÁI HẠNG {c.id}</span><strong>{c.title}</strong><span class="exam-class-facts"><span><b>{c.exam.questionCount}</b> câu</span><span><b>{c.exam.timeMinutes}</b> phút</span><span>Đạt <b>{c.exam.passingScore}/{c.exam.questionCount}</b></span></span><span class="exam-class-action">Chọn đề thi <Icon name="arrow-right" size={16} /></span></a></li>)}
+    <ul class="xt-class-list">
+      {
+        LANDING_CLASSES.map((c) => (
+          <li>
+            <a href={paths.licenseClass(c.id)} class="xt-row">
+              <span class="xt-row-icon xt-row-icon-blue"><b>{c.id}</b></span>
+              <span class="min-w-0 flex-1">
+                <strong>Hạng {c.id} · {c.title}</strong>
+                <small>{c.exam.questionCount} câu · đạt {c.exam.passingScore}/{c.exam.questionCount} · 20 đề</small>
+              </span>
+              <span class="xt-pill">{c.exam.timeMinutes} phút</span>
+              <Icon name="chevron-right" size={18} class="text-muted" />
+            </a>
+          </li>
+        ))
+      }
     </ul>
 
     {extraClasses.length > 0 && <details class="exam-extra"><summary>Thi thử hạng kéo rơ-moóc <Icon name="chevron-down" size={19} /></summary><div class="exam-extra-grid">{extraClasses.map((c) => <a href={paths.licenseClass(c.id)}><span>Hạng <b>{c.id}</b></span><small>{c.exam.questionCount} câu · {c.exam.timeMinutes} phút</small><Icon name="arrow-right" size={17} /></a>)}</div></details>}

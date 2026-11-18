@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import { ExamScoreBadge, RememberClass } from '../../components/HomeIslands';
+import { RememberClass } from '../../components/HomeIslands';
+import { ExamCellStatus, ExamHeroProgress, ExamRevealToggle } from '../../components/ExamIslands';
 import { CAR_CLASSES, CHAPTERS, LANDING_CLASSES, fixedExams, paths } from '../../lib/data';
 import { classFaq, courseLd, faqLd } from '../../lib/faq';
 import type { LicenseClass } from '../../lib/types';
@@ -16,12 +17,6 @@ const faq = classFaq(c);
 const path = paths.licenseClass(c.id);
 const heading = `Thi thử lý thuyết lái xe hạng ${c.id}`;
 const description = `Thi thử lý thuyết bằng lái hạng ${c.id} (${c.title.toLowerCase()}): ${c.exam.questionCount} câu, ${c.exam.timeMinutes} phút, cần đúng ${c.exam.passingScore} câu. 20 đề có đáp án và đề ngẫu nhiên từ bộ 600 câu.`;
-const facts = [
-  { value: c.exam.questionCount, label: 'Câu hỏi' },
-  { value: `${c.exam.timeMinutes} phút`, label: 'Thời gian' },
-  { value: `${c.exam.passingScore}/${c.exam.questionCount}`, label: 'Điểm đạt' },
-  { value: `${c.minAge}+`, label: 'Tuổi tối thiểu' },
-];
 ---
 
 <Base
@@ -33,34 +28,46 @@ const facts = [
 >
   <RememberClass client:load id={c.id} />
   <section class="container-page exam-class-page">
-    <div class="exam-class-hero">
-      <div class="exam-class-hero-main">
-        <span class="exam-class-hero-badge">BẰNG LÁI HẠNG {c.id}</span>
-        <h1>{heading}</h1>
-        <p>{c.title} · {c.description}</p>
-        <div class="exam-class-hero-actions">
-          <a href={paths.exam(c.id, 'ngau-nhien')} class="btn exam-hero-primary"><Icon name="refresh" size={18} /> Làm đề ngẫu nhiên</a>
-          <a href={paths.exam(c.id, 1)} class="btn exam-hero-secondary">Bắt đầu đề số 1 <Icon name="arrow-right" size={18} /></a>
+    <div class="xt">
+      <div class="xt-hero">
+        <div class="xt-hero-head">
+          <div class="min-w-0">
+            <h1>{heading}</h1>
+            <p>Hạng {c.id} · {exams.length} đề · sai câu điểm liệt là trượt</p>
+          </div>
+          <ExamHeroProgress client:load classId={c.id} examIds={exams.map((e) => e.id)} examHref={paths.exam(c.id, 0).replace(/0$/, '{id}')} />
         </div>
+        <ul class="xt-hero-chips">
+          <li><Icon name="file" size={13} /> {c.exam.questionCount} câu</li>
+          <li><Icon name="clock" size={13} /> {c.exam.timeMinutes} phút</li>
+          <li><Icon name="check" size={13} /> Đạt {c.exam.passingScore}/{c.exam.questionCount}</li>
+        </ul>
       </div>
-      <div class="exam-class-hero-decoration" aria-hidden="true"><Icon name="target" size={230} /></div>
-    </div>
-    <dl class="exam-class-stats">{facts.map((f) => <div><dt>{f.label}</dt><dd>{f.value}</dd></div>)}</dl>
 
-    <div class="exam-section-heading exam-list-heading"><div><p class="exam-section-label">BỘ ĐỀ CỐ ĐỊNH</p><h2>20 đề thi thử hạng {c.id}</h2><p>Chọn một đề để làm bài. Điểm của bạn sẽ được lưu trên thiết bị này.</p></div></div>
-    <ul class="exam-paper-grid">
-      {
-        exams.map((e) => (
-          <li>
-            <a href={paths.exam(c.id, e.id)} class="exam-paper-card">
-              <span class="exam-paper-label">ĐỀ SỐ</span>
-              <strong>{String(e.id).padStart(2, '0')}</strong>
-              <span class="exam-paper-bottom"><ExamScoreBadge client:visible examKey={`${c.id}-${e.id}`} /><Icon name="arrow-right" size={17} /></span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+      <a href={paths.exam(c.id, 'ngau-nhien')} class="xt-row">
+        <span class="xt-row-icon"><Icon name="shuffle" size={20} /></span>
+        <span class="min-w-0 flex-1"><strong>Đề ngẫu nhiên</strong><small>Mỗi lần một đề mới, cùng cấu trúc</small></span>
+        <span class="xt-pill">{c.exam.timeMinutes} phút</span>
+        <Icon name="chevron-right" size={18} class="text-muted" />
+      </a>
+
+      <p class="xt-label">Xem đáp án</p>
+      <ExamRevealToggle client:load />
+
+      <h2 class="xt-label">Danh sách đề thi</h2>
+      <ul class="xt-grid">
+        {
+          exams.map((e) => (
+            <li>
+              <a href={paths.exam(c.id, e.id)} class="xt-cell">
+                <strong>Đề {e.id}</strong>
+                <ExamCellStatus client:visible examKey={`${c.id}-${e.id}`} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
     <div class="exam-info-grid">
       <div class="exam-info-card">
