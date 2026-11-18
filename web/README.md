@@ -45,3 +45,7 @@ Khi chưa bật `PUBLIC_CHAT_ENABLED`, liên kết chat sẽ không xuất hiệ
 Khi chat được bật, sidebar bên phải mở sẵn trên màn hình rộng. Ở màn hình nhỏ hơn, nút **Trò chuyện** mở sidebar; trang `/tro-chuyen` vẫn là chế độ xem riêng.
 
 Quản trị viên xem báo cáo trong bảng `chat_reports` trên Supabase Dashboard. Để ẩn một tin, đặt `is_hidden=true` cho dòng tương ứng trong `chat_messages`. Không cấp quyền sửa hoặc xoá bảng này cho trình duyệt.
+
+## Nút Zalo hỗ trợ
+
+Đặt `PUBLIC_ZALO_URL` (ví dụ `https://zalo.me/0912345678`) trong `.env.local` hoặc môi trường build để hiện nút Zalo nổi ở góc phải màn hình. Để trống thì nút bị ẩn. Nút không hiện trên màn làm bài để không che thanh điều hướng câu hỏi.
