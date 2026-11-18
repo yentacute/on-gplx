@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Icon } from './Icon';
-import { DEFAULT_CLASS, getAnswers, getExamScores, getLicenseClass, setLicenseClass, useStored } from '../lib/progress';
+import { DEFAULT_CLASS, getAnswers, getExamScores, getLicenseClass, getSaved, setLicenseClass, useStored } from '../lib/progress';
 
 type ChapterLite = { slug: string; numeral: string; name: string; ids: number[] };
 
@@ -171,4 +171,10 @@ export function ExamScoreBadge({ examKey }: { examKey: string }) {
 export function RememberClass({ id }: { id: string }) {
   useEffect(() => setLicenseClass(id), [id]);
   return null;
+}
+
+/** Count of bookmarked questions, for the "Câu đã lưu" tile. */
+export function SavedCount() {
+  const saved = useStored(getSaved, []);
+  return <>{saved.length ? `${saved.length} câu đã lưu` : 'Bấm lưu ở câu khó để xem lại'}</>;
 }

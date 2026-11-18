@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import { ChapterProgress, WrongCount } from '../../components/HomeIslands';
+import PageHero from '../../components/PageHero.astro';
+import { ChapterProgress, WrongCount, SavedCount } from '../../components/HomeIslands';
 import { CHAPTERS, CRITICAL_QUESTIONS, QUESTIONS, paths } from '../../lib/data';
 import { TONES } from '../../lib/icons';
 ---
@@ -11,56 +12,91 @@ import { TONES } from '../../lib/icons';
   description="Ôn tập lý thuyết lái xe ô tô theo 6 chương của bộ 600 câu, luyện 60 câu điểm liệt và làm lại các câu hay sai. Có đáp án và giải thích từng câu."
   trail={[{ name: 'Ôn tập', path: '/on-tap' }]}
 >
-  <section class="container-page pt-6">
-    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Ôn tập lý thuyết</h1>
-    <p class="mt-1 text-muted">Chọn chương để bắt đầu. Bấm vào đáp án là biết ngay đúng sai kèm giải thích.</p>
+  <section class="container-page exam-page">
+    <PageHero
+      kicker="ÔN TẬP LÝ THUYẾT"
+      kickerIcon="book"
+      title="Ôn 600 câu theo chương,"
+      highlight="hiểu đến đâu, nhớ đến đó"
+      lead="Bấm vào đáp án là biết ngay đúng sai kèm giải thích. Tiến độ được lưu lại, lần sau ôn tiếp từ câu chưa làm."
+      facts={[
+        { icon: 'grid', label: `${CHAPTERS.length} chương` },
+        { icon: 'alert', label: `${CRITICAL_QUESTIONS.length} câu điểm liệt` },
+        { icon: 'bookmark', label: 'Lưu câu khó' },
+      ]}
+      ringIcon="book"
+      ticket={{ label: 'GỢI Ý HỌC', icon: 'target', title: 'Điểm liệt trước<br />rồi ôn từng chương', note: 'Câu sai sẽ được gom lại để luyện lại' }}
+    />
 
-    <div class="mt-6 grid gap-3 sm:grid-cols-3">
-      <a href="/on-tap/cau-diem-liet" class="card group flex items-center gap-3 p-4 transition hover:border-red-400/40">
-        <span class={`grid size-11 place-items-center rounded-xl ${TONES.red}`}><Icon name="alert" /></span>
-        <span class="flex-1">
-          <span class="block font-bold">Câu điểm liệt</span>
-          <span class="block text-xs text-muted">{CRITICAL_QUESTIONS.length} câu, sai một câu là trượt</span>
-        </span>
-        <Icon name="chevron-right" size={16} class="text-muted" />
-      </a>
-      <a href="/on-tap/cau-sai" class="card group flex items-center gap-3 p-4 transition hover:border-amber-400/40">
-        <span class={`grid size-11 place-items-center rounded-xl ${TONES.amber}`}><Icon name="refresh" /></span>
-        <span class="flex-1">
-          <span class="block font-bold">Câu hay sai</span>
-          <span class="block text-xs text-muted"><WrongCount client:load>Câu đã làm sai</WrongCount></span>
-        </span>
-        <Icon name="chevron-right" size={16} class="text-muted" />
-      </a>
-      <a href="/on-tap/tat-ca" class="card group flex items-center gap-3 p-4 transition hover:border-brand/40">
-        <span class={`grid size-11 place-items-center rounded-xl ${TONES.sky}`}><Icon name="grid" /></span>
-        <span class="flex-1">
-          <span class="block font-bold">Toàn bộ {QUESTIONS.length} câu</span>
-          <span class="block text-xs text-muted">Ôn lần lượt từ câu 1</span>
-        </span>
-        <Icon name="chevron-right" size={16} class="text-muted" />
-      </a>
+    <div class="exam-section-heading">
+      <div>
+        <p class="exam-section-label">LUYỆN NHANH</p>
+        <h2>Bắt đầu từ đâu?</h2>
+      </div>
     </div>
+    <ul class="study-shortcuts">
+      <li>
+        <a href="/on-tap/cau-diem-liet" class="study-tile">
+          <span class={`study-tile-icon ${TONES.red}`}><Icon name="alert" size={22} /></span>
+          <span class="min-w-0"><strong>Câu điểm liệt</strong><small>{CRITICAL_QUESTIONS.length} câu, sai một câu là trượt</small></span>
+          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+        </a>
+      </li>
+      <li>
+        <a href="/on-tap/cau-sai" class="study-tile">
+          <span class={`study-tile-icon ${TONES.amber}`}><Icon name="refresh" size={22} /></span>
+          <span class="min-w-0"><strong>Câu hay sai</strong><small><WrongCount client:load /></small></span>
+          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+        </a>
+      </li>
+      <li>
+        <a href="/on-tap/cau-da-luu" class="study-tile">
+          <span class={`study-tile-icon ${TONES.violet}`}><Icon name="bookmark" size={22} /></span>
+          <span class="min-w-0"><strong>Câu đã lưu</strong><small><SavedCount client:load /></small></span>
+          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+        </a>
+      </li>
+      <li>
+        <a href="/on-tap/tat-ca" class="study-tile">
+          <span class={`study-tile-icon ${TONES.sky}`}><Icon name="grid" size={22} /></span>
+          <span class="min-w-0"><strong>Toàn bộ {QUESTIONS.length} câu</strong><small>Ôn lần lượt từ câu 1</small></span>
+          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+        </a>
+      </li>
+    </ul>
 
-    <h2 class="mt-10 text-lg font-bold">Theo chương</h2>
-    <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+    <div class="exam-section-heading">
+      <div>
+        <p class="exam-section-label">THEO CHƯƠNG</p>
+        <h2>Ôn tập theo chương</h2>
+        <p>Mỗi chương là một nhóm kiến thức. Làm hết một chương rồi chuyển sang chương sau.</p>
+      </div>
+    </div>
+    <ul class="chapter-rows">
       {
-        CHAPTERS.map((c) => (
-          <li class="card relative p-5 transition hover:border-brand/40">
-            <div class="flex items-start justify-between gap-3">
-              <span class="chip">Chương {c.numeral}</span>
-              <span class={`grid size-9 place-items-center rounded-lg ${TONES[c.tone]}`}>
-                <Icon name={c.icon as any} size={18} />
-              </span>
+        CHAPTERS.map((c, i) => (
+          <li class="chapter-row">
+            <span class="chapter-row-num">{i + 1}</span>
+            <div class="min-w-0 flex-1">
+              <h3>
+                <a href={paths.practice(c.slug)} class="after:absolute after:inset-0">
+                  Chương {c.numeral}: {c.name}
+                </a>
+              </h3>
+              <p class="chapter-row-meta">
+                {c.questionIds.length} câu hỏi · {c.range}
+              </p>
+              <ChapterProgress client:visible ids={c.questionIds} />
+              <p class="chapter-row-links">
+                <a href={paths.practice(c.slug)} class="inline-flex items-center gap-1 text-blue-600">
+                  Ôn tập <Icon name="chevron-right" size={14} />
+                </a>
+                <a href={paths.chapter(c)} class="text-muted hover:text-blue-600">Xem đáp án</a>
+              </p>
             </div>
-            <h3 class="mt-3 font-bold leading-snug">
-              <a href={paths.practice(c.slug)} class="after:absolute after:inset-0">{c.name}</a>
-            </h3>
-            <p class="text-xs text-muted">{c.questionIds.length} câu hỏi · {c.range}</p>
-            <ChapterProgress client:visible ids={c.questionIds} />
-            <p class="mt-3 flex items-center gap-1 text-sm font-semibold text-blue-600">
-              Bắt đầu ôn tập <Icon name="chevron-right" size={14} />
-            </p>
+            <span class={`hidden size-10 shrink-0 place-items-center rounded-xl sm:grid ${TONES[c.tone]}`}>
+              <Icon name={c.icon as any} size={19} />
+            </span>
           </li>
         ))
       }
