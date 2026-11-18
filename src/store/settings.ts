@@ -80,4 +80,9 @@ export const useSettings = create<SettingsData & SettingsActions>()(
 
 /** True once the persisted settings have been loaded from storage. */
 export const useSettingsHydrated = () =>
-  useSyncExternalStore(useSettings.persist.onFinishHydration, useSettings.persist.hasHydrated);
+  useSyncExternalStore(
+    useSettings.persist.onFinishHydration,
+    useSettings.persist.hasHydrated,
+    // Static web rendering: storage is never read on the server.
+    () => false,
+  );

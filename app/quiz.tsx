@@ -14,6 +14,7 @@ import { QuestionCard } from '@/components/QuestionCard';
 import { QuizProgress } from '@/components/QuizProgress';
 import { ResultSummary } from '@/components/ResultSummary';
 import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime, gradeExam, makeRandomExam } from '@/lib/exam';
+import { routeMetadata } from '@/seo/pages';
 import { useSettings, useSettingsHydrated } from '@/store/settings';
 import type { Question, QuizMode } from '@/types';
 
@@ -319,5 +320,7 @@ const QuizScreen = () => {
     </GestureDetector>
   );
 };
+
+export const generateMetadata = routeMetadata('/quiz');
 
 export default QuizScreen;

@@ -36,6 +36,18 @@ theo đúng số câu, thời gian, điểm đạt của hạng đó (`src/data/
 (30 câu, 20 phút, đạt 27). Dữ liệu hiện chưa có câu nào gắn cho hạng xe máy (A1, A, B1) nên các hạng này bị khóa
 cho đến khi bổ sung `licenseTypes`.
 
+## SEO cho bản web
+
+Bản web xuất **tĩnh từng trang** (`web.output: "static"` trong `app.json`): mỗi route có file HTML riêng chứa sẵn nội dung,
+nên Google đọc được mà không cần chạy JavaScript.
+
+- Tiêu đề, mô tả, canonical, Open Graph/Twitter của từng trang: `src/seo/pages.ts`. Mỗi file route export
+  `generateMetadata = routeMetadata('/duong-dan')` để Expo Router ghi các thẻ này vào HTML lúc build.
+- Khung HTML chung (`lang="vi"`, theme-color, manifest, JSON-LD): `app/+html.tsx`.
+- `public/`: `robots.txt`, `sitemap.xml`, `manifest.json`, ảnh chia sẻ `og-image.png` (1200×630) và icon PWA.
+- Thêm trang mới: khai báo trong `PAGE_SEO`, export `generateMetadata` ở route, và thêm URL vào `public/sitemap.xml`.
+- Đổi tên miền: sửa `SITE_URL` trong `src/seo/pages.ts`, `public/robots.txt` và `public/sitemap.xml`.
+
 ## Cấu trúc
 
 ```

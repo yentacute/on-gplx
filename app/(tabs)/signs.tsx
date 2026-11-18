@@ -5,6 +5,7 @@ import { useSigns } from '@/api/queries';
 import { LoadingView } from '@/components/LoadingView';
 import { SignDetailModal } from '@/components/SignDetailModal';
 import { SIGN_IMAGES } from '@/data/signImages';
+import { routeMetadata } from '@/seo/pages';
 import type { SignGroup } from '@/types';
 
 const GROUP_LABEL: Record<SignGroup, string> = {
@@ -95,5 +96,7 @@ const SignsScreen = () => {
     </>
   );
 };
+
+export const generateMetadata = routeMetadata('/signs');
 
 export default SignsScreen;

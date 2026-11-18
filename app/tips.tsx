@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { type ComponentProps, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { TIP_SECTIONS } from '@/data/tips';
+import { routeMetadata } from '@/seo/pages';
 import type { Tip, TipPoint, TipSection, TipStat } from '@/types';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
@@ -200,5 +201,7 @@ const TipsScreen = () => {
     </View>
   );
 };
+
+export const generateMetadata = routeMetadata('/tips');
 
 export default TipsScreen;

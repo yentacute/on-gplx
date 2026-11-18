@@ -5,6 +5,7 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
 import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime } from '@/lib/exam';
+import { routeMetadata } from '@/seo/pages';
 import { useSettings } from '@/store/settings';
 import type { Exam, ExamDraft, ExamReveal, ExamRules, ExamScore } from '@/types';
 
@@ -18,7 +19,7 @@ const REVEAL_OPTIONS: RevealOption[] = [
 ];
 
 const SectionTitle = ({ children }: { children: string }) => (
-  <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
+  <Text role="heading" aria-level={2} className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
 );
 
 /** Small icon + value pill in the hero, e.g. "30 câu". */
@@ -291,5 +292,7 @@ const ExamScreen = () => {
     </ScrollView>
   );
 };
+
+export const generateMetadata = routeMetadata('/exam');
 
 export default ExamScreen;
