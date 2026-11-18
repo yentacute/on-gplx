@@ -273,3 +273,8 @@
   .zalo-float-text { display: none; }
   .zalo-float-stacked { bottom: calc(146px + env(safe-area-inset-bottom)); }
 }
+/* Quiz and exam screens: keep the bubble small and above the fixed answer bar. */
+.zalo-float-app { padding: 4px; }
+.zalo-float-app .zalo-float-text { display: none; }
+@media (max-width: 639px) { .zalo-float-app { bottom: calc(86px + env(safe-area-inset-bottom)); } }
+@media (min-width: 640px) and (max-width: 1023px) { .zalo-float-app { bottom: 20px; } }

@@ -48,4 +48,4 @@ Quản trị viên xem báo cáo trong bảng `chat_reports` trên Supabase Dash
 
 ## Nút Zalo hỗ trợ
 
-Đặt `PUBLIC_ZALO_URL` (ví dụ `https://zalo.me/0912345678`) trong `.env.local` hoặc môi trường build để hiện nút Zalo nổi ở góc phải màn hình. Để trống thì nút bị ẩn. Nút không hiện trên màn làm bài để không che thanh điều hướng câu hỏi.
+Đặt `PUBLIC_ZALO_URL` (ví dụ `https://zalo.me/0912345678`) trong `.env.local` hoặc môi trường build để hiện nút Zalo nổi ở góc phải màn hình. Để trống thì nút bị ẩn. Nút hiện trên mọi trang; ở màn làm bài nút thu nhỏ và nằm trên thanh câu hỏi.
