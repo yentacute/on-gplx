@@ -1,14 +1,9 @@
-import { Asset } from 'expo-asset';
-
 // Web: load Inter through @font-face and apply it to all text, then pin the
 // Tailwind text sizes so they match the native app.
 
-const INTER_FILES = [
-  { weight: 400, module: require('@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf') },
-  { weight: 500, module: require('@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf') },
-  { weight: 600, module: require('@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf') },
-  { weight: 700, module: require('@expo-google-fonts/inter/700Bold/Inter_700Bold.ttf') },
-];
+// Latin + Vietnamese subsets of Inter as woff2 (about 42 KB each, against 340 KB for the full TTF).
+// Made with: pyftsubset Inter_<weight>.ttf --flavor=woff2 --unicodes=U+0000-024F,U+0300-036F,U+1E00-1EFF,U+2000-22FF,U+25A0-25FF
+const INTER_WEIGHTS = [400, 500, 600, 700];
 
 const TEXT_SIZES: Record<string, [fontSize: number, lineHeight: number]> = {
   'text-xs': [12, 16],
@@ -27,9 +22,9 @@ const addStyle = (css: string) => {
   document.head.appendChild(style);
 };
 
-const fontFaces = INTER_FILES.map(
-  ({ weight, module }) =>
-    `@font-face{font-family:"Inter";font-weight:${weight};font-display:swap;src:url("${Asset.fromModule(module).uri}") format("truetype");}`,
+const fontFaces = INTER_WEIGHTS.map(
+  (weight) =>
+    `@font-face{font-family:"Inter";font-weight:${weight};font-display:swap;src:url("/fonts/inter-${weight}.woff2") format("woff2");}`,
 ).join('');
 
 // Icon fonts must keep their own family.

@@ -6,6 +6,10 @@ import { AppButton } from '@/components/AppButton';
 import { MenuCard } from '@/components/MenuCard';
 import { examRulesFor, fixedExamKey, fixedExamsFor, formatTime } from '@/lib/exam';
 import { routeMetadata } from '@/seo/pages';
+import { paths } from '@/seo/slugs';
+import { LANDING_CLASSES } from '@/seo/catalog';
+import { LinkChips } from '@/components/seo/ContentPage';
+import { WebOnly } from '@/components/seo/WebOnly';
 import { useSettings } from '@/store/settings';
 import type { Exam, ExamDraft, ExamReveal, ExamRules, ExamScore } from '@/types';
 
@@ -274,6 +278,11 @@ const ExamScreen = () => {
           />
         ))}
       </View>
+
+      <WebOnly>
+        <SectionTitle>Thông tin thi theo hạng</SectionTitle>
+        <LinkChips links={LANDING_CLASSES.map((c) => ({ name: `Hạng ${c.id}`, path: paths.licenseClass(c.id) }))} />
+      </WebOnly>
 
       {pending ? (
         <StartExamDialog

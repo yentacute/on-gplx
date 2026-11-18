@@ -1,4 +1,20 @@
 import type { GenerateMetadataFunction, Metadata } from 'expo-server';
+import { SIGN_GROUP_LABEL } from '@/data/signGroups';
+import {
+  CRITICAL_QUESTIONS,
+  chapterBySlug,
+  chapterName,
+  classBySlug,
+  clip,
+  correctAnswer,
+  questionById,
+  questionImageUri,
+  questionsInChapter,
+  signBySlug,
+  signImageUri,
+  signLabel,
+} from './catalog';
+import { paths } from './slugs';
 
 /** Public address of the web build. Canonical URLs, Open Graph and the sitemap use it. */
 export const SITE_URL = 'https://ontaplaixe.com';
@@ -10,6 +26,8 @@ export type PageSeo = {
   description: string;
   /** Kept out of search results: personal or state-dependent screens. */
   noindex?: boolean;
+  /** Site-relative image for social previews, when the page has its own picture. */
+  image?: string;
 };
 
 export const DEFAULT_SEO: PageSeo = {
@@ -46,6 +64,16 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     description:
       'Ôn 600 câu lý thuyết lái xe theo từng chương: khái niệm và quy tắc giao thông, nghiệp vụ vận tải, văn hóa giao thông, kỹ thuật lái xe, cấu tạo sửa chữa, biển báo, sa hình.',
   },
+  [paths.critical]: {
+    title: '60 câu điểm liệt thi lý thuyết lái xe ô tô 2026 có đáp án',
+    description:
+      'Danh sách đủ 60 câu điểm liệt trong bộ 600 câu lý thuyết lái xe, kèm đáp án đúng và giải thích. Sai 1 câu điểm liệt là trượt, hãy ôn kỹ trước khi thi thử.',
+  },
+  [paths.allQuestions]: {
+    title: '600 câu hỏi lý thuyết lái xe ô tô có đáp án mới nhất',
+    description:
+      'Tra cứu đủ 600 câu hỏi lý thuyết sát hạch lái xe ô tô hạng B, C1, C, D kèm đáp án và giải thích, chia theo 6 chương: quy tắc giao thông, văn hóa, kỹ thuật lái xe, cấu tạo, biển báo, sa hình.',
+  },
   '/quiz': {
     title: 'Làm bài lý thuyết lái xe',
     description: DEFAULT_SEO.description,
@@ -58,7 +86,65 @@ export const PAGE_SEO: Record<string, PageSeo> = {
   },
 };
 
-export const seoForPath = (pathname: string): PageSeo => PAGE_SEO[pathname] ?? { ...DEFAULT_SEO, noindex: true };
+/** SEO for the generated content pages: questions, signs, chapters and license classes. */
+const dynamicSeo = (pathname: string): PageSeo | undefined => {
+  const [, section, slug = ''] = pathname.split('/');
+  switch (section) {
+    case 'cau-hoi': {
+      const q = questionById(slug);
+      if (!q) return undefined;
+      return {
+        title: `Câu ${q.id}: ${clip(q.text, 70)}`,
+        description: clip(
+          `${q.isCritical ? 'Câu điểm liệt. ' : ''}${q.text} Đáp án đúng: ${correctAnswer(q)} ${q.hint ?? ''}`,
+          160,
+        ),
+        image: questionImageUri(q),
+      };
+    }
+    case 'bien-bao': {
+      const sign = signBySlug(slug);
+      if (!sign) return undefined;
+      const label = signLabel(sign);
+      return {
+        title: `${label} – ý nghĩa, hình ảnh`,
+        image: signImageUri(sign),
+        description: clip(
+          `${label} thuộc nhóm ${SIGN_GROUP_LABEL[sign.group].toLowerCase()} theo QCVN 41. ${sign.meaning ?? ''}`,
+          160,
+        ),
+      };
+    }
+    case 'chuong': {
+      const chapter = chapterBySlug(slug);
+      if (!chapter) return undefined;
+      const count = questionsInChapter(chapter).length;
+      return {
+        title: `${chapter.chapter}: ${chapterName(chapter.id)} – ${count} câu có đáp án`,
+        description: clip(
+          `${chapter.chapter} – ${chapterName(chapter.id)}: ${count} câu hỏi lý thuyết lái xe (${chapter.range}) kèm đáp án đúng và giải thích, dùng cho các hạng B, C1, C, D.`,
+          160,
+        ),
+      };
+    }
+    case 'thi-thu': {
+      const c = classBySlug(slug);
+      if (!c) return undefined;
+      return {
+        title: `Thi thử lý thuyết lái xe hạng ${c.id} 2026 – ${c.exam.questionCount} câu, miễn phí`,
+        description: clip(
+          `Thi thử lý thuyết bằng lái hạng ${c.id} (${c.title.toLowerCase()}): ${c.exam.questionCount} câu trong ${c.exam.timeMinutes} phút, đúng ${c.exam.passingScore} câu là đạt, không sai câu điểm liệt. Ôn 600 câu và ${CRITICAL_QUESTIONS.length} câu điểm liệt có đáp án.`,
+          160,
+        ),
+      };
+    }
+    default:
+      return undefined;
+  }
+};
+
+export const seoForPath = (pathname: string): PageSeo =>
+  PAGE_SEO[pathname] ?? dynamicSeo(pathname) ?? { ...DEFAULT_SEO, noindex: true };
 
 export const canonicalUrl = (pathname: string) => `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
 
@@ -68,17 +154,19 @@ export const pageTitle = (pathname: string) => {
 };
 
 const metadataFor = (pathname: string): Metadata => {
-  const { description, noindex } = seoForPath(pathname);
+  const { description, noindex, image: pageImage } = seoForPath(pathname);
   const title = pageTitle(pathname);
   const url = canonicalUrl(pathname);
-  const image = { url: OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME };
+  const image = pageImage
+    ? { url: `${SITE_URL}${pageImage}`, alt: title }
+    : { url: OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME };
   return {
     title,
     description,
     robots: noindex ? { index: false, follow: true } : { index: true, follow: true, 'max-image-preview': 'large' },
     alternates: { canonical: url },
     openGraph: { type: 'website', siteName: SITE_NAME, locale: 'vi_VN', title, description, url, images: image },
-    twitter: { card: 'summary_large_image', title, description, images: OG_IMAGE },
+    twitter: { card: 'summary_large_image', title, description, images: image.url },
   };
 };
 
@@ -90,3 +178,11 @@ export const routeMetadata =
   (pathname: string): GenerateMetadataFunction =>
   () =>
     metadataFor(pathname);
+
+/** `generateMetadata` for a dynamic route: builds the page's pathname from its params. */
+export const dynamicRouteMetadata =
+  (toPath: (param: string) => string, key: string): GenerateMetadataFunction =>
+  (_request, params) => {
+    const value = params[key];
+    return metadataFor(toPath(Array.isArray(value) ? (value[0] ?? '') : (value ?? '')));
+  };

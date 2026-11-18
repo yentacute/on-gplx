@@ -46,6 +46,8 @@ const Root = ({ children }: PropsWithChildren) => {
         <meta name="google-site-verification" content="hu1bcwgZDTecUm35fkGH6qf9T0YbWfnZzFXVLJq23pU" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossOrigin="" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }} />
         <ScrollViewStyleReset />
         {headNodes}

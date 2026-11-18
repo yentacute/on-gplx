@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useResetProgress } from '@/hooks/useResetProgress';
+import { WEB_COLUMN } from '@/theme/layout';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -80,6 +81,7 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         headerTitleAlign: 'center',
+        sceneStyle: WEB_COLUMN,
         headerRight: () => <ResetButton />,
         tabBarActiveTintColor: '#2563eb',
         tabBarInactiveTintColor: '#64748b',

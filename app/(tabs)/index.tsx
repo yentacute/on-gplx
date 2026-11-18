@@ -1,13 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { type Href, Link, useRouter } from 'expo-router';
 import type { ComponentProps, ReactNode } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useQuestions } from '@/api/queries';
+import { LinkChips } from '@/components/seo/ContentPage';
+import { WebOnly } from '@/components/seo/WebOnly';
 import { classHasQuestions } from '@/data';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
+import { LANDING_CLASSES } from '@/seo/catalog';
 import { faqStructuredData, HOME_FAQ } from '@/seo/homeFaq';
 import { JsonLd } from '@/seo/JsonLd';
 import { routeMetadata } from '@/seo/pages';
+import { paths } from '@/seo/slugs';
 import { useSettings } from '@/store/settings';
 import type { LicenseClass, LicenseClassId } from '@/types';
 
@@ -20,6 +24,13 @@ const SHORTCUTS: { href: Href; title: string; icon: IconName; color: string }[] 
 ];
 
 const GUIDE_LINKS: { href: Href; label: string }[] = [
+  // The answer-lookup pages are for search visitors; the app keeps its original links.
+  ...(Platform.OS === 'web'
+    ? [
+        { href: '/600-cau-hoi' as Href, label: '600 câu hỏi có đáp án' },
+        { href: '/cau-diem-liet' as Href, label: '60 câu điểm liệt' },
+      ]
+    : []),
   { href: '/practice', label: 'Ôn tập 600 câu' },
   { href: '/exam', label: 'Thi thử có chấm điểm' },
   { href: '/topics', label: 'Ôn theo chương' },
@@ -124,6 +135,11 @@ const HomeGuide = () => (
         ))}
       </View>
     </View>
+
+    <WebOnly>
+      <SectionTitle>Thi thử theo hạng bằng</SectionTitle>
+      <LinkChips links={LANDING_CLASSES.map((c) => ({ name: `Thi thử hạng ${c.id}`, path: paths.licenseClass(c.id) }))} />
+    </WebOnly>
 
     <SectionTitle>Câu hỏi thường gặp</SectionTitle>
     <View className="gap-2">
