@@ -1,8 +1,7 @@
-import { Tag } from '@ant-design/react-native';
 import { useState } from 'react';
 import { Image, Pressable, Text, View, useWindowDimensions } from 'react-native';
+import { CriticalNotice } from '@/components/CriticalNotice';
 import { QUESTION_IMAGES } from '@/data/questionImages';
-import { tagColor } from '@/lib/tagColor';
 import { INTER } from '@/theme/inter';
 import type { Question } from '@/types';
 
@@ -40,11 +39,7 @@ export const QuestionCard = (props: Props) => {
 
   return (
     <View className="gap-2.5 rounded-2xl bg-white p-3">
-      {question.isCritical ? (
-        <View className="self-start">
-          <Tag styles={tagColor('#dc2626')}>Câu điểm liệt</Tag>
-        </View>
-      ) : null}
+      {question.isCritical ? <CriticalNotice /> : null}
       <Text className="text-base font-semibold text-slate-900">{question.text}</Text>
       {images.length > 0 ? (
         <View
