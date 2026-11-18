@@ -1,0 +1,69 @@
+---
+import Icon from './Icon.astro';
+import { paths } from '../lib/data';
+import type { Question } from '../lib/types';
+
+type Props = { q: Question; heading?: 'h1' | 'h2' | 'h3'; link?: boolean; compact?: boolean };
+const { q, heading = 'h3', link = true, compact = false } = Astro.props;
+const Heading = heading;
+const LETTERS = ['A', 'B', 'C', 'D'];
+---
+
+<article class="card p-4 sm:p-5">
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="chip">Câu {q.id}</span>
+    {
+      q.critical && (
+        <span class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-300">
+          <Icon name="alert" size={12} /> Điểm liệt
+        </span>
+      )
+    }
+  </div>
+  <Heading class:list={['mt-2 font-semibold leading-relaxed', heading === 'h1' ? 'text-lg sm:text-xl' : 'text-[15px]']}>
+    {link ? <a href={paths.question(q.id)} class="hover:text-sky-300">{q.text}</a> : q.text}
+  </Heading>
+  {
+    q.image && (
+      <img
+        src={q.image}
+        alt={`Hình câu ${q.id}: ${q.text}`}
+        loading={heading === 'h1' ? 'eager' : 'lazy'}
+        class:list={['mt-3 w-auto max-w-full rounded-xl border border-line bg-white object-contain', compact ? 'max-h-48' : 'max-h-80']}
+      />
+    )
+  }
+  <ul class="mt-3 space-y-1.5">
+    {
+      q.options.map((o, i) => (
+        <li
+          class:list={[
+            'flex items-start gap-2.5 rounded-lg border px-3 py-2 text-sm leading-relaxed',
+            i === q.answer ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-50' : 'border-line text-soft',
+          ]}
+        >
+          <span
+            class:list={[
+              'grid size-6 shrink-0 place-items-center rounded-md text-xs font-bold',
+              i === q.answer ? 'bg-emerald-500 text-white' : 'bg-raised',
+            ]}
+          >
+            {LETTERS[i]}
+          </span>
+          <span>
+            {o}
+            {i === q.answer && <span class="sr-only"> (đáp án đúng)</span>}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  {
+    q.hint && (
+      <p class="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm leading-relaxed text-amber-100">
+        <span class="font-semibold text-amber-300">Giải thích: </span>
+        {q.hint}
+      </p>
+    )
+  }
+</article>

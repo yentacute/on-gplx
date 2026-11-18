@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { TIPS, paths } from '../lib/data';
+
+const KIND = {
+  do: { icon: 'check', tone: 'text-emerald-300' },
+  dont: { icon: 'x', tone: 'text-red-300' },
+  info: { icon: 'bulb', tone: 'text-sky-300' },
+} as const;
+---
+
+<Base
+  title="Mẹo thi lý thuyết lái xe ô tô 600 câu dễ nhớ"
+  description="Mẹo làm nhanh 600 câu lý thuyết lái xe: cách đọc phương án, nhóm câu điểm liệt, mẹo biển báo, sa hình và các con số hay gặp."
+  trail={[{ name: 'Mẹo ghi nhớ', path: '/meo-ghi-nho' }]}
+>
+  <section class="container-page pt-4">
+    <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Mẹo ghi nhớ</h1>
+    <p class="mt-1 max-w-2xl text-muted">Mẹo giúp kiểm tra lại đáp án nhanh hơn. Hiểu câu hỏi vẫn là chính, mẹo chỉ để chắc tay.</p>
+    <nav class="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" aria-label="Nhóm mẹo">
+      {TIPS.map((s) => <a href={`#${s.id}`} class="shrink-0 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-soft hover:text-white">{s.short}</a>)}
+    </nav>
+    {
+      TIPS.map((section) => (
+        <section id={section.id} class="mt-10 scroll-mt-20">
+          <h2 class="text-xl font-bold">{section.title}</h2>
+          <p class="text-sm text-muted">{section.summary}</p>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            {section.tips.map((tip) => (
+              <article class="card p-5">
+                <h3 class="font-bold">{tip.title}</h3>
+                <p class="mt-1 text-sm text-sky-200">{tip.takeaway}</p>
+                {tip.stats && (
+                  <ul class="mt-3 space-y-2">
+                    {tip.stats.map((st) => (
+                      <li>
+                        <div class="flex justify-between text-xs text-muted">
+                          <span>{st.label}</span>
+                          <span class="font-semibold text-soft">{st.value}% · {st.detail}</span>
+                        </div>
+                        <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-raised">
+                          <div class="h-full rounded-full bg-brand" style={`width:${st.value}%`} />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {tip.points && (
+                  <ul class="mt-3 space-y-1.5 text-sm text-soft">
+                    {tip.points.map((p) => {
+                      const k = KIND[p.kind ?? 'info'];
+                      return (
+                        <li class="flex gap-2">
+                          <Icon name={k.icon} size={16} class={`mt-0.5 shrink-0 ${k.tone}`} />
+                          <span>{p.text}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                {tip.questions && tip.questions.length > 0 && (
+                  <p class="mt-3 flex flex-wrap gap-1.5 text-xs">
+                    <span class="text-muted">Ví dụ:</span>
+                    {tip.questions.slice(0, 8).map((id) => <a href={paths.question(id)} class="chip hover:bg-brand/25">Câu {id}</a>)}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </section>
+</Base>

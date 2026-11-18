@@ -1,0 +1,21 @@
+---
+import { ICONS, type IconName } from '../lib/icons';
+
+type Props = { name: IconName; class?: string; size?: number };
+const { name, class: className = '', size = 20 } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  class={className}
+  set:html={ICONS[name]}
+/>

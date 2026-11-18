@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { SIGNS, SIGN_GROUP_LABEL, clip, paths, signLabel, slugify } from '../../lib/data';
+import type { Sign } from '../../lib/types';
+
+export const getStaticPaths = () => SIGNS.map((s) => ({ params: { id: slugify(s.id) }, props: { s } }));
+const { s } = Astro.props as { s: Sign };
+const related = SIGNS.filter((x) => x.group === s.group && x.id !== s.id).slice(0, 10);
+const label = signLabel(s);
+---
+
+<Base
+  title={label}
+  description={clip(`${label}: ${s.meaning ?? SIGN_GROUP_LABEL[s.group]}`, 155)}
+  trail={[{ name: 'Biển báo', path: '/bien-bao' }, { name: s.group === 'vachke' ? s.name : s.id, path: paths.sign(s) }]}
+>
+  <section class="container-page max-w-3xl pt-4">
+    <div class="card grid gap-6 p-5 sm:grid-cols-[220px_1fr] sm:p-6">
+      <div class="flex aspect-square items-center justify-center rounded-2xl bg-white p-4">
+        {s.imageUrl && <img src={s.imageUrl} alt={label} class="max-h-full max-w-full object-contain" />}
+      </div>
+      <div>
+        <p class="chip">{SIGN_GROUP_LABEL[s.group]}</p>
+        <h1 class="mt-3 text-2xl font-extrabold tracking-tight">{label}</h1>
+        {s.meaning && <p class="mt-3 leading-relaxed text-soft">{s.meaning}</p>}
+        <a href="/bien-bao" class="btn btn-ghost mt-5"><Icon name="arrow-left" size={16} /> Tất cả biển báo</a>
+      </div>
+    </div>
+    {
+      related.length > 0 && (
+        <>
+          <h2 class="mt-10 text-lg font-bold">{SIGN_GROUP_LABEL[s.group]} khác</h2>
+          <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+            {related.map((r) => (
+              <li>
+                <a href={paths.sign(r)} class="card flex h-full flex-col items-center p-3 text-center hover:border-brand/40">
+                  <span class="flex h-20 w-full items-center justify-center rounded-xl bg-white p-2">
+                    {r.imageUrl && <img src={r.imageUrl} alt={r.name} loading="lazy" class="max-h-full max-w-full object-contain" />}
+                  </span>
+                  <span class="mt-2 line-clamp-2 text-xs text-soft">{r.group === 'vachke' ? r.name : `${r.id} ${r.name}`}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </section>
+</Base>

@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuestionBlock from '../../components/QuestionBlock.astro';
+import Icon from '../../components/Icon.astro';
+import { CHAPTERS, questionById, paths, type Chapter } from '../../lib/data';
+
+export const getStaticPaths = () => CHAPTERS.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+const { c } = Astro.props as { c: Chapter };
+const questions = c.questionIds.map((id) => questionById(id)!);
+const critical = questions.filter((q) => q.critical).length;
+---
+
+<Base
+  title={`Chương ${c.numeral}. ${c.name}: ${questions.length} câu có đáp án`}
+  description={`Toàn bộ ${questions.length} câu hỏi chương ${c.numeral} "${c.name}" (${c.range}) trong bộ 600 câu lý thuyết lái xe, có đáp án đúng và giải thích${critical ? `, gồm ${critical} câu điểm liệt` : ''}.`}
+  trail={[{ name: 'Ôn tập', path: '/on-tap' }, { name: `Chương ${c.numeral}`, path: paths.chapter(c) }]}
+>
+  <section class="container-page max-w-3xl pt-4">
+    <p class="chip">Chương {c.numeral} · {c.range}</p>
+    <h1 class="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{c.name}</h1>
+    <p class="mt-2 text-muted">
+      {questions.length} câu hỏi có đáp án và giải thích{critical > 0 && `, trong đó ${critical} câu điểm liệt`}.
+    </p>
+    <a href={paths.practice(c.slug)} class="btn btn-primary mt-4">Luyện tập chương này <Icon name="arrow-right" size={16} /></a>
+    <div class="mt-6 space-y-3">
+      {questions.map((q) => <QuestionBlock q={q} compact />)}
+    </div>
+    <nav class="mt-8 flex flex-wrap gap-2" aria-label="Chương khác">
+      {CHAPTERS.filter((x) => x.slug !== c.slug).map((x) => <a href={paths.chapter(x)} class="chip hover:bg-brand/25">Chương {x.numeral}. {x.name}</a>)}
+    </nav>
+  </section>
+</Base>

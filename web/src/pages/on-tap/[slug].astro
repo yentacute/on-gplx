@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import Quiz from '../../components/Quiz';
+import { CHAPTERS, CRITICAL_QUESTIONS, QUESTIONS, paths } from '../../lib/data';
+
+// Interactive practice screens. They are noindex: the indexable copies of the same questions are
+// /chuong/<slug>, /cau-diem-liet and /600-cau-hoi.
+export const getStaticPaths = () => [
+  ...CHAPTERS.map((c) => ({
+    params: { slug: c.slug },
+    props: { title: `Chương ${c.numeral}. ${c.name}`, ids: c.questionIds, seo: paths.chapter(c) },
+  })),
+  {
+    params: { slug: 'cau-diem-liet' },
+    props: { title: 'Câu điểm liệt', ids: CRITICAL_QUESTIONS.map((q) => q.id), seo: paths.critical },
+  },
+  { params: { slug: 'tat-ca' }, props: { title: `Toàn bộ ${QUESTIONS.length} câu`, ids: QUESTIONS.map((q) => q.id), seo: paths.allQuestions } },
+  { params: { slug: 'cau-sai' }, props: { title: 'Câu hay sai', ids: undefined, seo: '/on-tap' } },
+];
+
+const { title, ids, seo } = Astro.props;
+---
+
+<Base title={`Ôn tập: ${title}`} description={`Ôn tập ${title.toLowerCase()} có đáp án và giải thích.`} noindex app>
+  <Quiz client:load title={title} backHref="/on-tap" ids={ids} onlyWrong={!ids} />
+  <p class="container-page text-center text-xs text-muted">
+    <a href={seo} class="hover:text-sky-300">Xem bản đọc có sẵn đáp án</a>
+  </p>
+</Base>

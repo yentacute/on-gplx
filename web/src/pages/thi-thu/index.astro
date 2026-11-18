@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
+---
+
+<Base
+  title="Thi thử lý thuyết lái xe ô tô online, chấm điểm như thi thật"
+  description="Thi thử lý thuyết bằng lái ô tô hạng B, C1, C, D1, D2, D và các hạng kéo rơ-moóc: đề bấm giờ, chấm điểm, có câu điểm liệt, xem lại đáp án sau khi nộp bài."
+  trail={[{ name: 'Thi thử', path: '/thi-thu' }]}
+>
+  <section class="container-page pt-6">
+    <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Thi thử lý thuyết</h1>
+    <p class="mt-1 text-muted">Chọn hạng bằng. Mỗi hạng có 20 đề cố định và đề ngẫu nhiên, bấm giờ như thi thật.</p>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        CAR_CLASSES.map((c) => (
+          <li>
+            <a href={paths.licenseClass(c.id)} class="card group flex items-center gap-4 p-4 transition hover:border-brand/40 hover:bg-raised/60">
+              <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-extrabold">
+                {c.id}
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-bold">Hạng {c.id}</span>
+                <span class="block truncate text-xs text-soft">{c.title}</span>
+                <span class="mt-1 block text-[11px] text-muted">
+                  {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}/{c.exam.questionCount}
+                </span>
+              </span>
+              <Icon name="chevron-right" size={18} class="text-muted transition group-hover:translate-x-0.5" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-8 text-sm text-muted">
+      Hạng phổ biến:
+      {LANDING_CLASSES.map((c, i) => (
+        <>
+          {i > 0 && ', '}
+          <a class="text-sky-300 hover:underline" href={paths.licenseClass(c.id)}>thi thử hạng {c.id}</a>
+        </>
+      ))}.
+    </p>
+  </section>
+</Base>

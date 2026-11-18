@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import QuestionBlock from '../components/QuestionBlock.astro';
+import Icon from '../components/Icon.astro';
+import { CRITICAL_QUESTIONS, paths } from '../lib/data';
+---
+
+<Base
+  title={`${CRITICAL_QUESTIONS.length} câu điểm liệt thi lý thuyết lái xe ô tô có đáp án`}
+  description={`Danh sách đầy đủ ${CRITICAL_QUESTIONS.length} câu điểm liệt trong bộ 600 câu lý thuyết lái xe, có đáp án và giải thích. Sai một câu điểm liệt là trượt bài thi.`}
+  trail={[{ name: 'Câu điểm liệt', path: paths.critical }]}
+>
+  <section class="container-page max-w-3xl pt-4">
+    <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">{CRITICAL_QUESTIONS.length} câu điểm liệt</h1>
+    <p class="mt-2 text-muted">
+      Câu điểm liệt hỏi về tình huống mất an toàn nghiêm trọng. Trong bài thi chỉ cần sai một câu là trượt, dù tổng điểm vẫn đủ.
+      Hãy thuộc hết các câu này trước.
+    </p>
+    <a href="/on-tap/cau-diem-liet" class="btn btn-primary mt-4">Luyện câu điểm liệt <Icon name="arrow-right" size={16} /></a>
+    <div class="mt-6 space-y-3">{CRITICAL_QUESTIONS.map((q) => <QuestionBlock q={q} compact />)}</div>
+  </section>
+</Base>
