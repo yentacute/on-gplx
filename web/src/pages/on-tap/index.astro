@@ -1,7 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import PageHero from '../../components/PageHero.astro';
 import { ChapterProgress, WrongCount, SavedCount } from '../../components/HomeIslands';
 import { CHAPTERS, CRITICAL_QUESTIONS, QUESTIONS, paths } from '../../lib/data';
 import { TONES } from '../../lib/icons';
@@ -13,20 +12,7 @@ import { TONES } from '../../lib/icons';
   trail={[{ name: 'Ôn tập', path: '/on-tap' }]}
 >
   <section class="container-page exam-page">
-    <PageHero
-      kicker="ÔN TẬP LÝ THUYẾT"
-      kickerIcon="book"
-      title="Ôn 600 câu theo chương,"
-      highlight="hiểu đến đâu, nhớ đến đó"
-      lead="Bấm vào đáp án là biết ngay đúng sai kèm giải thích. Tiến độ được lưu lại, lần sau ôn tiếp từ câu chưa làm."
-      facts={[
-        { icon: 'grid', label: `${CHAPTERS.length} chương` },
-        { icon: 'alert', label: `${CRITICAL_QUESTIONS.length} câu điểm liệt` },
-        { icon: 'bookmark', label: 'Lưu câu khó' },
-      ]}
-      ringIcon="book"
-      ticket={{ label: 'GỢI Ý HỌC', icon: 'target', title: 'Điểm liệt trước<br />rồi ôn từng chương', note: 'Câu sai sẽ được gom lại để luyện lại' }}
-    />
+    <h1 class="sr-only">Ôn tập 600 câu lý thuyết lái xe theo chương</h1>
 
     <div class="exam-section-heading">
       <div>
@@ -35,6 +21,13 @@ import { TONES } from '../../lib/icons';
       </div>
     </div>
     <ul class="study-shortcuts">
+      <li>
+        <a href="/on-tap/tat-ca" class="study-tile">
+          <span class={`study-tile-icon ${TONES.sky}`}><Icon name="grid" size={22} /></span>
+          <span class="min-w-0"><strong>Toàn bộ {QUESTIONS.length} câu</strong><small>Ôn lần lượt từ câu 1</small></span>
+          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+        </a>
+      </li>
       <li>
         <a href="/on-tap/cau-diem-liet" class="study-tile">
           <span class={`study-tile-icon ${TONES.red}`}><Icon name="alert" size={22} /></span>
@@ -53,13 +46,6 @@ import { TONES } from '../../lib/icons';
         <a href="/on-tap/cau-da-luu" class="study-tile">
           <span class={`study-tile-icon ${TONES.violet}`}><Icon name="bookmark" size={22} /></span>
           <span class="min-w-0"><strong>Câu đã lưu</strong><small><SavedCount client:load /></small></span>
-          <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
-        </a>
-      </li>
-      <li>
-        <a href="/on-tap/tat-ca" class="study-tile">
-          <span class={`study-tile-icon ${TONES.sky}`}><Icon name="grid" size={22} /></span>
-          <span class="min-w-0"><strong>Toàn bộ {QUESTIONS.length} câu</strong><small>Ôn lần lượt từ câu 1</small></span>
           <span class="study-tile-arrow"><Icon name="arrow-right" size={15} /></span>
         </a>
       </li>
