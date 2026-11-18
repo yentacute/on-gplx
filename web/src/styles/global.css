@@ -390,3 +390,11 @@
   .exam-class-stats dd { font-size: .95rem; }
   .exam-class-stats dt { font-size: .65rem; }
 }
+
+/* A section heading that opens the page (no hero above it) sits close to the breadcrumb. */
+.exam-page > h1.sr-only + .exam-section-heading { margin-top: 20px; }
+@media (max-width: 767px) {
+  .exam-page > h1.sr-only + .exam-section-heading { margin-top: 4px; margin-bottom: 14px; }
+  .exam-page .exam-section-heading h2 { font-size: 1.35rem; }
+  .exam-page .exam-section-heading { margin-top: 28px; }
+}
