@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Same Worker and domains as the Expo web build in ../wrangler.jsonc: deploying from here
+  // replaces the site at ontaplaixe.com with this Astro build.
+  "name": "on-gplx",
+  "compatibility_date": "2026-11-17",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "ontaplaixe.com", "custom_domain": true },
+    { "pattern": "www.ontaplaixe.com", "custom_domain": true }
+  ]
+}

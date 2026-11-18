@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import QuestionBlock from '../../components/QuestionBlock.astro';
+import { QUESTIONS, chapterOf, clip, paths } from '../../lib/data';
+import type { Question } from '../../lib/types';
+
+export const getStaticPaths = () => QUESTIONS.map((q, i) => ({ params: { id: String(q.id) }, props: { q, prev: QUESTIONS[i - 1], next: QUESTIONS[i + 1] } }));
+
+const { q, prev, next } = Astro.props as { q: Question; prev?: Question; next?: Question };
+const chapter = chapterOf(q);
+const answer = q.options[q.answer] ?? '';
+const site = Astro.site!.origin;
+const qaLd = {
+  '@context': 'https://schema.org',
+  '@type': 'QAPage',
+  mainEntity: {
+    '@type': 'Question',
+    name: clip(q.text, 110),
+    text: q.text,
+    answerCount: 1,
+    ...(q.image ? { image: `${site}${q.image}` } : {}),
+    acceptedAnswer: { '@type': 'Answer', text: q.hint ? `${answer} ${q.hint}` : answer, url: `${site}${paths.question(q.id)}` },
+  },
+};
+---
+
+<Base
+  title={`Câu ${q.id}: ${clip(q.text, 70)}`}
+  description={clip(`Đáp án câu ${q.id}/600: ${answer} ${q.hint ?? ''}`, 155)}
+  trail={[
+    { name: `Chương ${chapter.numeral}`, path: paths.chapter(chapter) },
+    { name: `Câu ${q.id}`, path: paths.question(q.id) },
+  ]}
+  jsonLd={[qaLd]}
+>
+  <section class="container-page max-w-3xl pt-4">
+    <p class="text-xs text-muted">
+      Câu {q.id}/600 · <a href={paths.chapter(chapter)} class="hover:text-sky-300">Chương {chapter.numeral}. {chapter.name}</a>
+    </p>
+    <div class="mt-3"><QuestionBlock q={q} heading="h1" link={false} /></div>
+    <nav class="mt-4 flex items-center justify-between gap-2" aria-label="Câu khác">
+      {prev ? <a href={paths.question(prev.id)} class="btn btn-ghost"><Icon name="arrow-left" size={16} /> Câu {prev.id}</a> : <span></span>}
+      <a href={paths.practice(chapter.slug)} class="btn btn-primary">Luyện chương này</a>
+      {next ? <a href={paths.question(next.id)} class="btn btn-ghost">Câu {next.id} <Icon name="arrow-right" size={16} /></a> : <span></span>}
+    </nav>
+  </section>
+</Base>

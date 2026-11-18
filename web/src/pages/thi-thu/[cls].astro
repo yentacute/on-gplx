@@ -1,0 +1,110 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { ExamScoreBadge, RememberClass } from '../../components/HomeIslands';
+import { CAR_CLASSES, CHAPTERS, LANDING_CLASSES, fixedExams, paths } from '../../lib/data';
+import { classFaq, courseLd, faqLd } from '../../lib/faq';
+import type { LicenseClass } from '../../lib/types';
+
+export const getStaticPaths = () =>
+  CAR_CLASSES.map((c) => ({ params: { cls: `hang-${c.id.toLowerCase()}` }, props: { c } }));
+
+const { c } = Astro.props as { c: LicenseClass };
+const landing = LANDING_CLASSES.some((x) => x.id === c.id);
+const exams = fixedExams(c);
+const faq = classFaq(c);
+const path = paths.licenseClass(c.id);
+const heading = `Thi thử lý thuyết lái xe hạng ${c.id}`;
+const description = `Thi thử lý thuyết bằng lái hạng ${c.id} (${c.title.toLowerCase()}): ${c.exam.questionCount} câu, ${c.exam.timeMinutes} phút, cần đúng ${c.exam.passingScore} câu. 20 đề có đáp án và đề ngẫu nhiên từ bộ 600 câu.`;
+const facts = [
+  { value: c.exam.questionCount, label: 'Câu hỏi' },
+  { value: `${c.exam.timeMinutes} phút`, label: 'Thời gian' },
+  { value: `${c.exam.passingScore}/${c.exam.questionCount}`, label: 'Điểm đạt' },
+  { value: `${c.minAge}+`, label: 'Tuổi tối thiểu' },
+];
+---
+
+<Base
+  title={`${heading}: ${c.exam.questionCount} câu, ${c.exam.timeMinutes} phút`}
+  description={description}
+  noindex={!landing}
+  trail={[{ name: 'Thi thử', path: '/thi-thu' }, { name: `Hạng ${c.id}`, path }]}
+  jsonLd={[courseLd(`Ôn thi lý thuyết lái xe hạng ${c.id}`, description, `${Astro.site!.origin}${path}`), faqLd(faq)]}
+>
+  <RememberClass client:load id={c.id} />
+  <section class="container-page pt-6">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 p-6 sm:p-8">
+      <p class="text-sm font-semibold text-blue-100">{c.title} · {c.description}</p>
+      <h1 class="mt-1 text-2xl font-extrabold tracking-tight sm:text-4xl">{heading}</h1>
+      <dl class="mt-5 grid max-w-xl grid-cols-4 gap-2">
+        {
+          facts.map((f) => (
+            <div class="rounded-xl border border-white/20 bg-white/10 px-2 py-2 text-center">
+              <dd class="text-base font-bold sm:text-lg">{f.value}</dd>
+              <dt class="text-[11px] text-blue-100">{f.label}</dt>
+            </div>
+          ))
+        }
+      </dl>
+      <div class="mt-6 flex flex-wrap gap-2">
+        <a href={paths.exam(c.id, 'ngau-nhien')} class="btn bg-white text-brand-strong hover:bg-sky-50">
+          <Icon name="refresh" size={16} /> Đề ngẫu nhiên
+        </a>
+        <a href={paths.exam(c.id, 1)} class="btn border border-white/30 bg-white/10 text-white hover:bg-white/20">
+          Làm đề số 1 <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+
+    <h2 class="mt-10 text-lg font-bold">20 đề thi thử hạng {c.id}</h2>
+    <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+      {
+        exams.map((e) => (
+          <li>
+            <a href={paths.exam(c.id, e.id)} class="card flex flex-col gap-1 p-4 transition hover:border-brand/40 hover:bg-raised/60">
+              <span class="text-xs text-muted">Đề số</span>
+              <span class="text-2xl font-extrabold tabular-nums">{String(e.id).padStart(2, '0')}</span>
+              <ExamScoreBadge client:visible examKey={`${c.id}-${e.id}`} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <div>
+        <h2 class="text-lg font-bold">Cấu trúc đề thi hạng {c.id}</h2>
+        <p class="mt-2 text-sm leading-relaxed text-soft">
+          Đề gồm {c.exam.questionCount} câu lấy từ bộ 600 câu hỏi, chia theo 6 chương. Mỗi đề có câu điểm liệt: trả lời sai
+          một câu điểm liệt là trượt ngay. Ôn trước theo từng chương:
+        </p>
+        <ul class="mt-3 space-y-1.5 text-sm">
+          {
+            CHAPTERS.map((ch) => (
+              <li>
+                <a href={paths.chapter(ch)} class="text-sky-300 hover:underline">
+                  Chương {ch.numeral}. {ch.name}
+                </a>
+                <span class="text-muted"> ({ch.questionIds.length} câu)</span>
+              </li>
+            ))
+          }
+          <li><a href="/cau-diem-liet" class="text-sky-300 hover:underline">60 câu điểm liệt</a></li>
+        </ul>
+      </div>
+      <div class="space-y-2">
+        {
+          faq.map((f) => (
+            <details class="card group p-4" open>
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
+                {f.question}
+                <Icon name="chevron-down" size={18} class="shrink-0 text-muted transition group-open:rotate-180" />
+              </summary>
+              <p class="mt-2 text-sm leading-relaxed text-soft">{f.answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

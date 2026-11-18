@@ -1,0 +1,226 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import type { IconName } from '../lib/icons';
+
+export const SITE_NAME = 'Ôn thi GPLX';
+const GA_ID = 'G-XCMS02ZVBJ';
+
+type Crumb = { name: string; path: string };
+type Props = {
+  title: string;
+  description: string;
+  /** Hide from search engines: interactive screens that duplicate an indexable page. */
+  noindex?: boolean;
+  jsonLd?: object[];
+  trail?: Crumb[];
+  /** Full-height app screen without the footer, e.g. the quiz runner. */
+  app?: boolean;
+};
+
+const { title, description, noindex = false, jsonLd = [], trail, app = false } = Astro.props;
+const site = Astro.site!.origin;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+const canonical = `${site}${path === '/' ? '/' : path}`;
+const fullTitle = path === '/' ? title : `${title} | ${SITE_NAME}`;
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', '@id': `${site}/#website`, url: `${site}/`, name: SITE_NAME, inLanguage: 'vi-VN' },
+    {
+      '@type': 'WebApplication',
+      name: SITE_NAME,
+      url: `${site}/`,
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web, Android, iOS',
+      inLanguage: 'vi-VN',
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' },
+    },
+  ],
+};
+const breadcrumbLd = trail && {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{ name: 'Trang chủ', path: '/' }, ...trail].map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.name,
+    item: `${site}${c.path}`,
+  })),
+};
+const structured = [path === '/' ? websiteLd : undefined, breadcrumbLd, ...jsonLd].filter(Boolean);
+
+const NAV: { href: string; label: string; icon: IconName; match: RegExp }[] = [
+  { href: '/', label: 'Trang chủ', icon: 'grid', match: /^\/$/ },
+  { href: '/on-tap', label: 'Ôn tập', icon: 'book', match: /^\/(on-tap|chuong|cau-hoi|600-cau-hoi|cau-diem-liet)/ },
+  { href: '/thi-thu', label: 'Thi thử', icon: 'clock', match: /^\/thi-thu/ },
+  { href: '/bien-bao', label: 'Biển báo', icon: 'sign', match: /^\/bien-bao/ },
+  { href: '/meo-ghi-nho', label: 'Mẹo ghi nhớ', icon: 'bulb', match: /^\/meo-ghi-nho/ },
+];
+const active = (match: RegExp) => match.test(path);
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#0a1020" />
+    <meta name="google-site-verification" content="fAPfkbdORdNVDQGY70O1a2b2ctOqiMPkZrCdgVTH_1U" />
+    <meta name="google-site-verification" content="hu1bcwgZDTecUm35fkGH6qf9T0YbWfnZzFXVLJq23pU" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${site}/og-image.png`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+    />
+    {structured.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+    <script is:inline define:vars={{ GA_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    </script>
+  </head>
+  <body class="min-h-dvh font-sans">
+    <header class="sticky top-0 z-40 border-b border-line bg-ink/80 backdrop-blur-md">
+      <div class="container-page flex h-14 items-center gap-6">
+        <a href="/" class="flex shrink-0 items-center gap-2 font-bold tracking-tight">
+          <img src="/icon-192.png" alt="" width="30" height="30" class="rounded-lg" />
+          <span>Ôn thi <span class="text-brand">GPLX</span></span>
+        </a>
+        <nav class="hidden flex-1 items-center justify-center gap-1 md:flex" aria-label="Chính">
+          {
+            NAV.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  'rounded-lg px-3 py-1.5 text-sm font-medium transition',
+                  active(item.match) ? 'bg-brand-soft text-sky-300' : 'text-soft hover:text-white',
+                ]}
+                aria-current={active(item.match) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        {!app && <a href="/thi-thu" class="btn btn-primary ml-auto py-1.5 md:ml-0">Thi thử ngay</a>}
+      </div>
+    </header>
+
+    {
+      trail && (
+        <nav class="container-page pt-4 text-xs text-muted" aria-label="Breadcrumb">
+          <ol class="flex flex-wrap items-center gap-1">
+            <li>
+              <a href="/" class="hover:text-white">
+                Trang chủ
+              </a>
+            </li>
+            {trail.map((c, i) => (
+              <li class="flex items-center gap-1">
+                <Icon name="chevron-right" size={12} />
+                {i === trail.length - 1 ? (
+                  <span class="text-soft">{c.name}</span>
+                ) : (
+                  <a href={c.path} class="hover:text-white">
+                    {c.name}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <main class:list={['pb-24 md:pb-12', app && 'pb-28']}>
+      <slot />
+    </main>
+
+    {
+      !app && (
+        <footer class="border-t border-line pb-24 pt-10 text-sm text-muted md:pb-10">
+          <div class="container-page grid gap-8 sm:grid-cols-3">
+            <div>
+              <p class="font-bold text-white">
+                Ôn thi <span class="text-brand">GPLX</span>
+              </p>
+              <p class="mt-2 max-w-xs">
+                Ôn 600 câu lý thuyết lái xe ô tô, thi thử có chấm điểm, tra biển báo. Miễn phí, không cần đăng ký.
+              </p>
+            </div>
+            <div>
+              <p class="font-semibold text-soft">Ôn tập</p>
+              <ul class="mt-2 space-y-1.5">
+                <li><a class="hover:text-white" href="/600-cau-hoi">600 câu hỏi lý thuyết</a></li>
+                <li><a class="hover:text-white" href="/cau-diem-liet">60 câu điểm liệt</a></li>
+                <li><a class="hover:text-white" href="/bien-bao">Biển báo giao thông</a></li>
+                <li><a class="hover:text-white" href="/meo-ghi-nho">Mẹo ghi nhớ</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="font-semibold text-soft">Thi thử theo hạng</p>
+              <ul class="mt-2 grid grid-cols-3 gap-1.5">
+                {['B', 'C1', 'C', 'D1', 'D2', 'D'].map((id) => (
+                  <li>
+                    <a class="hover:text-white" href={`/thi-thu/hang-${id.toLowerCase()}`}>
+                      Hạng {id}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <p class="container-page mt-8 text-xs">© {new Date().getFullYear()} ontaplaixe.com</p>
+        </footer>
+      )
+    }
+
+    <nav
+      class:list={['fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden', app && 'hidden']}
+      aria-label="Điều hướng"
+    >
+      <ul class="grid grid-cols-5">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium',
+                  active(item.match) ? 'text-sky-300' : 'text-muted',
+                ]}
+                aria-current={active(item.match) ? 'page' : undefined}
+              >
+                <Icon name={item.icon} size={20} />
+                {item.label.replace(' ghi nhớ', '')}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </body>
+</html>

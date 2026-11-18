@@ -1,0 +1,44 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Quiz from '../../../components/Quiz';
+import { CAR_CLASSES, fixedExams, paths } from '../../../lib/data';
+import type { LicenseClass } from '../../../lib/types';
+
+export const getStaticPaths = () =>
+  CAR_CLASSES.flatMap((c) => [
+    ...fixedExams(c).map((e) => ({
+      params: { cls: `hang-${c.id.toLowerCase()}`, exam: `de-${e.id}` },
+      props: { c, examId: e.id, ids: e.questionIds },
+    })),
+    { params: { cls: `hang-${c.id.toLowerCase()}`, exam: 'ngau-nhien' }, props: { c, examId: 0, ids: [] } },
+  ]);
+
+const { c, examId, ids } = Astro.props as { c: LicenseClass; examId: number; ids: number[] };
+const title = examId ? `Đề số ${examId} · Hạng ${c.id}` : `Đề ngẫu nhiên · Hạng ${c.id}`;
+---
+
+<Base title={`Thi thử ${title}`} description={`Thi thử lý thuyết lái xe hạng ${c.id}.`} noindex app>
+  {
+    examId ? (
+      <Quiz
+        client:load
+        title={title}
+        subtitle={`${c.exam.questionCount} câu · ${c.exam.timeMinutes} phút · đạt ${c.exam.passingScore}`}
+        backHref={paths.licenseClass(c.id)}
+        moreHref={paths.licenseClass(c.id)}
+        ids={ids}
+        exam={{ key: `${c.id}-${examId}`, durationSec: c.exam.timeMinutes * 60, passCount: c.exam.passingScore }}
+      />
+    ) : (
+      <Quiz
+        client:load
+        title={title}
+        subtitle={`${c.exam.questionCount} câu · ${c.exam.timeMinutes} phút · đạt ${c.exam.passingScore}`}
+        backHref={paths.licenseClass(c.id)}
+        moreHref={paths.exam(c.id, 'ngau-nhien')}
+        randomFor={{ classId: c.id, size: c.exam.questionCount }}
+        exam={{ key: `${c.id}-random`, durationSec: c.exam.timeMinutes * 60, passCount: c.exam.passingScore }}
+      />
+    )
+  }
+</Base>

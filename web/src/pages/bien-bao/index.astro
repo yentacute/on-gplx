@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import SignBrowser from '../../components/SignBrowser';
+import { SIGNS, SIGN_GROUP_LABEL, SIGN_GROUP_ORDER, paths, signLabel } from '../../lib/data';
+
+const signs = SIGNS.map((s) => ({ ...s, href: paths.sign(s) }));
+const groups = SIGN_GROUP_ORDER.map((id) => ({ id, label: SIGN_GROUP_LABEL[id] }));
+---
+
+<Base
+  title={`${SIGNS.length} biển báo giao thông đường bộ và ý nghĩa`}
+  description="Tra cứu biển báo cấm, biển nguy hiểm, biển hiệu lệnh, biển chỉ dẫn, biển phụ và vạch kẻ đường theo QCVN 41:2024, có hình và ý nghĩa từng biển."
+  trail={[{ name: 'Biển báo', path: '/bien-bao' }]}
+>
+  <section class="container-page pt-4">
+    <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Biển báo giao thông</h1>
+    <p class="mt-1 text-muted">{SIGNS.length} biển báo và vạch kẻ đường. Bấm vào biển để xem ý nghĩa.</p>
+    <div class="mt-2">
+      <SignBrowser client:load signs={signs} groups={groups} />
+    </div>
+    <noscript>
+      <ul class="mt-6 grid gap-1 text-sm sm:grid-cols-2">
+        {signs.map((s) => <li><a href={s.href}>{signLabel(s)}</a></li>)}
+      </ul>
+    </noscript>
+  </section>
+</Base>
