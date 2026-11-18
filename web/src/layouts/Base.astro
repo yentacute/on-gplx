@@ -52,6 +52,8 @@ const breadcrumbLd = trail && {
   })),
 };
 const structured = [path === '/' ? websiteLd : undefined, breadcrumbLd, ...jsonLd].filter(Boolean);
+// Floating Zalo button for study support; hidden until PUBLIC_ZALO_URL is set (e.g. https://zalo.me/0912345678).
+const zaloUrl = import.meta.env.PUBLIC_ZALO_URL as string | undefined;
 const chatEnabled = import.meta.env.PUBLIC_CHAT_ENABLED === 'true' && Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 
 const NAV: { href: string; label: string; icon: IconName; match: RegExp; mobile?: boolean }[] = [
@@ -160,6 +162,24 @@ const active = (match: RegExp) => match.test(path);
     <main class:list={['pb-24 lg:pb-12', app && 'pb-28']}>
       <slot />
     </main>
+
+    {
+      zaloUrl && !app && (
+        <a
+          href={zaloUrl}
+          target="_blank"
+          rel="noopener"
+          class:list={['zalo-float', chatEnabled && path !== '/tro-chuyen' && 'zalo-float-stacked']}
+          aria-label="Nhắn Zalo để được hỗ trợ ôn luyện"
+        >
+          <span class="zalo-float-icon" aria-hidden="true">Zalo</span>
+          <span class="zalo-float-text">
+            <b>Hỗ trợ ôn luyện</b>
+            <small>Nhắn Zalo</small>
+          </span>
+        </a>
+      )
+    }
 
     {chatEnabled && path !== '/tro-chuyen' && <ChatSidebar client:load url={import.meta.env.PUBLIC_SUPABASE_URL} publishableKey={import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY} />}
 
