@@ -9,6 +9,7 @@ const KEYS = {
   saved: 'gplx.saved',
   time: 'gplx.time',
   history: 'gplx.history',
+  examReveal: 'gplx.examReveal',
 } as const;
 
 const CHANGE_EVENT = 'gplx:progress';
@@ -35,6 +36,11 @@ export const DEFAULT_CLASS = 'B';
 
 export const getLicenseClass = () => read<string>(KEYS.licenseClass, DEFAULT_CLASS);
 export const setLicenseClass = (id: string) => write(KEYS.licenseClass, id);
+
+/** When a mock exam shows right/wrong: after each answer, or only once submitted (like the real test). */
+export type ExamReveal = 'each' | 'submit';
+export const getExamReveal = () => read<ExamReveal>(KEYS.examReveal, 'submit');
+export const setExamReveal = (mode: ExamReveal) => write(KEYS.examReveal, mode);
 
 /** Last answer picked for each question id, whether it was right, and how often it was ever wrong. */
 export type AnswerEntry = { picked: number; correct: boolean; wrong?: number; tries?: number };

@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 import {
   addStudySeconds,
   getAnswers,
+  getExamReveal,
   getLicenseClass,
   getSaved,
   loadQuestions,
@@ -74,6 +75,9 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
 
   const isExam = Boolean(exam);
   const reveal = !isExam || reviewing;
+  // Exam setting from the class page: show right/wrong after each answer instead of only at the end.
+  const revealMode = useStored(getExamReveal, 'submit');
+  const instant = isExam && revealMode === 'each';
 
   useEffect(() => {
     loadQuestions().then((all) => {
@@ -167,7 +171,7 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
 
   const choose = (option: number) => {
     if (!current || (submitted && isExam)) return;
-    if (!isExam && picked[current.id] !== undefined) return;
+    if ((!isExam || instant) && picked[current.id] !== undefined) return;
     setPicked((p) => ({ ...p, [current.id]: option }));
     if (!isExam) recordAnswer(current.id, option, option === current.answer);
   };
@@ -192,7 +196,7 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
   const statusOf = (q: Question): Status => {
     const p = picked[q.id];
     if (p === undefined) return 'empty';
-    if (!reveal) return 'picked';
+    if (!reveal && !instant) return 'picked';
     return p === q.answer ? 'right' : 'wrong';
   };
 
@@ -285,6 +289,7 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
   const q = current!;
   const pickedNow = picked[q.id];
   const answeredNow = pickedNow !== undefined;
+  const showNow = reveal || (instant && answeredNow);
   const progress = Math.round((stats.answered / stats.total) * 100);
   const lowTime = isExam && !submitted && remaining <= 60;
 
@@ -392,10 +397,10 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
               const isAnswer = q.answer === i;
               let tone = 'border-line bg-white hover:border-brand/50';
               let badge = 'bg-raised text-soft';
-              if (reveal && answeredNow && isAnswer) {
+              if (showNow && answeredNow && isAnswer) {
                 tone = 'border-emerald-500/60 bg-emerald-50';
                 badge = 'bg-emerald-500 text-white';
-              } else if (reveal && isPicked && !isAnswer) {
+              } else if (showNow && isPicked && !isAnswer) {
                 tone = 'border-red-500/60 bg-red-50';
                 badge = 'bg-red-500 text-white';
               } else if (reveal && reviewing && isAnswer) {
@@ -405,13 +410,13 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
                 tone = 'border-brand bg-blue-50';
                 badge = 'bg-brand text-white';
               }
-              const locked = (!isExam && answeredNow) || submitted;
+              const locked = ((!isExam || instant) && answeredNow) || submitted;
               return (
                 <li key={i}>
                   <button
                     type="button"
                     onClick={() => choose(i)}
-                    disabled={locked && !isPicked && !(reveal && isAnswer)}
+                    disabled={locked && !isPicked && !(showNow && isAnswer)}
                     aria-pressed={isPicked}
                     className={`flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left text-sm font-medium leading-relaxed shadow-sm shadow-slate-900/[0.03] transition disabled:opacity-60 sm:text-[15px] ${tone} ${locked ? 'cursor-default' : ''}`}
                   >
@@ -423,7 +428,7 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
             })}
           </ul>
 
-          {reveal && (answeredNow || reviewing) && q.hint && (
+          {showNow && (answeredNow || reviewing) && q.hint && (
             <div className="mt-4 rounded-2xl border border-line border-l-4 border-l-brand bg-white p-4 text-sm leading-relaxed text-soft shadow-sm">
               <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-blue-600">
                 <Icon name="bulb" size={15} /> Giải thích
