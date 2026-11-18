@@ -15,14 +15,15 @@ export const getStaticPaths = () => [
     props: { title: 'Câu điểm liệt', ids: CRITICAL_QUESTIONS.map((q) => q.id), seo: paths.critical },
   },
   { params: { slug: 'tat-ca' }, props: { title: `Toàn bộ ${QUESTIONS.length} câu`, ids: QUESTIONS.map((q) => q.id), seo: paths.allQuestions } },
-  { params: { slug: 'cau-sai' }, props: { title: 'Câu hay sai', ids: undefined, seo: '/on-tap' } },
+  { params: { slug: 'cau-sai' }, props: { title: 'Câu hay sai nhất', ids: undefined, source: 'wrong', seo: '/on-tap' } },
+  { params: { slug: 'cau-da-luu' }, props: { title: 'Câu đã lưu', ids: undefined, source: 'saved', seo: '/on-tap' } },
 ];
 
-const { title, ids, seo } = Astro.props;
+const { title, ids, seo, source } = Astro.props as { title: string; ids?: number[]; seo: string; source?: 'wrong' | 'saved' };
 ---
 
 <Base title={`Ôn tập: ${title}`} description={`Ôn tập ${title.toLowerCase()} có đáp án và giải thích.`} noindex app>
-  <Quiz client:load title={title} backHref="/on-tap" ids={ids} onlyWrong={!ids} />
+  <Quiz client:load title={title} backHref="/on-tap" ids={ids} source={source} />
   <p class="container-page text-center text-xs text-muted">
     <a href={seo} class="hover:text-blue-600">Xem bản đọc có sẵn đáp án</a>
   </p>

@@ -1,12 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from './Icon';
 import {
+  addStudySeconds,
   getAnswers,
+  getSaved,
   loadQuestions,
   recordAnswer,
   recordAnswers,
+  recordExamAttempt,
   recordExamScore,
   resetAnswers,
+  toggleSaved,
+  useStored,
+  weakQuestionIds,
 } from '../lib/progress';
 import type { Question } from '../lib/types';
 
@@ -16,9 +22,10 @@ type Props = {
   title: string;
   subtitle?: string;
   backHref: string;
-  /** Question ids in order. Omit with `onlyWrong` to practise the questions answered wrong so far. */
+  /** Question ids in order. Omit with `source` to build the list from the learner's own history. */
   ids?: number[];
-  onlyWrong?: boolean;
+  /** "wrong": questions answered wrong, most-missed first. "saved": bookmarked questions. */
+  source?: 'wrong' | 'saved';
   /** Present for a timed exam: answers stay hidden until the exam is submitted. */
   exam?: ExamRules;
   /** Where "Đề khác" goes after an exam. */
@@ -26,8 +33,6 @@ type Props = {
   /** Build a fresh random exam in the browser: 3 câu điểm liệt plus random others from the class. */
   randomFor?: { classId: string; size: number };
 };
-
-const LETTERS = ['A', 'B', 'C', 'D'];
 
 const formatTime = (seconds: number) => {
   const s = Math.max(0, Math.round(seconds));
@@ -51,7 +56,9 @@ const randomExam = (pool: Question[], size: number) => {
 
 type Status = 'right' | 'wrong' | 'picked' | 'empty';
 
-export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, moreHref, randomFor }: Props) {
+export default function Quiz({ title, subtitle, backHref, ids, source, exam, moreHref, randomFor }: Props) {
+  const onlyWrong = source === 'wrong';
+  const saved = useStored(getSaved, []);
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [picked, setPicked] = useState<Record<number, number>>({});
   const [index, setIndex] = useState(0);
@@ -70,8 +77,8 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
       const log = getAnswers();
       const list = randomFor
         ? randomExam(all.filter((q) => q.classes.includes(randomFor.classId)), randomFor.size)
-        : onlyWrong
-          ? all.filter((q) => log[q.id] && !log[q.id]!.correct)
+        : source
+          ? (source === 'wrong' ? weakQuestionIds(log) : getSaved()).flatMap((id) => byId.get(id) ?? [])
           : (ids ?? []).flatMap((id) => byId.get(id) ?? []);
       setQuestions(list);
       if (!isExam) {
@@ -94,6 +101,15 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
         picked[q.id] === undefined ? [] : [{ id: q.id, picked: picked[q.id]!, correct: picked[q.id] === q.answer }],
       ),
     );
+    recordExamAttempt({
+      key: exam.key,
+      title,
+      correct,
+      total: questions.length,
+      passed: !criticalFailed && correct >= exam.passCount,
+      at: Date.now(),
+      seconds: exam.durationSec - remaining,
+    });
     recordExamScore(exam.key, {
       correct,
       total: questions.length,
@@ -103,7 +119,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
     setSubmitted(true);
     setConfirmSubmit(false);
     window.scrollTo({ top: 0 });
-  }, [questions, picked, exam]);
+  }, [questions, picked, exam, remaining, title]);
 
   // Exam countdown; submits by itself when time runs out.
   const submitRef = useRef(submit);
@@ -122,6 +138,26 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
     }, 1000);
     return () => clearInterval(timer);
   }, [exam, questions, submitted]);
+
+  // Time on this screen while the tab is visible counts as study time.
+  useEffect(() => {
+    let last = Date.now();
+    const flush = () => {
+      const now = Date.now();
+      if (document.visibilityState === 'visible') addStudySeconds(Math.min((now - last) / 1000, 60));
+      last = now;
+    };
+    const timer = setInterval(flush, 15000);
+    const onHide = () => flush();
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('pagehide', onHide);
+    return () => {
+      flush();
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onHide);
+    };
+  }, []);
 
   const current = questions?.[index];
 
@@ -178,8 +214,12 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-600">
             <Icon name="check" size={28} />
           </div>
-          <h1 className="mt-4 text-lg font-bold">Chưa có câu nào làm sai</h1>
-          <p className="mt-1 text-sm text-muted">Câu bạn trả lời sai khi ôn tập hay thi thử sẽ được gom vào đây để luyện lại.</p>
+          <h1 className="mt-4 text-lg font-bold">{source === 'saved' ? 'Chưa lưu câu nào' : 'Chưa có câu nào làm sai'}</h1>
+          <p className="mt-1 text-sm text-muted">
+            {source === 'saved'
+              ? 'Bấm biểu tượng đánh dấu ở góc câu hỏi để lưu lại những câu muốn xem lại.'
+              : 'Câu bạn trả lời sai khi ôn tập hay thi thử sẽ được gom vào đây để luyện lại.'}
+          </p>
           <a href="/on-tap" className="btn btn-primary mt-6">
             Bắt đầu ôn tập
           </a>
@@ -247,26 +287,20 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
   return (
     <div className="container-page py-4 sm:py-6">
       {/* Top bar */}
-      <div className="card flex items-center gap-3 p-3">
-        <a href={backHref} className="grid size-9 shrink-0 place-items-center rounded-xl bg-raised text-soft hover:text-slate-900" aria-label="Quay lại">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <a href={backHref} className="grid size-10 shrink-0 place-items-center rounded-full border border-line bg-surface text-soft shadow-sm hover:text-slate-900" aria-label="Quay lại">
           <Icon name="arrow-left" size={18} />
         </a>
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-sm font-bold sm:text-base">{title}</h1>
-          <div className="mt-1 flex items-center gap-2 text-xs text-muted">
-            <span className="hidden truncate sm:inline">{subtitle ?? `${stats.total} câu`}</span>
-            <span aria-hidden="true" className="hidden sm:inline">·</span>
-            <span className="text-blue-600">
-              {stats.answered}/{stats.total} đã làm
-            </span>
-          </div>
-          <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-raised">
-            <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${progress}%` }} />
-          </div>
+          <p className="truncate text-xs text-muted">
+            <span className="hidden sm:inline">{subtitle ?? `${stats.total} câu`} · </span>
+            <span className="font-semibold text-blue-600">{stats.answered}/{stats.total}</span> đã làm
+          </p>
         </div>
         {isExam && !submitted && (
           <div
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'bg-raised text-slate-900'}`}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'border border-line bg-surface text-slate-900 shadow-sm'}`}
             role="timer"
             aria-label="Thời gian còn lại"
           >
@@ -274,8 +308,16 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             {formatTime(remaining)}
           </div>
         )}
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-2 text-sm font-semibold tabular-nums shadow-sm hover:bg-raised lg:hidden"
+          onClick={() => setGridOpen(true)}
+          aria-label="Danh sách câu hỏi"
+        >
+          <Icon name="grid" size={16} className="text-blue-600" /> {index + 1}/{questions.length}
+        </button>
         {isExam && !submitted && (
-          <button type="button" className="btn btn-primary px-3" onClick={() => setConfirmSubmit(true)}>
+          <button type="button" className="btn btn-primary hidden px-4 sm:inline-flex" onClick={() => setConfirmSubmit(true)}>
             Nộp bài
           </button>
         )}
@@ -285,25 +327,38 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           </button>
         )}
       </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white shadow-inner ring-1 ring-line">
+        <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all" style={{ width: `${progress}%` }} />
+      </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_300px]">
         {/* Question */}
         <article className="card p-4 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="chip">Câu {index + 1}</span>
-            <span className="text-xs text-muted">#{q.id} trong bộ 600 câu</span>
+            <span className="rounded-full bg-brand px-3 py-1 text-xs font-bold text-white">Câu {index + 1}</span>
             {q.critical && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-600">
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-1 text-xs font-semibold text-red-600">
                 <Icon name="alert" size={12} /> Điểm liệt
               </span>
             )}
+            <span className="text-xs text-muted">#{q.id}/600</span>
+            <button
+              type="button"
+              onClick={() => toggleSaved(q.id)}
+              aria-pressed={saved.includes(q.id)}
+              aria-label={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+              title={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+              className={`ml-auto grid size-9 place-items-center rounded-full border transition ${saved.includes(q.id) ? 'border-amber-400/50 bg-amber-400/20 text-amber-600' : 'border-line text-muted hover:bg-raised hover:text-slate-900'}`}
+            >
+              <Icon name="bookmark" size={16} className={saved.includes(q.id) ? 'fill-current' : ''} />
+            </button>
           </div>
-          <h2 className="mt-3 text-base font-semibold leading-relaxed sm:text-lg">{q.text}</h2>
+          <h2 className="mt-4 text-[17px] font-semibold leading-relaxed sm:text-lg">{q.text}</h2>
           {q.image && (
             <img
               src={q.image}
               alt={`Hình minh họa câu ${q.id}`}
-              className="mt-4 max-h-80 w-auto max-w-full rounded-xl border border-line bg-white object-contain"
+              className="mt-4 max-h-80 w-auto max-w-full rounded-2xl border border-line bg-white object-contain"
             />
           )}
 
@@ -311,8 +366,8 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             {q.options.map((option, i) => {
               const isPicked = pickedNow === i;
               const isAnswer = q.answer === i;
-              let tone = 'border-line bg-raised/40 hover:border-brand/50 hover:bg-raised';
-              let badge = 'bg-raised text-soft';
+              let tone = 'border-line bg-surface hover:border-brand/50 hover:bg-brand-soft/40';
+              let badge = 'border border-line bg-raised text-soft';
               if (reveal && answeredNow && isAnswer) {
                 tone = 'border-emerald-500/60 bg-emerald-500/10';
                 badge = 'bg-emerald-500 text-white';
@@ -334,9 +389,9 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
                     onClick={() => choose(i)}
                     disabled={locked && !isPicked && !(reveal && isAnswer)}
                     aria-pressed={isPicked}
-                    className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm leading-relaxed transition disabled:opacity-60 sm:text-[15px] ${tone} ${locked ? 'cursor-default' : ''}`}
+                    className={`flex w-full items-start gap-3 rounded-2xl border-[1.5px] p-3.5 text-left text-sm leading-relaxed transition disabled:opacity-60 sm:text-[15px] ${tone} ${locked ? 'cursor-default' : ''}`}
                   >
-                    <span className={`grid size-7 shrink-0 place-items-center rounded-lg text-xs font-bold ${badge}`}>{LETTERS[i]}</span>
+                    <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${badge}`}>{i + 1}</span>
                     <span className="pt-0.5">{option}</span>
                   </button>
                 </li>
@@ -345,7 +400,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           </ul>
 
           {reveal && (answeredNow || reviewing) && q.hint && (
-            <div className="mt-5 rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-relaxed text-amber-900">
+            <div className="mt-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-relaxed text-amber-900">
               <p className="mb-1 flex items-center gap-1.5 font-semibold text-amber-700">
                 <Icon name="bulb" size={16} /> Giải thích
               </p>
@@ -353,16 +408,22 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             </div>
           )}
 
-          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-2 border-t border-line bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:static sm:mt-6 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4 sm:backdrop-blur-none">
+          <div className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-2 rounded-full border border-line bg-white/95 p-1.5 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:static sm:mt-6 sm:rounded-none sm:border-0 sm:border-t sm:bg-transparent sm:p-0 sm:pt-5 sm:shadow-none sm:backdrop-blur-none">
             <button type="button" className="btn btn-ghost" onClick={() => go(index - 1)} disabled={index === 0}>
-              <Icon name="arrow-left" size={16} /> <span className="hidden sm:inline">Câu trước</span>
+              <Icon name="arrow-left" size={16} /> Trước
             </button>
-            <button type="button" className="btn btn-ghost lg:hidden" onClick={() => setGridOpen(true)}>
-              <Icon name="grid" size={16} /> {index + 1}/{questions.length}
-            </button>
+            {isExam && !submitted ? (
+              <button type="button" className="rounded-full px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-raised sm:hidden" onClick={() => setConfirmSubmit(true)}>
+                Nộp bài
+              </button>
+            ) : (
+              <a href="/" className="grid size-10 place-items-center rounded-full text-muted hover:bg-raised hover:text-slate-900 sm:hidden" aria-label="Trang chủ">
+                <Icon name="grid" size={18} />
+              </a>
+            )}
             {index < questions.length - 1 ? (
               <button type="button" className="btn btn-primary" onClick={() => go(index + 1)}>
-                <span className="hidden sm:inline">Câu tiếp theo</span> <Icon name="arrow-right" size={16} />
+                Tiếp <Icon name="arrow-right" size={16} />
               </button>
             ) : isExam && !submitted ? (
               <button type="button" className="btn btn-primary" onClick={() => setConfirmSubmit(true)}>
@@ -381,7 +442,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           className={`${gridOpen ? 'fixed inset-0 z-50 flex items-end bg-slate-900/50 lg:static lg:block lg:bg-transparent' : 'hidden lg:block'}`}
           onClick={(e) => e.target === e.currentTarget && setGridOpen(false)}
         >
-          <div className="card max-h-[75dvh] w-full overflow-hidden rounded-b-none p-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:rounded-b-2xl">
+          <div className="card max-h-[75dvh] w-full overflow-hidden rounded-b-none p-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:rounded-b-3xl">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold">Danh sách câu hỏi</p>
               <span className="chip">{questions.length} câu</span>
@@ -405,7 +466,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
                     key={item.id}
                     type="button"
                     onClick={() => go(i)}
-                    className={`relative aspect-square rounded-lg border text-xs font-semibold tabular-nums transition hover:brightness-125 ${tone} ${i === index ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}`}
+                    className={`relative aspect-square rounded-xl border text-xs font-semibold tabular-nums transition hover:brightness-125 ${tone} ${i === index ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface' : ''}`}
                     aria-label={`Câu ${i + 1}`}
                     aria-current={i === index}
                   >
