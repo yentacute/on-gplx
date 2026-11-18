@@ -43,6 +43,7 @@ const Root = ({ children }: PropsWithChildren) => {
         <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
         <meta name="format-detection" content="telephone=no" />
         <meta name="google-site-verification" content="fAPfkbdORdNVDQGY70O1a2b2ctOqiMPkZrCdgVTH_1U" />
+        <meta name="google-site-verification" content="hu1bcwgZDTecUm35fkGH6qf9T0YbWfnZzFXVLJq23pU" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }} />
