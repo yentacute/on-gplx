@@ -24,6 +24,6 @@ const { title, ids, seo } = Astro.props;
 <Base title={`Ôn tập: ${title}`} description={`Ôn tập ${title.toLowerCase()} có đáp án và giải thích.`} noindex app>
   <Quiz client:load title={title} backHref="/on-tap" ids={ids} onlyWrong={!ids} />
   <p class="container-page text-center text-xs text-muted">
-    <a href={seo} class="hover:text-sky-300">Xem bản đọc có sẵn đáp án</a>
+    <a href={seo} class="hover:text-blue-600">Xem bản đọc có sẵn đáp án</a>
   </p>
 </Base>

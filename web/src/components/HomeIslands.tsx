@@ -31,7 +31,7 @@ export function ClassBar({ classes, total }: { classes: LicenseClass[]; total: n
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-haspopup="listbox"
-          className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-br from-brand-strong to-indigo-600 px-3 py-2.5 text-left font-bold shadow-lg shadow-blue-900/40 sm:w-48"
+          className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-br from-brand-strong to-indigo-600 px-3 text-white py-2.5 text-left font-bold shadow-lg shadow-blue-600/25 sm:w-48"
         >
           <span className="grid size-8 place-items-center rounded-lg bg-white/15">
             <Icon name="car" size={18} />
@@ -45,7 +45,7 @@ export function ClassBar({ classes, total }: { classes: LicenseClass[]; total: n
         {open && (
           <ul
             role="listbox"
-            className="absolute left-0 top-full z-50 mt-2 grid max-h-80 w-full min-w-64 grid-cols-1 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-2xl shadow-black/60 sm:w-72"
+            className="absolute left-0 top-full z-50 mt-2 grid max-h-80 w-full min-w-64 grid-cols-1 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-2xl shadow-slate-900/15 sm:w-72"
           >
             {classes.map((c) => (
               <li key={c.id}>
@@ -59,9 +59,9 @@ export function ClassBar({ classes, total }: { classes: LicenseClass[]; total: n
                   }}
                   className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-raised ${c.id === selected.id ? 'bg-brand-soft' : ''}`}
                 >
-                  <span className="w-10 font-bold text-sky-300">{c.id}</span>
+                  <span className="w-10 font-bold text-blue-600">{c.id}</span>
                   <span className="flex-1 text-soft">{c.title}</span>
-                  {c.id === selected.id && <Icon name="check" size={16} className="text-sky-300" />}
+                  {c.id === selected.id && <Icon name="check" size={16} className="text-blue-600" />}
                 </button>
               </li>
             ))}
@@ -102,7 +102,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
       detail: `${criticalDone}/${criticalIds.length} câu đã làm đúng`,
       href: '/on-tap/cau-diem-liet',
       done: criticalDone === criticalIds.length,
-      tone: 'text-red-300 bg-red-500/15',
+      tone: 'text-red-600 bg-red-500/15',
     },
     {
       icon: 'book' as const,
@@ -110,7 +110,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
       detail: `${done}/${total} câu đã làm`,
       href: `/on-tap/${next.slug}`,
       done: done >= total,
-      tone: 'text-sky-300 bg-sky-500/15',
+      tone: 'text-blue-600 bg-sky-500/15',
     },
     {
       icon: 'refresh' as const,
@@ -118,7 +118,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
       detail: wrong ? `${wrong} câu cần xem lại` : 'Chưa có câu sai',
       href: '/on-tap/cau-sai',
       done: done > 0 && wrong === 0,
-      tone: 'text-amber-300 bg-amber-500/15',
+      tone: 'text-amber-700 bg-amber-500/15',
     },
     {
       icon: 'trophy' as const,
@@ -126,7 +126,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
       detail: Object.keys(scores).length ? `Đã thi ${Object.keys(scores).length} đề, đỗ ${passedExams}` : 'Chưa thi đề nào',
       href: `/thi-thu/hang-${classId.toLowerCase()}`,
       done: passedExams >= 3,
-      tone: 'text-emerald-300 bg-emerald-500/15',
+      tone: 'text-emerald-600 bg-emerald-500/15',
     },
   ];
 
@@ -134,7 +134,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
     <div className="card relative h-full overflow-hidden p-5 sm:p-7">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-sky-300">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-blue-600">
             <Icon name="target" size={16} /> Lộ trình của bạn
           </p>
           <h2 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Mục tiêu đậu hạng {classId}</h2>
@@ -156,7 +156,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
                 </span>
                 <span className="block truncate text-xs text-muted">{s.detail}</span>
               </span>
-              <Icon name="chevron-right" size={16} className="text-muted transition group-hover:translate-x-0.5 group-hover:text-white" />
+              <Icon name="chevron-right" size={16} className="text-muted transition group-hover:translate-x-0.5 group-hover:text-slate-900" />
             </a>
           </li>
         ))}
@@ -236,7 +236,7 @@ export function ExamScoreBadge({ examKey }: { examKey: string }) {
   const s = scores[examKey];
   if (!s) return <span className="text-xs text-muted">Chưa làm</span>;
   return (
-    <span className={`text-xs font-semibold ${s.passed ? 'text-emerald-300' : 'text-red-300'}`}>
+    <span className={`text-xs font-semibold ${s.passed ? 'text-emerald-600' : 'text-red-600'}`}>
       {s.passed ? 'Đạt' : 'Trượt'} · {s.correct}/{s.total}
     </span>
   );

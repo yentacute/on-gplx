@@ -24,7 +24,7 @@ const shortcuts = [
     <p class="chip mx-auto"><Icon name="shield" size={12} /> Bộ 600 câu hỏi sát hạch áp dụng từ 2025</p>
     <h1 class="mx-auto mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
       Ôn thi lý thuyết lái xe{' '}
-      <span class="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">đậu ngay lần đầu</span>
+      <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">đậu ngay lần đầu</span>
     </h1>
     <p class="mx-auto mt-3 max-w-xl text-muted">
       600 câu có đáp án và giải thích, thi thử bấm giờ như thi thật. Miễn phí, không cần đăng ký.
@@ -37,7 +37,7 @@ const shortcuts = [
 
   <section class="container-page mt-8 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
     <RoadmapCard client:idle chapters={chapters} criticalIds={CRITICAL_QUESTIONS.map((q) => q.id)} />
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 p-6 shadow-2xl shadow-blue-950/50 sm:p-7">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 shadow-2xl shadow-blue-600/30 sm:p-7">
       <div class="grid size-11 place-items-center rounded-xl bg-white/15"><Icon name="clock" size={22} /></div>
       <h2 class="mt-5 text-2xl font-extrabold tracking-tight sm:text-3xl">Thi thử online</h2>
       <p class="mt-2 max-w-xs text-sm text-blue-100">
@@ -76,10 +76,10 @@ const shortcuts = [
   <section class="container-page mt-14">
     <div class="flex items-end justify-between gap-4">
       <div>
-        <p class="text-sm font-semibold text-sky-300">Ôn theo chương</p>
+        <p class="text-sm font-semibold text-blue-600">Ôn theo chương</p>
         <h2 class="mt-1 text-2xl font-bold tracking-tight">6 chương của bộ 600 câu</h2>
       </div>
-      <a href="/600-cau-hoi" class="hidden text-sm font-semibold text-sky-300 hover:text-sky-200 sm:block">Xem cả 600 câu →</a>
+      <a href="/600-cau-hoi" class="hidden text-sm font-semibold text-blue-600 hover:text-blue-700 sm:block">Xem cả 600 câu →</a>
     </div>
     <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {
@@ -97,7 +97,7 @@ const shortcuts = [
               </div>
             </div>
             <ChapterProgress client:visible ids={c.questionIds} />
-            <a href={paths.chapter(c)} class="relative z-10 mt-3 inline-block text-xs text-muted hover:text-sky-300">
+            <a href={paths.chapter(c)} class="relative z-10 mt-3 inline-block text-xs text-muted hover:text-blue-600">
               Xem đáp án chương {c.numeral}
             </a>
           </li>
@@ -107,14 +107,14 @@ const shortcuts = [
   </section>
 
   <section class="container-page mt-14">
-    <p class="text-sm font-semibold text-sky-300">Thi thử theo hạng bằng</p>
+    <p class="text-sm font-semibold text-blue-600">Thi thử theo hạng bằng</p>
     <h2 class="mt-1 text-2xl font-bold tracking-tight">Chọn hạng để vào đề</h2>
     <ul class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       {
         LANDING_CLASSES.map((c) => (
           <li>
             <a href={paths.licenseClass(c.id)} class="card block p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="text-2xl font-extrabold text-sky-300">{c.id}</span>
+              <span class="text-2xl font-extrabold text-blue-600">{c.id}</span>
               <span class="mt-1 block text-xs text-soft">{c.title}</span>
               <span class="mt-3 block text-[11px] text-muted">
                 {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}
@@ -128,7 +128,7 @@ const shortcuts = [
 
   <section class="container-page mt-14 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
     <div>
-      <p class="text-sm font-semibold text-sky-300">Hỏi đáp</p>
+      <p class="text-sm font-semibold text-blue-600">Hỏi đáp</p>
       <h2 class="mt-1 text-2xl font-bold tracking-tight">Câu hỏi thường gặp về thi lý thuyết</h2>
       <p class="mt-2 text-sm text-muted">
         Thi lý thuyết là bài đầu tiên khi thi bằng lái ô tô. Đề lấy từ bộ 600 câu, có câu điểm liệt, sai một câu điểm liệt là trượt.
