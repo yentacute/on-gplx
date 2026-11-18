@@ -2,8 +2,10 @@ import { useRouter } from 'expo-router';
 import { ScrollView, Text } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { MenuCard } from '@/components/MenuCard';
+import { LinkChips } from '@/components/seo/ContentPage';
 import { TOPIC_META } from '@/data/topics';
 import { routeMetadata } from '@/seo/pages';
+import { paths } from '@/seo/slugs';
 
 const TopicsScreen = () => {
   const router = useRouter();
@@ -26,6 +28,13 @@ const TopicsScreen = () => {
           />
         );
       })}
+      <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Xem đáp án theo chương</Text>
+      <LinkChips
+        links={[
+          ...TOPIC_META.map((t) => ({ name: `${t.chapter}: ${t.title}`, path: paths.chapter(t.id) })),
+          { name: '60 câu điểm liệt', path: paths.critical },
+        ]}
+      />
     </ScrollView>
   );
 };

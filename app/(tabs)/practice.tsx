@@ -2,9 +2,11 @@ import { useRouter } from 'expo-router';
 import { ScrollView, Text } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { MenuCard } from '@/components/MenuCard';
+import { LinkChips } from '@/components/seo/ContentPage';
 import { TIP_SECTIONS } from '@/data/tips';
 import { TOPIC_META } from '@/data/topics';
 import { routeMetadata } from '@/seo/pages';
+import { paths } from '@/seo/slugs';
 import { useSettings } from '@/store/settings';
 import type { QuizMode } from '@/types';
 
@@ -58,6 +60,13 @@ const PracticeScreen = () => {
         color="#d97706"
         badge={`${TIP_SECTIONS.length} nhóm`}
         onPress={() => router.push('/tips')}
+      />
+      <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Tra cứu đáp án</Text>
+      <LinkChips
+        links={[
+          { name: '600 câu hỏi có đáp án', path: paths.allQuestions },
+          { name: '60 câu điểm liệt', path: paths.critical },
+        ]}
       />
     </ScrollView>
   );

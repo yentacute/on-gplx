@@ -1,23 +1,19 @@
 import { List } from '@ant-design/react-native';
 import { useMemo, useState } from 'react';
-import { Image, ScrollView, Text } from 'react-native';
+import { type Href, Link } from 'expo-router';
+import { Platform, ScrollView, Text, View } from 'react-native';
 import { useSigns } from '@/api/queries';
 import { LoadingView } from '@/components/LoadingView';
 import { SignDetailModal } from '@/components/SignDetailModal';
+import { SeoImage } from '@/components/seo/SeoImage';
+import { SIGN_GROUP_LABEL, SIGN_GROUP_ORDER } from '@/data/signGroups';
 import { SIGN_IMAGES } from '@/data/signImages';
+import { signLabel } from '@/seo/catalog';
 import { routeMetadata } from '@/seo/pages';
-import type { SignGroup } from '@/types';
+import { paths } from '@/seo/slugs';
 
-const GROUP_LABEL: Record<SignGroup, string> = {
-  nguyhiem: 'Biển báo nguy hiểm',
-  cam: 'Biển báo cấm',
-  hieulenh: 'Biển hiệu lệnh',
-  chidan: 'Biển chỉ dẫn',
-  phu: 'Biển phụ',
-  vachke: 'Vạch kẻ đường',
-};
-
-const GROUP_ORDER = Object.keys(GROUP_LABEL) as SignGroup[];
+const GROUP_LABEL = SIGN_GROUP_LABEL;
+const GROUP_ORDER = SIGN_GROUP_ORDER;
 
 const SignsScreen = () => {
   const { data, isLoading, isError, refetch } = useSigns();
@@ -64,11 +60,20 @@ const SignsScreen = () => {
                     onPress={() => setSelectedId(sign.id)}
                     thumb={
                       image ? (
-                        <Image source={image} resizeMode="contain" style={{ width: 80, height: 64 }} className="mr-3" />
+                        <View style={{ width: 80, height: 64, justifyContent: 'center' }} className="mr-3">
+                          <SeoImage source={image} alt={signLabel(sign)} aspectRatio={1.25} maxHeight={64} lazy />
+                        </View>
                       ) : null
                     }
                   >
-                    {sign.name}
+                    {Platform.OS === 'web' ? (
+                      // A real link so search engines reach each sign's own page; the row still opens the dialog.
+                      <Link href={paths.sign(sign) as Href} onPress={(e) => e.stopPropagation()}>
+                        {sign.name}
+                      </Link>
+                    ) : (
+                      sign.name
+                    )}
                     {sign.meaning ? <List.Item.Brief wrap>{sign.meaning}</List.Item.Brief> : null}
                   </List.Item>
                 );
