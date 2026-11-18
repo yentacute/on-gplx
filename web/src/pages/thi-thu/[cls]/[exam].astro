@@ -22,6 +22,7 @@ const title = examId ? `Đề số ${examId} · Hạng ${c.id}` : `Đề ngẫu 
     examId ? (
       <Quiz
         client:load
+        classId={c.id}
         title={title}
         subtitle={`${c.exam.questionCount} câu · ${c.exam.timeMinutes} phút · đạt ${c.exam.passingScore}`}
         backHref={paths.licenseClass(c.id)}
@@ -32,6 +33,7 @@ const title = examId ? `Đề số ${examId} · Hạng ${c.id}` : `Đề ngẫu 
     ) : (
       <Quiz
         client:load
+        classId={c.id}
         title={title}
         subtitle={`${c.exam.questionCount} câu · ${c.exam.timeMinutes} phút · đạt ${c.exam.passingScore}`}
         backHref={paths.licenseClass(c.id)}
