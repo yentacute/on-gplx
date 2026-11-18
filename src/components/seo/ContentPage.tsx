@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { type Href, Link } from 'expo-router';
 import { Fragment, type ReactNode } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { JsonLd } from '@/seo/JsonLd';
 import { breadcrumbJsonLd, type Crumb } from '@/seo/structuredData';
 
@@ -104,4 +104,41 @@ export const PlainHeaderTitle = ({ text }: { text: string }) => (
   <Text numberOfLines={1} className="text-[17px] font-semibold text-slate-900">
     {text}
   </Text>
+);
+
+export type NavItem = { title: string; subtitle?: string; path: string; badge?: string };
+
+/** Tappable list of pages, one row each: title, optional subtitle and badge, chevron. Rows are real links on web. */
+export const NavList = ({ items }: { items: NavItem[] }) => (
+  <View className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    {items.map((item, i) => (
+      <Link key={item.path} href={item.path as Href} asChild>
+        <Pressable
+          style={({ pressed }) => ({ backgroundColor: pressed ? '#f8fafc' : '#ffffff' })}
+          className={'flex-row items-center gap-3 px-4 py-3 ' + (i === 0 ? '' : 'border-t border-slate-100')}
+        >
+          <View className="flex-1 gap-0.5">
+            <Text className="text-[15px] font-semibold leading-5 text-slate-900">{item.title}</Text>
+            {item.subtitle ? <Text className="text-[13px] text-slate-500">{item.subtitle}</Text> : null}
+          </View>
+          {item.badge ? (
+            <View className="rounded-full bg-primary-light px-2.5 py-1">
+              <Text className="text-xs font-bold text-primary">{item.badge}</Text>
+            </View>
+          ) : null}
+          <Ionicons name="chevron-forward" size={18} color="#cbd5e1" />
+        </Pressable>
+      </Link>
+    ))}
+  </View>
+);
+
+/** Numbered step, for short how-to lists. */
+export const Step = ({ n, children }: { n: number; children: ReactNode }) => (
+  <View className="flex-row gap-3">
+    <View className="h-6 w-6 items-center justify-center rounded-full bg-primary-light">
+      <Text className="text-xs font-bold text-primary">{n}</Text>
+    </View>
+    <Text className="flex-1 text-sm leading-6 text-slate-700">{children}</Text>
+  </View>
 );

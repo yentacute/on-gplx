@@ -5,9 +5,10 @@ import {
   Card,
   ContentPage,
   LinkChips,
-  PageHeading,
+  NavList,
   Paragraph,
   SectionHeading,
+  Step,
 } from '@/components/seo/ContentPage';
 import { QUESTIONS } from '@/data';
 import { TOPIC_META } from '@/data/topics';
@@ -35,9 +36,9 @@ const classFaq = (c: LicenseClass): FaqItem[] => [
 ];
 
 const Stat = ({ value, label }: { value: string | number; label: string }) => (
-  <View className="flex-1 items-center gap-0.5 rounded-xl bg-primary-light py-2.5">
-    <Text className="text-lg font-bold text-primary">{value}</Text>
-    <Text className="text-xs text-slate-600">{label}</Text>
+  <View className="flex-1 items-center gap-0.5 rounded-xl border border-white/25 bg-white/15 py-2">
+    <Text className="text-lg font-bold text-white">{value}</Text>
+    <Text className="text-xs text-white/80">{label}</Text>
   </View>
 );
 
@@ -51,6 +52,7 @@ const LicenseClassPage = () => {
   const path = paths.licenseClass(c.id);
   const faq = classFaq(c);
   const heading = `Thi thử lý thuyết lái xe hạng ${c.id}`;
+
   const start = (target: '/exam' | '/practice') => {
     setLicenseClass(c.id);
     router.push(target);
@@ -72,49 +74,53 @@ const LicenseClassPage = () => {
           faqStructuredData(faq),
         ]}
       >
-        <Card>
-          <PageHeading>{heading}</PageHeading>
-          <Paragraph>
+        <View className="gap-3 rounded-3xl bg-primary p-4">
+          <Text role="heading" aria-level={1} className="text-xl font-bold leading-7 text-white">
+            {heading}
+          </Text>
+          <Text className="text-sm leading-6 text-white/85">
             Giấy phép lái xe hạng {c.id} dành cho {c.title.toLowerCase()} ({c.description}), người học từ {c.minAge}{' '}
-            tuổi. Bài thi lý thuyết hạng {c.id} lấy câu hỏi từ bộ {QUESTIONS.length} câu dùng chung cho các hạng ô tô,
-            có {CRITICAL_QUESTIONS.length} câu điểm liệt. Ôn và thi thử miễn phí ngay trên trình duyệt.
-          </Paragraph>
+            tuổi. Đề thi lấy từ bộ {QUESTIONS.length} câu dùng chung cho các hạng ô tô, có{' '}
+            {CRITICAL_QUESTIONS.length} câu điểm liệt.
+          </Text>
           <View className="flex-row gap-2">
             <Stat value={c.exam.questionCount} label="câu hỏi" />
-            <Stat value={`${c.exam.timeMinutes}′`} label="thời gian" />
+            <Stat value={`${c.exam.timeMinutes} phút`} label="thời gian" />
             <Stat value={`${c.exam.passingScore}/${c.exam.questionCount}`} label="điểm đạt" />
           </View>
           <View className="flex-row gap-3">
-            <Pressable onPress={() => start('/exam')} accessibilityRole="button" className="flex-1 rounded-xl bg-primary px-4 py-3">
-              <Text className="text-center text-sm font-semibold text-white">Thi thử hạng {c.id}</Text>
+            <Pressable onPress={() => start('/exam')} accessibilityRole="button" className="flex-1 rounded-xl bg-white px-4 py-3">
+              <Text className="text-center text-sm font-semibold text-primary">Thi thử hạng {c.id}</Text>
             </Pressable>
             <Pressable
               onPress={() => start('/practice')}
               accessibilityRole="button"
-              className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3"
+              className="flex-1 rounded-xl border border-white/40 px-4 py-3"
             >
-              <Text className="text-center text-sm font-semibold text-slate-800">Ôn tập hạng {c.id}</Text>
+              <Text className="text-center text-sm font-semibold text-white">Ôn tập hạng {c.id}</Text>
             </Pressable>
           </View>
-        </Card>
+        </View>
 
         <Card>
           <SectionHeading>Cách ôn thi lý thuyết hạng {c.id} hiệu quả</SectionHeading>
-          <Paragraph>
-            1. Học kỹ {CRITICAL_QUESTIONS.length} câu điểm liệt trước, vì sai một câu là trượt cả bài.
-          </Paragraph>
-          <Paragraph>2. Ôn lần lượt 6 chương của bộ 600 câu, mỗi câu đều có đáp án và giải thích.</Paragraph>
-          <Paragraph>
-            3. Thi thử đề {c.exam.questionCount} câu có hẹn giờ {c.exam.timeMinutes} phút cho đến khi đạt ổn định trên{' '}
+          <Step n={1}>Học kỹ {CRITICAL_QUESTIONS.length} câu điểm liệt trước, vì sai một câu là trượt cả bài.</Step>
+          <Step n={2}>Ôn lần lượt 6 chương của bộ 600 câu, mỗi câu đều có đáp án và giải thích.</Step>
+          <Step n={3}>
+            Thi thử đề {c.exam.questionCount} câu có hẹn giờ {c.exam.timeMinutes} phút cho đến khi đạt ổn định trên{' '}
             {c.exam.passingScore} câu.
-          </Paragraph>
-          <Paragraph>4. Làm lại các câu đã sai và đọc mẹo ghi nhớ biển báo, sa hình.</Paragraph>
+          </Step>
+          <Step n={4}>Làm lại các câu đã sai và đọc mẹo ghi nhớ biển báo, sa hình.</Step>
           <View className="flex-row gap-3">
             <ActionLink href={paths.critical} label="60 câu điểm liệt" primary />
             <ActionLink href="/tips" label="Mẹo thi" />
           </View>
-          <LinkChips links={TOPIC_META.map((t) => ({ name: `${t.chapter}: ${t.title}`, path: paths.chapter(t.id) }))} />
         </Card>
+
+        <SectionHeading>Ôn theo chương</SectionHeading>
+        <NavList
+          items={TOPIC_META.map((t) => ({ title: t.title, subtitle: `${t.chapter} · ${t.range}`, path: paths.chapter(t.id) }))}
+        />
 
         <Card>
           <SectionHeading>Câu hỏi thường gặp về thi hạng {c.id}</SectionHeading>

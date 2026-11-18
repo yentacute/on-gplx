@@ -9,6 +9,7 @@ import {
   PageHeading,
   SectionHeading,
 } from '@/components/seo/ContentPage';
+import { CriticalNotice } from '@/components/CriticalNotice';
 import { SeoImage } from '@/components/seo/SeoImage';
 import { QUESTIONS } from '@/data';
 import { QUESTION_IMAGES } from '@/data/questionImages';
@@ -29,8 +30,9 @@ const OptionRow = ({ text, index, correct }: { text: string; index: number; corr
   <View
     className={'flex-row items-start gap-2 rounded-xl border px-3 py-2.5 ' + (correct ? 'border-success bg-green-50' : 'border-slate-200 bg-white')}
   >
-    <Text className={'flex-1 text-sm leading-[22px] ' + (correct ? 'font-semibold text-green-800' : 'text-slate-800')}>
-      {index + 1}. {text}
+    <Text className={'flex-1 text-sm font-medium leading-[22px] ' + (correct ? 'text-green-800' : 'text-slate-800')}>
+      <Text className="font-semibold">{index + 1}. </Text>
+      {text}
     </Text>
     {correct ? <Ionicons name="checkmark-circle" size={20} color="#16a34a" /> : null}
   </View>
@@ -75,16 +77,10 @@ const QuestionPage = () => {
         jsonLd={[questionJsonLd(question, path, questionImageUri(question))]}
       >
         <Card>
-          <View className="flex-row flex-wrap gap-2">
-            <Text className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-              Câu {question.id}
-            </Text>
-            {question.isCritical ? (
-              <Link href={paths.critical} className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-danger">
-                Câu điểm liệt
-              </Link>
-            ) : null}
-          </View>
+          <Text className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Câu {question.id} · {chapter?.chapter ?? ''}
+          </Text>
+          {question.isCritical ? <CriticalNotice /> : null}
           <PageHeading>{question.text}</PageHeading>
           <QuestionImages question={question} />
           <View className="gap-2">
@@ -94,18 +90,23 @@ const QuestionPage = () => {
           </View>
         </Card>
 
-        <Card>
-          <SectionHeading>Đáp án và giải thích</SectionHeading>
-          <Text className="text-sm leading-6 text-slate-700">
+        <View className="gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="bulb" size={18} color="#d97706" />
+            <Text role="heading" aria-level={2} className="text-base font-semibold text-amber-900">
+              Đáp án và giải thích
+            </Text>
+          </View>
+          <Text className="text-sm leading-6 text-amber-900">
             Đáp án đúng là <Text className="font-semibold text-green-800">{question.answer + 1}. {correct}</Text>
           </Text>
-          {question.hint ? <Text className="text-sm leading-6 text-slate-700">{question.hint}</Text> : null}
+          {question.hint ? <Text className="text-sm leading-6 text-amber-900">{question.hint}</Text> : null}
           {question.isCritical ? (
             <Text className="text-sm leading-6 text-danger">
               Đây là câu điểm liệt: trả lời sai câu này trong bài thi là trượt lý thuyết dù đủ số câu đúng.
             </Text>
           ) : null}
-        </Card>
+        </View>
 
         <View className="flex-row gap-3">
           {prev ? <ActionLink href={paths.question(prev)} label={`← Câu ${prev.id}`} /> : null}

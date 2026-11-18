@@ -6,7 +6,7 @@ import {
   PageHeading,
   Paragraph,
 } from '@/components/seo/ContentPage';
-import { QuestionAnswerRow } from '@/components/seo/QuestionAnswerRow';
+import { QuestionAnswerList } from '@/components/seo/QuestionAnswerRow';
 import { CRITICAL_QUESTIONS } from '@/seo/catalog';
 import { routeMetadata } from '@/seo/pages';
 import { paths } from '@/seo/slugs';
@@ -40,11 +40,7 @@ const CriticalQuestionsPage = () => (
           <ActionLink href="/tips" label="Mẹo ghi nhớ" />
         </View>
       </Card>
-      <Card>
-        {CRITICAL_QUESTIONS.map((q) => (
-          <QuestionAnswerRow key={q.id} question={q} />
-        ))}
-      </Card>
+      <QuestionAnswerList questions={CRITICAL_QUESTIONS} />
     </ContentPage>
   </>
 );

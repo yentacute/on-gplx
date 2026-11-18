@@ -4,11 +4,12 @@ import {
   ActionLink,
   Card,
   ContentPage,
-  LinkChips,
+  NavList,
+  SectionHeading,
   PageHeading,
   Paragraph,
 } from '@/components/seo/ContentPage';
-import { QuestionAnswerRow } from '@/components/seo/QuestionAnswerRow';
+import { QuestionAnswerList } from '@/components/seo/QuestionAnswerRow';
 import { TOPIC_META } from '@/data/topics';
 import { chapterBySlug, chapterName, questionsInChapter } from '@/seo/catalog';
 import { dynamicRouteMetadata } from '@/seo/pages';
@@ -58,21 +59,16 @@ const ChapterPage = () => {
           </View>
         </Card>
 
-        <Card>
-          {questions.map((q) => (
-            <QuestionAnswerRow key={q.id} question={q} />
-          ))}
-        </Card>
+        <QuestionAnswerList questions={questions} />
 
-        <Card>
-          <Text className="text-xs text-slate-500">Các chương khác:</Text>
-          <LinkChips
-            links={TOPIC_META.filter((t) => t.id !== chapter.id).map((t) => ({
-              name: `${t.chapter}: ${t.title}`,
-              path: paths.chapter(t.id),
-            }))}
-          />
-        </Card>
+        <SectionHeading>Các chương khác</SectionHeading>
+        <NavList
+          items={TOPIC_META.filter((t) => t.id !== chapter.id).map((t) => ({
+            title: t.title,
+            subtitle: `${t.chapter} · ${t.range}`,
+            path: paths.chapter(t.id),
+          }))}
+        />
       </ContentPage>
     </>
   );
