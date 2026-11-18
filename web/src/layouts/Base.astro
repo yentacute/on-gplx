@@ -71,7 +71,7 @@ const active = (match: RegExp) => match.test(path);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta name="theme-color" content="#0a1020" />
+    <meta name="theme-color" content="#f4f7fc" />
     <meta name="google-site-verification" content="fAPfkbdORdNVDQGY70O1a2b2ctOqiMPkZrCdgVTH_1U" />
     <meta name="google-site-verification" content="hu1bcwgZDTecUm35fkGH6qf9T0YbWfnZzFXVLJq23pU" />
     <meta property="og:type" content="website" />
@@ -103,7 +103,7 @@ const active = (match: RegExp) => match.test(path);
     </script>
   </head>
   <body class="min-h-dvh font-sans">
-    <header class="sticky top-0 z-40 border-b border-line bg-ink/80 backdrop-blur-md">
+    <header class="sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
       <div class="container-page flex h-14 items-center gap-6">
         <a href="/" class="flex shrink-0 items-center gap-2 font-bold tracking-tight">
           <img src="/icon-192.png" alt="" width="30" height="30" class="rounded-lg" />
@@ -116,7 +116,7 @@ const active = (match: RegExp) => match.test(path);
                 href={item.href}
                 class:list={[
                   'rounded-lg px-3 py-1.5 text-sm font-medium transition',
-                  active(item.match) ? 'bg-brand-soft text-sky-300' : 'text-soft hover:text-white',
+                  active(item.match) ? 'bg-brand-soft text-blue-600' : 'text-soft hover:text-slate-900',
                 ]}
                 aria-current={active(item.match) ? 'page' : undefined}
               >
@@ -134,7 +134,7 @@ const active = (match: RegExp) => match.test(path);
         <nav class="container-page pt-4 text-xs text-muted" aria-label="Breadcrumb">
           <ol class="flex flex-wrap items-center gap-1">
             <li>
-              <a href="/" class="hover:text-white">
+              <a href="/" class="hover:text-slate-900">
                 Trang chủ
               </a>
             </li>
@@ -144,7 +144,7 @@ const active = (match: RegExp) => match.test(path);
                 {i === trail.length - 1 ? (
                   <span class="text-soft">{c.name}</span>
                 ) : (
-                  <a href={c.path} class="hover:text-white">
+                  <a href={c.path} class="hover:text-slate-900">
                     {c.name}
                   </a>
                 )}
@@ -164,7 +164,7 @@ const active = (match: RegExp) => match.test(path);
         <footer class="border-t border-line pb-24 pt-10 text-sm text-muted md:pb-10">
           <div class="container-page grid gap-8 sm:grid-cols-3">
             <div>
-              <p class="font-bold text-white">
+              <p class="font-bold text-slate-900">
                 Ôn thi <span class="text-brand">GPLX</span>
               </p>
               <p class="mt-2 max-w-xs">
@@ -174,10 +174,10 @@ const active = (match: RegExp) => match.test(path);
             <div>
               <p class="font-semibold text-soft">Ôn tập</p>
               <ul class="mt-2 space-y-1.5">
-                <li><a class="hover:text-white" href="/600-cau-hoi">600 câu hỏi lý thuyết</a></li>
-                <li><a class="hover:text-white" href="/cau-diem-liet">60 câu điểm liệt</a></li>
-                <li><a class="hover:text-white" href="/bien-bao">Biển báo giao thông</a></li>
-                <li><a class="hover:text-white" href="/meo-ghi-nho">Mẹo ghi nhớ</a></li>
+                <li><a class="hover:text-slate-900" href="/600-cau-hoi">600 câu hỏi lý thuyết</a></li>
+                <li><a class="hover:text-slate-900" href="/cau-diem-liet">60 câu điểm liệt</a></li>
+                <li><a class="hover:text-slate-900" href="/bien-bao">Biển báo giao thông</a></li>
+                <li><a class="hover:text-slate-900" href="/meo-ghi-nho">Mẹo ghi nhớ</a></li>
               </ul>
             </div>
             <div>
@@ -185,7 +185,7 @@ const active = (match: RegExp) => match.test(path);
               <ul class="mt-2 grid grid-cols-3 gap-1.5">
                 {['B', 'C1', 'C', 'D1', 'D2', 'D'].map((id) => (
                   <li>
-                    <a class="hover:text-white" href={`/thi-thu/hang-${id.toLowerCase()}`}>
+                    <a class="hover:text-slate-900" href={`/thi-thu/hang-${id.toLowerCase()}`}>
                       Hạng {id}
                     </a>
                   </li>
@@ -199,7 +199,7 @@ const active = (match: RegExp) => match.test(path);
     }
 
     <nav
-      class:list={['fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden', app && 'hidden']}
+      class:list={['fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden', app && 'hidden']}
       aria-label="Điều hướng"
     >
       <ul class="grid grid-cols-5">
@@ -210,7 +210,7 @@ const active = (match: RegExp) => match.test(path);
                 href={item.href}
                 class:list={[
                   'flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium',
-                  active(item.match) ? 'text-sky-300' : 'text-muted',
+                  active(item.match) ? 'text-blue-600' : 'text-muted',
                 ]}
                 aria-current={active(item.match) ? 'page' : undefined}
               >

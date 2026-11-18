@@ -17,7 +17,7 @@ import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
         CAR_CLASSES.map((c) => (
           <li>
             <a href={paths.licenseClass(c.id)} class="card group flex items-center gap-4 p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-extrabold">
+              <span class="grid size-14 shrink-0 place-items-center rounded-2xl text-white bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-extrabold">
                 {c.id}
               </span>
               <span class="min-w-0 flex-1">
@@ -38,7 +38,7 @@ import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
       {LANDING_CLASSES.map((c, i) => (
         <>
           {i > 0 && ', '}
-          <a class="text-sky-300 hover:underline" href={paths.licenseClass(c.id)}>thi thử hạng {c.id}</a>
+          <a class="text-blue-600 hover:underline" href={paths.licenseClass(c.id)}>thi thử hạng {c.id}</a>
         </>
       ))}.
     </p>

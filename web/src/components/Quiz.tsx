@@ -175,7 +175,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
     return (
       <div className="container-page py-16">
         <div className="card mx-auto max-w-md p-8 text-center">
-          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-300">
+          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-600">
             <Icon name="check" size={28} />
           </div>
           <h1 className="mt-4 text-lg font-bold">Chưa có câu nào làm sai</h1>
@@ -196,11 +196,11 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
         <div className="card mx-auto max-w-lg overflow-hidden">
           <div className={`p-8 text-center ${passed ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
             <div
-              className={`mx-auto grid size-16 place-items-center rounded-2xl ${passed ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}
+              className={`mx-auto grid size-16 place-items-center rounded-2xl ${passed ? 'bg-emerald-500/20 text-emerald-600' : 'bg-red-500/20 text-red-600'}`}
             >
               <Icon name={passed ? 'trophy' : 'x'} size={30} />
             </div>
-            <p className={`mt-4 text-sm font-semibold ${passed ? 'text-emerald-300' : 'text-red-300'}`}>
+            <p className={`mt-4 text-sm font-semibold ${passed ? 'text-emerald-600' : 'text-red-600'}`}>
               {passed ? 'ĐẠT' : 'CHƯA ĐẠT'}
             </p>
             <p className="mt-1 text-5xl font-extrabold tabular-nums">
@@ -209,12 +209,12 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             </p>
             <p className="mt-2 text-sm text-soft">
               Cần đúng {exam!.passCount} câu và không sai câu điểm liệt.
-              {criticalFailed && <span className="block font-semibold text-red-300">Bạn đã sai câu điểm liệt.</span>}
+              {criticalFailed && <span className="block font-semibold text-red-600">Bạn đã sai câu điểm liệt.</span>}
             </p>
           </div>
           <div className="grid grid-cols-3 divide-x divide-line border-y border-line text-center">
-            <Stat value={stats.right} label="Đúng" tone="text-emerald-300" />
-            <Stat value={stats.wrong} label="Sai" tone="text-red-300" />
+            <Stat value={stats.right} label="Đúng" tone="text-emerald-600" />
+            <Stat value={stats.wrong} label="Sai" tone="text-red-600" />
             <Stat value={questions.length - stats.answered} label="Bỏ trống" tone="text-soft" />
           </div>
           <div className="flex flex-col gap-2 p-5 sm:flex-row">
@@ -248,7 +248,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
     <div className="container-page py-4 sm:py-6">
       {/* Top bar */}
       <div className="card flex items-center gap-3 p-3">
-        <a href={backHref} className="grid size-9 shrink-0 place-items-center rounded-xl bg-raised text-soft hover:text-white" aria-label="Quay lại">
+        <a href={backHref} className="grid size-9 shrink-0 place-items-center rounded-xl bg-raised text-soft hover:text-slate-900" aria-label="Quay lại">
           <Icon name="arrow-left" size={18} />
         </a>
         <div className="min-w-0 flex-1">
@@ -256,7 +256,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           <div className="mt-1 flex items-center gap-2 text-xs text-muted">
             <span className="hidden truncate sm:inline">{subtitle ?? `${stats.total} câu`}</span>
             <span aria-hidden="true" className="hidden sm:inline">·</span>
-            <span className="text-sky-300">
+            <span className="text-blue-600">
               {stats.answered}/{stats.total} đã làm
             </span>
           </div>
@@ -266,7 +266,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
         </div>
         {isExam && !submitted && (
           <div
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 font-mono text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-300' : 'bg-raised text-white'}`}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 font-mono text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'bg-raised text-slate-900'}`}
             role="timer"
             aria-label="Thời gian còn lại"
           >
@@ -293,7 +293,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             <span className="chip">Câu {index + 1}</span>
             <span className="text-xs text-muted">#{q.id} trong bộ 600 câu</span>
             {q.critical && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-300">
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-600">
                 <Icon name="alert" size={12} /> Điểm liệt
               </span>
             )}
@@ -345,15 +345,15 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
           </ul>
 
           {reveal && (answeredNow || reviewing) && q.hint && (
-            <div className="mt-5 rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-relaxed text-amber-100">
-              <p className="mb-1 flex items-center gap-1.5 font-semibold text-amber-300">
+            <div className="mt-5 rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-relaxed text-amber-900">
+              <p className="mb-1 flex items-center gap-1.5 font-semibold text-amber-700">
                 <Icon name="bulb" size={16} /> Giải thích
               </p>
               {q.hint}
             </div>
           )}
 
-          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-2 border-t border-line bg-ink/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:static sm:mt-6 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4 sm:backdrop-blur-none">
+          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-2 border-t border-line bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:static sm:mt-6 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-4 sm:backdrop-blur-none">
             <button type="button" className="btn btn-ghost" onClick={() => go(index - 1)} disabled={index === 0}>
               <Icon name="arrow-left" size={16} /> <span className="hidden sm:inline">Câu trước</span>
             </button>
@@ -378,7 +378,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
 
         {/* Question grid: sidebar on desktop, bottom sheet on mobile */}
         <aside
-          className={`${gridOpen ? 'fixed inset-0 z-50 flex items-end bg-black/60 lg:static lg:block lg:bg-transparent' : 'hidden lg:block'}`}
+          className={`${gridOpen ? 'fixed inset-0 z-50 flex items-end bg-slate-900/50 lg:static lg:block lg:bg-transparent' : 'hidden lg:block'}`}
           onClick={(e) => e.target === e.currentTarget && setGridOpen(false)}
         >
           <div className="card max-h-[75dvh] w-full overflow-hidden rounded-b-none p-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:rounded-b-2xl">
@@ -394,11 +394,11 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
                 const s = statusOf(item);
                 const tone =
                   s === 'right'
-                    ? 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40'
+                    ? 'bg-emerald-500/20 text-emerald-700 border-emerald-500/40'
                     : s === 'wrong'
-                      ? 'bg-red-500/20 text-red-200 border-red-500/40'
+                      ? 'bg-red-500/20 text-red-700 border-red-500/40'
                       : s === 'picked'
-                        ? 'bg-brand-soft text-sky-200 border-brand/40'
+                        ? 'bg-brand-soft text-blue-700 border-brand/40'
                         : 'bg-raised/60 text-soft border-line';
                 return (
                   <button
@@ -450,7 +450,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
       </div>
 
       {confirmSubmit && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/50 p-4" role="dialog" aria-modal="true">
           <div className="card w-full max-w-sm p-6 text-center">
             <h2 className="text-lg font-bold">Nộp bài?</h2>
             <p className="mt-2 text-sm text-muted">

@@ -33,7 +33,7 @@ const facts = [
 >
   <RememberClass client:load id={c.id} />
   <section class="container-page pt-6">
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 p-6 sm:p-8">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 sm:p-8">
       <p class="text-sm font-semibold text-blue-100">{c.title} · {c.description}</p>
       <h1 class="mt-1 text-2xl font-extrabold tracking-tight sm:text-4xl">{heading}</h1>
       <dl class="mt-5 grid max-w-xl grid-cols-4 gap-2">
@@ -82,14 +82,14 @@ const facts = [
           {
             CHAPTERS.map((ch) => (
               <li>
-                <a href={paths.chapter(ch)} class="text-sky-300 hover:underline">
+                <a href={paths.chapter(ch)} class="text-blue-600 hover:underline">
                   Chương {ch.numeral}. {ch.name}
                 </a>
                 <span class="text-muted"> ({ch.questionIds.length} câu)</span>
               </li>
             ))
           }
-          <li><a href="/cau-diem-liet" class="text-sky-300 hover:underline">60 câu điểm liệt</a></li>
+          <li><a href="/cau-diem-liet" class="text-blue-600 hover:underline">60 câu điểm liệt</a></li>
         </ul>
       </div>
       <div class="space-y-2">

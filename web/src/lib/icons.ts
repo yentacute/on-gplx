@@ -31,12 +31,12 @@ export type IconName = keyof typeof ICONS;
 
 /** Tailwind classes for each chapter tone: icon tile background and text colour. */
 export const TONES: Record<string, string> = {
-  sky: 'bg-sky-500/15 text-sky-300',
-  pink: 'bg-pink-500/15 text-pink-300',
-  cyan: 'bg-cyan-500/15 text-cyan-300',
-  teal: 'bg-teal-500/15 text-teal-300',
-  amber: 'bg-amber-500/15 text-amber-300',
-  violet: 'bg-violet-500/15 text-violet-300',
-  red: 'bg-red-500/15 text-red-300',
-  emerald: 'bg-emerald-500/15 text-emerald-300',
+  sky: 'bg-sky-500/15 text-blue-600',
+  pink: 'bg-pink-500/15 text-pink-600',
+  cyan: 'bg-cyan-500/15 text-cyan-700',
+  teal: 'bg-teal-500/15 text-teal-700',
+  amber: 'bg-amber-500/15 text-amber-700',
+  violet: 'bg-violet-500/15 text-violet-600',
+  red: 'bg-red-500/15 text-red-600',
+  emerald: 'bg-emerald-500/15 text-emerald-600',
 };

@@ -4,9 +4,9 @@ import Icon from '../components/Icon.astro';
 import { TIPS, paths } from '../lib/data';
 
 const KIND = {
-  do: { icon: 'check', tone: 'text-emerald-300' },
-  dont: { icon: 'x', tone: 'text-red-300' },
-  info: { icon: 'bulb', tone: 'text-sky-300' },
+  do: { icon: 'check', tone: 'text-emerald-600' },
+  dont: { icon: 'x', tone: 'text-red-600' },
+  info: { icon: 'bulb', tone: 'text-blue-600' },
 } as const;
 ---
 
@@ -19,7 +19,7 @@ const KIND = {
     <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Mẹo ghi nhớ</h1>
     <p class="mt-1 max-w-2xl text-muted">Mẹo giúp kiểm tra lại đáp án nhanh hơn. Hiểu câu hỏi vẫn là chính, mẹo chỉ để chắc tay.</p>
     <nav class="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" aria-label="Nhóm mẹo">
-      {TIPS.map((s) => <a href={`#${s.id}`} class="shrink-0 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-soft hover:text-white">{s.short}</a>)}
+      {TIPS.map((s) => <a href={`#${s.id}`} class="shrink-0 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-soft hover:text-slate-900">{s.short}</a>)}
     </nav>
     {
       TIPS.map((section) => (
@@ -30,7 +30,7 @@ const KIND = {
             {section.tips.map((tip) => (
               <article class="card p-5">
                 <h3 class="font-bold">{tip.title}</h3>
-                <p class="mt-1 text-sm text-sky-200">{tip.takeaway}</p>
+                <p class="mt-1 text-sm text-blue-700">{tip.takeaway}</p>
                 {tip.stats && (
                   <ul class="mt-3 space-y-2">
                     {tip.stats.map((st) => (

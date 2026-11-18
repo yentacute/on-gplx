@@ -37,7 +37,7 @@ export default function SignBrowser({ signs, groups }: Props) {
 
   return (
     <div>
-      <div className="sticky top-14 z-20 -mx-4 space-y-3 bg-ink/85 px-4 py-3 backdrop-blur-md sm:mx-0 sm:px-0">
+      <div className="sticky top-14 z-20 -mx-4 space-y-3 bg-ink/90 px-4 py-3 backdrop-blur-md sm:mx-0 sm:px-0">
         <label className="card flex items-center gap-2 px-3">
           <Icon name="search" size={18} className="text-muted" />
           <input
@@ -55,7 +55,7 @@ export default function SignBrowser({ signs, groups }: Props) {
               type="button"
               onClick={() => setGroup(t.id)}
               aria-pressed={group === t.id}
-              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${group === t.id ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-soft hover:text-white'}`}
+              className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${group === t.id ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-soft hover:text-slate-900'}`}
             >
               {t.label}
             </button>
@@ -76,10 +76,10 @@ export default function SignBrowser({ signs, groups }: Props) {
               }}
               className="card flex h-full flex-col items-center p-3 text-center transition hover:border-brand/40 hover:bg-raised/60"
             >
-              <span className="flex h-24 w-full items-center justify-center overflow-hidden rounded-xl bg-white p-2">
+              <span className="flex h-24 w-full items-center justify-center overflow-hidden rounded-xl bg-white p-2 ring-1 ring-line">
                 {s.imageUrl && <img src={s.imageUrl} alt={s.name} loading="lazy" className="max-h-full max-w-full object-contain" />}
               </span>
-              {s.group !== 'vachke' && <span className="mt-2 text-xs font-bold text-sky-300">{s.id}</span>}
+              {s.group !== 'vachke' && <span className="mt-2 text-xs font-bold text-blue-600">{s.id}</span>}
               <span className="mt-1 line-clamp-2 text-xs leading-snug text-soft">{s.name}</span>
             </a>
           </li>
@@ -88,7 +88,7 @@ export default function SignBrowser({ signs, groups }: Props) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-0 sm:items-center sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-label={open.name}
@@ -97,11 +97,11 @@ export default function SignBrowser({ signs, groups }: Props) {
           <div className="card w-full max-w-md rounded-b-none bg-surface p-6 sm:rounded-2xl">
             <div className="flex items-start justify-between gap-3">
               <span className="chip">{open.group === 'vachke' ? 'Vạch kẻ đường' : open.id}</span>
-              <button type="button" onClick={() => setOpen(null)} aria-label="Đóng" className="text-muted hover:text-white">
+              <button type="button" onClick={() => setOpen(null)} aria-label="Đóng" className="text-muted hover:text-slate-900">
                 <Icon name="x" size={20} />
               </button>
             </div>
-            <div className="mt-4 flex h-44 items-center justify-center rounded-2xl bg-white p-4">
+            <div className="mt-4 flex h-44 items-center justify-center rounded-2xl bg-white p-4 ring-1 ring-line">
               {open.imageUrl && <img src={open.imageUrl} alt={open.name} className="max-h-full max-w-full object-contain" />}
             </div>
             <h2 className="mt-4 text-lg font-bold">{open.name}</h2>

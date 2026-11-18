@@ -14,14 +14,14 @@ const LETTERS = ['A', 'B', 'C', 'D'];
     <span class="chip">Câu {q.id}</span>
     {
       q.critical && (
-        <span class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-300">
+        <span class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-600">
           <Icon name="alert" size={12} /> Điểm liệt
         </span>
       )
     }
   </div>
   <Heading class:list={['mt-2 font-semibold leading-relaxed', heading === 'h1' ? 'text-lg sm:text-xl' : 'text-[15px]']}>
-    {link ? <a href={paths.question(q.id)} class="hover:text-sky-300">{q.text}</a> : q.text}
+    {link ? <a href={paths.question(q.id)} class="hover:text-blue-600">{q.text}</a> : q.text}
   </Heading>
   {
     q.image && (
@@ -39,7 +39,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
         <li
           class:list={[
             'flex items-start gap-2.5 rounded-lg border px-3 py-2 text-sm leading-relaxed',
-            i === q.answer ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-50' : 'border-line text-soft',
+            i === q.answer ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-900' : 'border-line text-soft',
           ]}
         >
           <span
@@ -60,8 +60,8 @@ const LETTERS = ['A', 'B', 'C', 'D'];
   </ul>
   {
     q.hint && (
-      <p class="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm leading-relaxed text-amber-100">
-        <span class="font-semibold text-amber-300">Giải thích: </span>
+      <p class="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm leading-relaxed text-amber-900">
+        <span class="font-semibold text-amber-700">Giải thích: </span>
         {q.hint}
       </p>
     )
