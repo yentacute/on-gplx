@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { type Href, useRouter } from 'expo-router';
+import { type Href, Link, useRouter } from 'expo-router';
 import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { classHasQuestions } from '@/data';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
+import { faqStructuredData, HOME_FAQ } from '@/seo/homeFaq';
+import { JsonLd } from '@/seo/JsonLd';
 import { routeMetadata } from '@/seo/pages';
 import { useSettings } from '@/store/settings';
 import type { LicenseClass, LicenseClassId } from '@/types';
@@ -16,6 +18,16 @@ const SHORTCUTS: { href: Href; title: string; icon: IconName; color: string }[] 
   { href: '/exam', title: 'Thi thử', icon: 'timer', color: '#7c3aed' },
   { href: '/signs', title: 'Biển báo', icon: 'warning', color: '#ea580c' },
 ];
+
+const GUIDE_LINKS: { href: Href; label: string }[] = [
+  { href: '/practice', label: 'Ôn tập 600 câu' },
+  { href: '/exam', label: 'Thi thử có chấm điểm' },
+  { href: '/topics', label: 'Ôn theo chương' },
+  { href: '/signs', label: 'Biển báo giao thông' },
+  { href: '/tips', label: 'Mẹo thi lý thuyết' },
+];
+
+const FAQ_JSON_LD = JSON.stringify(faqStructuredData(HOME_FAQ));
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
   <Text role="heading" aria-level={2} className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
@@ -89,6 +101,44 @@ const LockedClasses = ({ classes }: { classes: LicenseClass[] }) => (
   </View>
 );
 
+/** Intro and FAQ about the theory test: readable help for learners and indexable text for search. */
+const HomeGuide = () => (
+  <View className="gap-3">
+    <JsonLd data={FAQ_JSON_LD} />
+    <SectionTitle>Ôn thi lý thuyết lái xe miễn phí</SectionTitle>
+    <View className="gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+      <Text className="text-sm leading-6 text-slate-700">
+        Ôn tập đủ 600 câu hỏi lý thuyết lái xe ô tô hạng B, C1, C, D1, D2, D và các hạng kéo rơ-moóc. Mỗi câu có đáp
+        án và giải thích, đánh dấu riêng 60 câu điểm liệt. Thi thử theo đúng số câu, thời gian và điểm đạt của từng
+        hạng, xem lại câu sai và tra cứu biển báo giao thông. Miễn phí, không cần đăng ký.
+      </Text>
+      <View className="flex-row flex-wrap gap-2">
+        {GUIDE_LINKS.map((l) => (
+          <Link
+            key={l.label}
+            href={l.href}
+            className="rounded-full bg-primary-light px-3 py-1.5 text-sm font-medium text-primary"
+          >
+            {l.label}
+          </Link>
+        ))}
+      </View>
+    </View>
+
+    <SectionTitle>Câu hỏi thường gặp</SectionTitle>
+    <View className="gap-2">
+      {HOME_FAQ.map(({ question, answer }) => (
+        <View key={question} className="gap-1 rounded-2xl border border-slate-200 bg-white p-4">
+          <Text role="heading" aria-level={3} className="text-[15px] font-semibold text-slate-900">
+            {question}
+          </Text>
+          <Text className="text-sm leading-6 text-slate-600">{answer}</Text>
+        </View>
+      ))}
+    </View>
+  </View>
+);
+
 const HomeScreen = () => {
   const router = useRouter();
   const { data: questions } = useQuestions();
@@ -118,7 +168,9 @@ const HomeScreen = () => {
     <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-3 p-3">
       <View className="gap-3 rounded-3xl bg-primary p-4">
         <View className="gap-1">
-          <Text className="text-sm font-medium text-white/80">Ôn thi lý thuyết GPLX</Text>
+          <Text role="heading" aria-level={1} className="text-sm font-medium text-white/80">
+            Ôn thi lý thuyết lái xe GPLX
+          </Text>
           <Text className="text-2xl font-semibold text-white">Hạng {licenseClass}</Text>
         </View>
         <View className="flex-row gap-3">
@@ -136,17 +188,19 @@ const HomeScreen = () => {
       <View className="flex-row gap-3">
         {SHORTCUTS.map((s) => (
           <View key={s.title} style={{ flex: 1 }}>
-            <Pressable onPress={() => router.navigate(s.href)}>
-              <View className="items-center gap-1.5 rounded-2xl border border-slate-200 bg-white py-3">
-                <View
-                  className="h-11 w-11 items-center justify-center rounded-full"
-                  style={{ backgroundColor: `${s.color}1a` }}
-                >
-                  <Ionicons name={s.icon} size={22} color={s.color} />
+            <Link href={s.href} asChild>
+              <Pressable>
+                <View className="items-center gap-1.5 rounded-2xl border border-slate-200 bg-white py-3">
+                  <View
+                    className="h-11 w-11 items-center justify-center rounded-full"
+                    style={{ backgroundColor: `${s.color}1a` }}
+                  >
+                    <Ionicons name={s.icon} size={22} color={s.color} />
+                  </View>
+                  <Text className="text-center text-sm font-semibold text-slate-800">{s.title}</Text>
                 </View>
-                <Text className="text-center text-sm font-semibold text-slate-800">{s.title}</Text>
-              </View>
-            </Pressable>
+              </Pressable>
+            </Link>
           </View>
         ))}
       </View>
@@ -155,6 +209,8 @@ const HomeScreen = () => {
       {renderClasses(carClasses)}
       <SectionTitle>Hạng mô tô</SectionTitle>
       {renderClasses(motoClasses)}
+
+      <HomeGuide />
     </ScrollView>
   );
 };
