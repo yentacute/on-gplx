@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 import {
   addStudySeconds,
   getAnswers,
+  getLicenseClass,
   getSaved,
   loadQuestions,
   recordAnswer,
@@ -32,6 +33,8 @@ type Props = {
   moreHref?: string;
   /** Build a fresh random exam in the browser: 3 câu điểm liệt plus random others from the class. */
   randomFor?: { classId: string; size: number };
+  /** License class shown as a badge in the top bar; practice falls back to the learner's chosen class. */
+  classId?: string;
 };
 
 const formatTime = (seconds: number) => {
@@ -56,7 +59,8 @@ const randomExam = (pool: Question[], size: number) => {
 
 type Status = 'right' | 'wrong' | 'picked' | 'empty';
 
-export default function Quiz({ title, subtitle, backHref, ids, source, exam, moreHref, randomFor }: Props) {
+export default function Quiz({ title, subtitle, backHref, ids, source, exam, moreHref, randomFor, classId }: Props) {
+  const badgeClass = useStored(() => classId ?? getLicenseClass(), classId ?? '');
   const onlyWrong = source === 'wrong';
   const saved = useStored(getSaved, []);
   const [questions, setQuestions] = useState<Question[] | null>(null);
@@ -284,102 +288,121 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
   const progress = Math.round((stats.answered / stats.total) * 100);
   const lowTime = isExam && !submitted && remaining <= 60;
 
+  const canSave = !isExam;
+  const isSaved = saved.includes(q.id);
+
   return (
-    <div className="container-page py-4 sm:py-6">
-      {/* Top bar */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <a href={backHref} className="grid size-10 shrink-0 place-items-center rounded-full border border-line bg-surface text-soft shadow-sm hover:text-slate-900" aria-label="Quay lại">
+    <div className="container-page py-3 sm:py-6">
+      {/* Top bar: back, class, logo (or timer in an exam), question counter */}
+      <h1 className="sr-only">
+        {title}
+        {subtitle ? ` · ${subtitle}` : ''}
+      </h1>
+      <div className="flex items-center gap-2">
+        <a href={backHref} className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-soft shadow-sm ring-1 ring-line hover:text-slate-900" aria-label="Quay lại">
           <Icon name="arrow-left" size={18} />
         </a>
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-sm font-bold sm:text-base">{title}</h1>
-          <p className="truncate text-xs text-muted">
-            <span className="hidden sm:inline">{subtitle ?? `${stats.total} câu`} · </span>
-            <span className="font-semibold text-blue-600">{stats.answered}/{stats.total}</span> đã làm
-          </p>
-        </div>
-        {isExam && !submitted && (
-          <div
-            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'border border-line bg-surface text-slate-900 shadow-sm'}`}
-            role="timer"
-            aria-label="Thời gian còn lại"
-          >
-            <Icon name="clock" size={16} />
-            {formatTime(remaining)}
-          </div>
+        {badgeClass && (
+          <span className="grid h-8 min-w-8 shrink-0 place-items-center rounded-full bg-brand-soft px-1.5 text-xs font-bold text-blue-600" title={`Hạng ${badgeClass}`}>
+            {badgeClass}
+          </span>
         )}
+        <div className="flex min-w-0 flex-1 items-center justify-center">
+          {isExam && !submitted ? (
+            <div
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'bg-white text-slate-900 shadow-sm ring-1 ring-line'}`}
+              role="timer"
+              aria-label="Thời gian còn lại"
+            >
+              <Icon name="clock" size={16} />
+              {formatTime(remaining)}
+            </div>
+          ) : (
+            <a href="/" className="flex min-w-0 items-center gap-2 font-bold tracking-tight" aria-label="Ôn thi GPLX, về trang chủ">
+              <img src="/icon-192.png" alt="" width="30" height="30" className="rounded-lg shadow-sm" />
+              <span className="truncate">
+                Ôn thi <span className="text-brand">GPLX</span>
+              </span>
+            </a>
+          )}
+        </div>
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-2 text-sm font-semibold tabular-nums shadow-sm hover:bg-raised lg:hidden"
+          className="flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-bold tabular-nums shadow-sm ring-1 ring-line hover:bg-raised"
           onClick={() => setGridOpen(true)}
           aria-label="Danh sách câu hỏi"
         >
-          <Icon name="grid" size={16} className="text-blue-600" /> {index + 1}/{questions.length}
+          <span>
+            <span className="text-blue-600">{index + 1}</span>
+            <span className="text-xs font-semibold text-muted">/{questions.length}</span>
+          </span>
+          <Icon name="grid" size={15} className="text-blue-600" />
         </button>
         {isExam && !submitted && (
-          <button type="button" className="btn btn-primary hidden px-4 sm:inline-flex" onClick={() => setConfirmSubmit(true)}>
+          <button type="button" className="btn btn-primary shrink-0 px-3.5 py-2 text-sm" onClick={() => setConfirmSubmit(true)}>
             Nộp bài
           </button>
         )}
         {reviewing && (
-          <button type="button" className="btn btn-ghost hidden sm:inline-flex" onClick={() => setReviewing(false)}>
+          <button type="button" className="btn btn-ghost shrink-0 px-3.5 py-2 text-sm" onClick={() => setReviewing(false)}>
             Kết quả
           </button>
         )}
       </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white shadow-inner ring-1 ring-line">
-        <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all" style={{ width: `${progress}%` }} />
+      <div className="mt-3 h-1 overflow-hidden rounded-full bg-line/70">
+        <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:mt-4 lg:grid-cols-[minmax(0,1fr)_300px]">
         {/* Question */}
-        <article className="card min-w-0 p-4 sm:p-6">
-          <div className="flex items-start gap-2">
-            <h2 className="min-w-0 flex-1 text-[17px] font-semibold leading-relaxed sm:text-lg">
-              <span className="mr-2 inline-block -translate-y-px rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs font-bold text-white">Câu {index + 1}</span>
-              {q.critical && (
-                <span className="mr-2 inline-block -translate-y-px rounded-full bg-red-500/15 px-2.5 py-0.5 align-middle text-xs font-semibold text-red-600">Điểm liệt</span>
-              )}
-              {q.text}
-            </h2>
-            {!isExam && (
+        <article className="min-w-0 sm:card sm:p-6">
+          {canSave && (
+            <div className="mb-3 flex items-center gap-2">
+              <span className="min-w-0 flex-1 truncate rounded-full bg-brand-soft px-3 py-1.5 text-xs font-semibold text-blue-700">{q.chapter}</span>
               <button
                 type="button"
                 onClick={() => toggleSaved(q.id)}
-                aria-pressed={saved.includes(q.id)}
-                aria-label={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
-                title={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
-                className={`grid size-9 shrink-0 place-items-center rounded-full border transition ${saved.includes(q.id) ? 'border-amber-400/50 bg-amber-400/20 text-amber-600' : 'border-line text-muted hover:bg-raised hover:text-slate-900'}`}
+                aria-pressed={isSaved}
+                aria-label={isSaved ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+                title={isSaved ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+                className={`grid size-8 shrink-0 place-items-center rounded-full transition ${isSaved ? 'bg-amber-400/20 text-amber-600' : 'text-muted hover:bg-raised hover:text-slate-900'}`}
               >
-                <Icon name="bookmark" size={16} className={saved.includes(q.id) ? 'fill-current' : ''} />
+                <Icon name="bookmark" size={17} className={isSaved ? 'fill-current' : ''} />
               </button>
+            </div>
+          )}
+          <h2 className="text-[16px] font-bold leading-relaxed sm:text-lg">
+            <span className="mr-1.5 inline-block -translate-y-px rounded-md bg-brand px-2 py-0.5 align-middle text-xs font-bold text-white">Câu {index + 1}</span>
+            {q.critical && (
+              <span className="mr-1.5 inline-block -translate-y-px rounded-md bg-red-500/15 px-2 py-0.5 align-middle text-xs font-semibold text-red-600">Điểm liệt</span>
             )}
-          </div>
+            {q.text}
+          </h2>
           {q.image && (
             <img
               src={q.image}
               alt={`Hình minh họa câu ${q.id}`}
-              className="mt-4 max-h-80 w-auto max-w-full rounded-2xl border border-line bg-white object-contain"
+              className="mt-3 max-h-72 w-auto max-w-full rounded-2xl border border-line bg-white object-contain"
             />
           )}
 
-          <ul className="mt-5 space-y-2.5">
+          <ul className="mt-3 space-y-2.5">
             {q.options.map((option, i) => {
               const isPicked = pickedNow === i;
               const isAnswer = q.answer === i;
-              let tone = 'border-line bg-surface hover:border-brand/50 hover:bg-brand-soft/40';
-              let badge = 'border border-line bg-raised text-soft';
+              let tone = 'border-line bg-white hover:border-brand/50';
+              let badge = 'bg-raised text-soft';
               if (reveal && answeredNow && isAnswer) {
-                tone = 'border-emerald-500/60 bg-emerald-500/10';
+                tone = 'border-emerald-500/60 bg-emerald-50';
                 badge = 'bg-emerald-500 text-white';
               } else if (reveal && isPicked && !isAnswer) {
-                tone = 'border-red-500/60 bg-red-500/10';
+                tone = 'border-red-500/60 bg-red-50';
                 badge = 'bg-red-500 text-white';
               } else if (reveal && reviewing && isAnswer) {
-                tone = 'border-emerald-500/60 bg-emerald-500/10';
+                tone = 'border-emerald-500/60 bg-emerald-50';
                 badge = 'bg-emerald-500 text-white';
               } else if (isPicked) {
-                tone = 'border-brand bg-brand-soft';
+                tone = 'border-brand bg-blue-50';
                 badge = 'bg-brand text-white';
               }
               const locked = (!isExam && answeredNow) || submitted;
@@ -390,16 +413,15 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
                     onClick={() => choose(i)}
                     disabled={locked && !isPicked && !(reveal && isAnswer)}
                     aria-pressed={isPicked}
-                    className={`flex w-full items-start gap-3 rounded-2xl border-[1.5px] p-3.5 text-left text-sm leading-relaxed transition disabled:opacity-60 sm:text-[15px] ${tone} ${locked ? 'cursor-default' : ''}`}
+                    className={`flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left text-sm font-medium leading-relaxed shadow-sm shadow-slate-900/[0.03] transition disabled:opacity-60 sm:text-[15px] ${tone} ${locked ? 'cursor-default' : ''}`}
                   >
-                    <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold ${badge}`}>{i + 1}</span>
-                    <span className="pt-0.5">{option}</span>
+                    <span className={`grid size-6 shrink-0 place-items-center rounded-md text-xs font-bold ${badge}`}>{i + 1}</span>
+                    <span>{option}</span>
                   </button>
                 </li>
               );
             })}
           </ul>
-
 
           {reveal && (answeredNow || reviewing) && q.hint && (
             <div className="mt-4 rounded-2xl border border-line border-l-4 border-l-brand bg-white p-4 text-sm leading-relaxed text-soft shadow-sm">
@@ -413,29 +435,26 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
             </div>
           )}
 
-          <div className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-2 rounded-full border border-line bg-white/95 p-1.5 shadow-xl shadow-slate-900/10 backdrop-blur-md sm:static sm:mt-6 sm:rounded-none sm:border-0 sm:border-t sm:bg-transparent sm:p-0 sm:pt-5 sm:shadow-none sm:backdrop-blur-none">
-            <button type="button" className="btn btn-ghost" onClick={() => go(index - 1)} disabled={index === 0}>
+          {/* Bottom bar: fixed on phones, inline on larger screens */}
+          <div className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 bg-gradient-to-t from-ink via-ink/95 to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 sm:static sm:mt-6 sm:border-t sm:border-line sm:bg-none sm:px-0 sm:pb-0 sm:pt-5">
+            <button type="button" className="btn btn-ghost min-w-[96px] disabled:opacity-50" onClick={() => go(index - 1)} disabled={index === 0}>
               <Icon name="arrow-left" size={16} /> Trước
             </button>
-            {isExam && !submitted ? (
-              <button type="button" className="rounded-full px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-raised sm:hidden" onClick={() => setConfirmSubmit(true)}>
-                Nộp bài
-              </button>
-            ) : (
-              <a href="/" className="grid size-10 place-items-center rounded-full text-muted hover:bg-raised hover:text-slate-900 sm:hidden" aria-label="Trang chủ">
-                <Icon name="grid" size={18} />
+            {!isExam && (
+              <a href="/" className="grid size-11 shrink-0 place-items-center rounded-full bg-white text-soft shadow-md ring-1 ring-line hover:text-slate-900" aria-label="Trang chủ">
+                <Icon name="home" size={18} />
               </a>
             )}
             {index < questions.length - 1 ? (
-              <button type="button" className="btn btn-primary" onClick={() => go(index + 1)}>
+              <button type="button" className="btn btn-primary min-w-[120px] px-6" onClick={() => go(index + 1)}>
                 Tiếp <Icon name="arrow-right" size={16} />
               </button>
             ) : isExam && !submitted ? (
-              <button type="button" className="btn btn-primary" onClick={() => setConfirmSubmit(true)}>
+              <button type="button" className="btn btn-primary min-w-[120px] px-6" onClick={() => setConfirmSubmit(true)}>
                 Nộp bài
               </button>
             ) : (
-              <a href={backHref} className="btn btn-primary">
+              <a href={backHref} className="btn btn-primary min-w-[120px] px-6">
                 Xong <Icon name="check" size={16} />
               </a>
             )}
