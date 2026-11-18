@@ -45,7 +45,7 @@ export function ClassBar({ classes, total }: { classes: LicenseClass[]; total: n
         {open && (
           <ul
             role="listbox"
-            className="card absolute left-0 top-full z-30 mt-2 grid max-h-80 w-full min-w-64 grid-cols-1 overflow-y-auto bg-surface p-1.5 shadow-2xl sm:w-72"
+            className="absolute left-0 top-full z-50 mt-2 grid max-h-80 w-full min-w-64 grid-cols-1 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-2xl shadow-black/60 sm:w-72"
           >
             {classes.map((c) => (
               <li key={c.id}>

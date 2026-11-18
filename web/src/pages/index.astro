@@ -29,7 +29,8 @@ const shortcuts = [
     <p class="mx-auto mt-3 max-w-xl text-muted">
       600 câu có đáp án và giải thích, thi thử bấm giờ như thi thật. Miễn phí, không cần đăng ký.
     </p>
-    <div class="mt-7">
+    <!-- Above the cards below: their backdrop blur makes stacking contexts that would cover the class list. -->
+    <div class="relative z-30 mt-7">
       <ClassBar client:load classes={CAR_CLASSES} total={QUESTIONS.length} />
     </div>
   </section>

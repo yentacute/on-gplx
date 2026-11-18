@@ -389,7 +389,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
                 <Icon name="x" size={20} />
               </button>
             </div>
-            <div className="mt-3 grid max-h-[45dvh] grid-cols-6 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-8 lg:max-h-[50dvh] lg:grid-cols-5">
+            <div className="-mx-1.5 mt-1.5 grid max-h-[45dvh] grid-cols-6 gap-1.5 overflow-y-auto p-1.5 sm:grid-cols-8 lg:max-h-[50dvh] lg:grid-cols-5">
               {questions.map((item, i) => {
                 const s = statusOf(item);
                 const tone =
