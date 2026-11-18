@@ -2,6 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
+
+const extraClasses = CAR_CLASSES.filter((c) => !LANDING_CLASSES.some((featured) => featured.id === c.id));
 ---
 
 <Base
@@ -9,38 +11,22 @@ import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
   description="Thi thử lý thuyết bằng lái ô tô hạng B, C1, C, D1, D2, D và các hạng kéo rơ-moóc: đề bấm giờ, chấm điểm, có câu điểm liệt, xem lại đáp án sau khi nộp bài."
   trail={[{ name: 'Thi thử', path: '/thi-thu' }]}
 >
-  <section class="container-page pt-6">
-    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Thi thử lý thuyết</h1>
-    <p class="mt-1 text-muted">Chọn hạng bằng. Mỗi hạng có 20 đề cố định và đề ngẫu nhiên, bấm giờ như thi thật.</p>
-    <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        CAR_CLASSES.map((c) => (
-          <li>
-            <a href={paths.licenseClass(c.id)} class="card group flex items-center gap-4 p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="grid size-14 shrink-0 place-items-center rounded-2xl text-white bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-bold">
-                {c.id}
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block font-bold">Hạng {c.id}</span>
-                <span class="block truncate text-xs text-soft">{c.title}</span>
-                <span class="mt-1 block text-[11px] text-muted">
-                  {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}/{c.exam.questionCount}
-                </span>
-              </span>
-              <Icon name="chevron-right" size={18} class="text-muted transition group-hover:translate-x-0.5" />
-            </a>
-          </li>
-        ))
-      }
+  <section class="container-page exam-page">
+    <div class="exam-intro">
+      <div class="exam-intro-copy">
+        <p class="exam-kicker"><Icon name="target" size={16} /> LUYỆN ĐỀ GPLX</p>
+        <h1>Thi thử lý thuyết<br /><span>tự tin trước ngày thi</span></h1>
+        <p>Chọn hạng bằng của bạn, luyện đề có bấm giờ và xem kết quả ngay sau khi nộp bài.</p>
+        <div class="exam-intro-facts"><span><Icon name="grid" size={17} /> 20 đề mỗi hạng</span><span><Icon name="refresh" size={17} /> Đề ngẫu nhiên</span><span><Icon name="check" size={17} /> Chấm điểm ngay</span></div>
+      </div>
+      <div class="exam-intro-art" aria-hidden="true"><div class="exam-intro-ring"><Icon name="target" size={145} /></div><div class="exam-intro-ticket"><span><Icon name="clock" size={19} /> BÀI THI THỬ</span><strong>Chọn hạng · Chọn đề<br />Bắt đầu làm bài</strong><small>Ôn đúng trọng tâm, làm bài tự tin hơn</small></div></div>
+    </div>
+
+    <div class="exam-section-heading"><div><p class="exam-section-label">CHỌN HẠNG BẰNG</p><h2>Bạn muốn thi thử hạng nào?</h2><p>Mỗi hạng có số câu, thời gian và điểm đạt riêng.</p></div></div>
+    <ul class="exam-class-grid">
+      {LANDING_CLASSES.map((c) => <li><a href={paths.licenseClass(c.id)} class="exam-class-card"><span class="exam-class-top"><span class="exam-class-icon"><Icon name="car" size={24} /></span><span class="exam-class-arrow"><Icon name="arrow-right" size={19} /></span></span><span class="exam-class-eyebrow">BẰNG LÁI HẠNG {c.id}</span><strong>{c.title}</strong><span class="exam-class-facts"><span><b>{c.exam.questionCount}</b> câu</span><span><b>{c.exam.timeMinutes}</b> phút</span><span>Đạt <b>{c.exam.passingScore}/{c.exam.questionCount}</b></span></span><span class="exam-class-action">Chọn đề thi <Icon name="arrow-right" size={16} /></span></a></li>)}
     </ul>
-    <p class="mt-8 text-sm text-muted">
-      Hạng phổ biến:
-      {LANDING_CLASSES.map((c, i) => (
-        <>
-          {i > 0 && ', '}
-          <a class="text-blue-600 hover:underline" href={paths.licenseClass(c.id)}>thi thử hạng {c.id}</a>
-        </>
-      ))}.
-    </p>
+
+    {extraClasses.length > 0 && <details class="exam-extra"><summary>Thi thử hạng kéo rơ-moóc <Icon name="chevron-down" size={19} /></summary><div class="exam-extra-grid">{extraClasses.map((c) => <a href={paths.licenseClass(c.id)}><span>Hạng <b>{c.id}</b></span><small>{c.exam.questionCount} câu · {c.exam.timeMinutes} phút</small><Icon name="arrow-right" size={17} /></a>)}</div></details>}
   </section>
 </Base>

@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { CommunityChat } from '../components/CommunityChat';
+
+const url = import.meta.env.PUBLIC_SUPABASE_URL?.trim() ?? '';
+const publishableKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ?? '';
+const ready = import.meta.env.PUBLIC_CHAT_ENABLED === 'true' && Boolean(url && publishableKey);
+---
+
+<Base
+  title="Trò chuyện cùng cộng đồng ôn thi GPLX"
+  description="Phòng chat cộng đồng để hỏi đáp và chia sẻ kinh nghiệm ôn thi GPLX theo thời gian thực."
+  noindex
+  trail={[{ name: 'Trò chuyện', path: '/tro-chuyen' }]}
+>
+  <section class="container-page community-page">
+    <div class="community-intro">
+      <div><p class="home-kicker">CÙNG HỌC CÙNG TIẾN BỘ</p><h1>Trò chuyện cùng mọi người</h1><p>Hỏi đáp về câu hỏi lý thuyết, biển báo và kinh nghiệm thi bằng lái ngay tại đây.</p></div>
+      <span aria-hidden="true"><Icon name="book" size={48} /></span>
+    </div>
+    {ready ? <div class="community-layout"><CommunityChat client:load url={url} publishableKey={publishableKey} /><aside class="community-rules"><span class="community-rules-icon"><Icon name="shield" size={23} /></span><h2>Giữ cuộc trò chuyện hữu ích</h2><ul><li>Hỏi rõ câu hoặc chủ đề bạn đang vướng.</li><li>Tôn trọng người học khác, tránh quảng cáo và gửi lặp.</li><li>Không chia sẻ số điện thoại hay thông tin riêng tư.</li><li>Dùng nút “Báo cáo” nếu thấy nội dung không phù hợp.</li></ul><p>Tin nhắn có thể được ẩn khi vi phạm quy tắc cộng đồng.</p></aside></div> : <div class="community-pending"><Icon name="clock" size={30} /><h2>Phòng chat đang được chuẩn bị</h2><p>Vui lòng quay lại sau để trò chuyện cùng mọi người.</p><a href="/on-tap" class="btn btn-primary">Ôn tập trong lúc chờ <Icon name="arrow-right" size={17} /></a></div>}
+  </section>
+</Base>

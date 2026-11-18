@@ -32,47 +32,38 @@ const facts = [
   jsonLd={[courseLd(`Ôn thi lý thuyết lái xe hạng ${c.id}`, description, `${Astro.site!.origin}${path}`), faqLd(faq)]}
 >
   <RememberClass client:load id={c.id} />
-  <section class="container-page pt-6">
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 sm:p-8">
-      <p class="text-sm font-semibold text-blue-100">{c.title} · {c.description}</p>
-      <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-4xl">{heading}</h1>
-      <dl class="mt-5 grid max-w-xl grid-cols-4 gap-2">
-        {
-          facts.map((f) => (
-            <div class="rounded-xl border border-white/20 bg-white/10 px-2 py-2 text-center">
-              <dd class="text-base font-bold sm:text-lg">{f.value}</dd>
-              <dt class="text-[11px] text-blue-100">{f.label}</dt>
-            </div>
-          ))
-        }
-      </dl>
-      <div class="mt-6 flex flex-wrap gap-2">
-        <a href={paths.exam(c.id, 'ngau-nhien')} class="btn bg-white text-brand-strong hover:bg-sky-50">
-          <Icon name="refresh" size={16} /> Đề ngẫu nhiên
-        </a>
-        <a href={paths.exam(c.id, 1)} class="btn border border-white/30 bg-white/10 text-white hover:bg-white/20">
-          Làm đề số 1 <Icon name="arrow-right" size={16} />
-        </a>
+  <section class="container-page exam-class-page">
+    <div class="exam-class-hero">
+      <div class="exam-class-hero-main">
+        <span class="exam-class-hero-badge">BẰNG LÁI HẠNG {c.id}</span>
+        <h1>{heading}</h1>
+        <p>{c.title} · {c.description}</p>
+        <div class="exam-class-hero-actions">
+          <a href={paths.exam(c.id, 'ngau-nhien')} class="btn exam-hero-primary"><Icon name="refresh" size={18} /> Làm đề ngẫu nhiên</a>
+          <a href={paths.exam(c.id, 1)} class="btn exam-hero-secondary">Bắt đầu đề số 1 <Icon name="arrow-right" size={18} /></a>
+        </div>
       </div>
+      <div class="exam-class-hero-decoration" aria-hidden="true"><Icon name="target" size={230} /></div>
     </div>
+    <dl class="exam-class-stats">{facts.map((f) => <div><dt>{f.label}</dt><dd>{f.value}</dd></div>)}</dl>
 
-    <h2 class="mt-10 text-lg font-bold">20 đề thi thử hạng {c.id}</h2>
-    <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+    <div class="exam-section-heading exam-list-heading"><div><p class="exam-section-label">BỘ ĐỀ CỐ ĐỊNH</p><h2>20 đề thi thử hạng {c.id}</h2><p>Chọn một đề để làm bài. Điểm của bạn sẽ được lưu trên thiết bị này.</p></div></div>
+    <ul class="exam-paper-grid">
       {
         exams.map((e) => (
           <li>
-            <a href={paths.exam(c.id, e.id)} class="card flex flex-col gap-1 p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="text-xs text-muted">Đề số</span>
-              <span class="text-2xl font-bold tabular-nums">{String(e.id).padStart(2, '0')}</span>
-              <ExamScoreBadge client:visible examKey={`${c.id}-${e.id}`} />
+            <a href={paths.exam(c.id, e.id)} class="exam-paper-card">
+              <span class="exam-paper-label">ĐỀ SỐ</span>
+              <strong>{String(e.id).padStart(2, '0')}</strong>
+              <span class="exam-paper-bottom"><ExamScoreBadge client:visible examKey={`${c.id}-${e.id}`} /><Icon name="arrow-right" size={17} /></span>
             </a>
           </li>
         ))
       }
     </ul>
 
-    <div class="mt-12 grid gap-8 lg:grid-cols-2">
-      <div>
+    <div class="exam-info-grid">
+      <div class="exam-info-card">
         <h2 class="text-lg font-bold">Cấu trúc đề thi hạng {c.id}</h2>
         <p class="mt-2 text-sm leading-relaxed text-soft">
           Đề gồm {c.exam.questionCount} câu lấy từ bộ 600 câu hỏi, chia theo 6 chương. Mỗi đề có câu điểm liệt: trả lời sai
@@ -92,10 +83,10 @@ const facts = [
           <li><a href="/cau-diem-liet" class="text-blue-600 hover:underline">60 câu điểm liệt</a></li>
         </ul>
       </div>
-      <div class="space-y-2">
+      <div class="exam-faq-list">
         {
           faq.map((f) => (
-            <details class="card group p-4" open>
+            <details class="card group p-4">
               <summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
                 {f.question}
                 <Icon name="chevron-down" size={18} class="shrink-0 text-muted transition group-open:rotate-180" />

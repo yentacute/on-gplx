@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Icon from '../components/Icon.astro';
+import { ChatSidebar } from '../components/ChatSidebar';
 import type { IconName } from '../lib/icons';
 
 export const SITE_NAME = 'Ôn thi GPLX';
@@ -51,13 +52,15 @@ const breadcrumbLd = trail && {
   })),
 };
 const structured = [path === '/' ? websiteLd : undefined, breadcrumbLd, ...jsonLd].filter(Boolean);
+const chatEnabled = import.meta.env.PUBLIC_CHAT_ENABLED === 'true' && Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 
-const NAV: { href: string; label: string; icon: IconName; match: RegExp }[] = [
+const NAV: { href: string; label: string; icon: IconName; match: RegExp; mobile?: boolean }[] = [
   { href: '/', label: 'Trang chủ', icon: 'grid', match: /^\/$/ },
   { href: '/on-tap', label: 'Ôn tập', icon: 'book', match: /^\/(on-tap|chuong|cau-hoi|600-cau-hoi|cau-diem-liet)/ },
   { href: '/thi-thu', label: 'Thi thử', icon: 'clock', match: /^\/thi-thu/ },
   { href: '/bien-bao', label: 'Biển báo', icon: 'sign', match: /^\/bien-bao/ },
-  { href: '/meo-ghi-nho', label: 'Mẹo ghi nhớ', icon: 'bulb', match: /^\/meo-ghi-nho/ },
+  { href: '/meo-ghi-nho', label: 'Mẹo ghi nhớ', icon: 'bulb', match: /^\/meo-ghi-nho/, mobile: !chatEnabled },
+  ...(chatEnabled ? [{ href: '/tro-chuyen', label: 'Trò chuyện', icon: 'chat' as IconName, match: /^\/tro-chuyen/, mobile: true }] : []),
 ];
 const active = (match: RegExp) => match.test(path);
 ---
@@ -108,7 +111,7 @@ const active = (match: RegExp) => match.test(path);
             <span class="block text-[11px] font-medium text-muted">600 câu lý thuyết ô tô</span>
           </span>
         </a>
-        <nav class="mx-auto hidden items-center gap-0.5 rounded-full bg-raised p-1 md:flex" aria-label="Chính">
+        <nav class="mx-auto hidden items-center gap-0.5 rounded-full bg-raised p-1 lg:flex" aria-label="Chính">
           {
             NAV.map((item) => (
               <a
@@ -124,7 +127,7 @@ const active = (match: RegExp) => match.test(path);
             ))
           }
         </nav>
-        {!app && <a href="/thi-thu" class="btn btn-primary ml-auto px-4 py-2 md:ml-0">Thi thử ngay</a>}
+        {!app && <a href="/thi-thu" class="btn btn-primary ml-auto px-4 py-2 lg:ml-0">Thi thử ngay</a>}
       </div>
     </header>
 
@@ -154,13 +157,15 @@ const active = (match: RegExp) => match.test(path);
       )
     }
 
-    <main class:list={['pb-28 md:pb-14', app && 'pb-28']}>
+    <main class:list={['pb-24 lg:pb-12', app && 'pb-28']}>
       <slot />
     </main>
 
+    {chatEnabled && path !== '/tro-chuyen' && <ChatSidebar client:load url={import.meta.env.PUBLIC_SUPABASE_URL} publishableKey={import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY} />}
+
     {
       !app && (
-        <footer class="border-t border-line bg-white/60 pb-28 pt-10 text-sm text-muted md:pb-10">
+        <footer class="border-t border-line bg-white/60 pb-24 pt-10 text-sm text-muted lg:pb-10">
           <div class="container-page grid gap-8 sm:grid-cols-3">
             <div>
               <p class="font-bold text-slate-900">
@@ -177,6 +182,7 @@ const active = (match: RegExp) => match.test(path);
                 <li><a class="hover:text-slate-900" href="/cau-diem-liet">60 câu điểm liệt</a></li>
                 <li><a class="hover:text-slate-900" href="/bien-bao">Biển báo giao thông</a></li>
                 <li><a class="hover:text-slate-900" href="/meo-ghi-nho">Mẹo ghi nhớ</a></li>
+                {chatEnabled && <li><a class="hover:text-slate-900" href="/tro-chuyen">Trò chuyện cộng đồng</a></li>}
               </ul>
             </div>
             <div>
@@ -199,14 +205,14 @@ const active = (match: RegExp) => match.test(path);
 
     <nav
       class:list={[
-        'fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-full border border-line bg-white/90 p-1 shadow-xl shadow-slate-900/10 backdrop-blur-md md:hidden',
+        'fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-full border border-line bg-white/90 p-1 shadow-xl shadow-slate-900/10 backdrop-blur-md lg:hidden',
         app && 'hidden',
       ]}
       aria-label="Điều hướng"
     >
       <ul class="grid grid-cols-5">
         {
-          NAV.map((item) => (
+          NAV.filter((item) => item.mobile !== false).map((item) => (
             <li>
               <a
                 href={item.href}
