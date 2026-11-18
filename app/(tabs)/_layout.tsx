@@ -1,19 +1,49 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useResetProgress } from '@/hooks/useResetProgress';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-const TABS: { name: string; title: string; icon: IconName; activeIcon: IconName }[] = [
-  { name: 'index', title: 'Trang chủ', icon: 'home-outline', activeIcon: 'home' },
-  { name: 'practice', title: 'Ôn tập', icon: 'book-outline', activeIcon: 'book' },
-  { name: 'exam', title: 'Thi thử', icon: 'timer-outline', activeIcon: 'timer' },
-  { name: 'signs', title: 'Biển báo', icon: 'warning-outline', activeIcon: 'warning' },
-  { name: 'profile', title: 'Cá nhân', icon: 'person-outline', activeIcon: 'person' },
+type TabConfig = {
+  name: string;
+  /** Tab bar label. */
+  title: string;
+  /** Header text. It is the page's <h1> on web, so it carries the search keywords. */
+  heading: string;
+  /** The home screen's hero holds its <h1>, so its header is plain text. */
+  headingIsPageTitle: boolean;
+  icon: IconName;
+  activeIcon: IconName;
+};
+
+const TABS: TabConfig[] = [
+  { name: 'index', title: 'Trang chủ', heading: 'Trang chủ', headingIsPageTitle: false, icon: 'home-outline', activeIcon: 'home' },
+  { name: 'practice', title: 'Ôn tập', heading: 'Ôn tập lý thuyết', headingIsPageTitle: true, icon: 'book-outline', activeIcon: 'book' },
+  { name: 'exam', title: 'Thi thử', heading: 'Thi thử GPLX', headingIsPageTitle: true, icon: 'timer-outline', activeIcon: 'timer' },
+  {
+    name: 'signs',
+    title: 'Biển báo',
+    heading: 'Biển báo giao thông',
+    headingIsPageTitle: true,
+    icon: 'warning-outline',
+    activeIcon: 'warning',
+  },
+  { name: 'profile', title: 'Cá nhân', heading: 'Cá nhân', headingIsPageTitle: true, icon: 'person-outline', activeIcon: 'person' },
 ];
+
+const HeaderTitle = ({ text, isPageTitle }: { text: string; isPageTitle: boolean }) => (
+  <Text
+    role={isPageTitle ? 'heading' : undefined}
+    aria-level={isPageTitle ? 1 : undefined}
+    numberOfLines={1}
+    className="text-[17px] font-semibold text-slate-900"
+  >
+    {text}
+  </Text>
+);
 
 const TabIcon = ({ name, focused, color }: { name: IconName; focused: boolean; color: string }) => (
   <View
@@ -51,7 +81,6 @@ const TabsLayout = () => {
       screenOptions={{
         headerTitleAlign: 'center',
         headerRight: () => <ResetButton />,
-        headerTitleStyle: { fontWeight: '600' },
         tabBarActiveTintColor: '#2563eb',
         tabBarInactiveTintColor: '#64748b',
         tabBarStyle: {
@@ -69,12 +98,13 @@ const TabsLayout = () => {
         tabBarLabelStyle: { fontSize: 12, lineHeight: 16, flexShrink: 0, fontWeight: '600', marginTop: 2 },
       }}
     >
-      {TABS.map(({ name, title, icon, activeIcon }) => (
+      {TABS.map(({ name, title, heading, headingIsPageTitle, icon, activeIcon }) => (
         <Tabs.Screen
           key={name}
           name={name}
           options={{
             title,
+            headerTitle: () => <HeaderTitle text={heading} isPageTitle={headingIsPageTitle} />,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 name={focused ? activeIcon : icon}
