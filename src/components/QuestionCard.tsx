@@ -79,8 +79,8 @@ export const QuestionCard = (props: Props) => {
           className={`rounded-xl border px-3 py-2.5 ${optionClass(i, props)}`}
         >
           <Text
-            style={{ fontFamily: INTER.regular }}
-            className={`text-[15px] font-normal leading-6 ${optionTextClass(i, props)}`}
+            style={{ fontFamily: INTER.medium }}
+            className={`text-sm font-medium leading-[22px] ${optionTextClass(i, props)}`}
           >
             <Text style={{ fontFamily: INTER.semibold }} className="font-semibold">
               {i + 1}.{' '}
