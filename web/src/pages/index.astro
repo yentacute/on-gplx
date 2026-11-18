@@ -54,9 +54,10 @@ const tiles = [
     </div>
     <div class="hub-features">
       <a href="/on-tap" class="hub-feature hub-feature-primary">
-        <span class="hub-feature-art" aria-hidden="true"><Icon name="book" size={86} /></span>
+        <span class="hub-feature-top">
+          <span class="hub-feature-icon hub-feature-icon-glass"><Icon name="book" size={22} /></span>
+        </span>
         <strong>{QUESTIONS.length} câu lý thuyết</strong>
-        <small>Đáp án kèm giải thích dễ nhớ</small>
         <StudyProgress client:idle total={QUESTIONS.length} />
         <span class="hub-feature-button">Ôn ngay <Icon name="arrow-right" size={17} /></span>
       </a>
