@@ -203,7 +203,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
             <p className={`mt-4 text-sm font-semibold ${passed ? 'text-emerald-600' : 'text-red-600'}`}>
               {passed ? 'ĐẠT' : 'CHƯA ĐẠT'}
             </p>
-            <p className="mt-1 text-5xl font-extrabold tabular-nums">
+            <p className="mt-1 text-5xl font-bold tabular-nums">
               {stats.right}
               <span className="text-2xl text-muted">/{questions.length}</span>
             </p>
@@ -266,7 +266,7 @@ export default function Quiz({ title, subtitle, backHref, ids, onlyWrong, exam, 
         </div>
         {isExam && !submitted && (
           <div
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 font-mono text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'bg-raised text-slate-900'}`}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold tabular-nums ${lowTime ? 'bg-red-500/15 text-red-600' : 'bg-raised text-slate-900'}`}
             role="timer"
             aria-label="Thời gian còn lại"
           >

@@ -35,7 +35,7 @@ const facts = [
   <section class="container-page pt-6">
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 sm:p-8">
       <p class="text-sm font-semibold text-blue-100">{c.title} · {c.description}</p>
-      <h1 class="mt-1 text-2xl font-extrabold tracking-tight sm:text-4xl">{heading}</h1>
+      <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-4xl">{heading}</h1>
       <dl class="mt-5 grid max-w-xl grid-cols-4 gap-2">
         {
           facts.map((f) => (
@@ -63,7 +63,7 @@ const facts = [
           <li>
             <a href={paths.exam(c.id, e.id)} class="card flex flex-col gap-1 p-4 transition hover:border-brand/40 hover:bg-raised/60">
               <span class="text-xs text-muted">Đề số</span>
-              <span class="text-2xl font-extrabold tabular-nums">{String(e.id).padStart(2, '0')}</span>
+              <span class="text-2xl font-bold tabular-nums">{String(e.id).padStart(2, '0')}</span>
               <ExamScoreBadge client:visible examKey={`${c.id}-${e.id}`} />
             </a>
           </li>
