@@ -13,6 +13,7 @@ const copies = [
   ['assets/questions', 'public/img/q'],
   ['assets/traffic-signs', 'public/img/signs'],
   ['assets/signs', 'public/img/signs'],
+  ['public/fonts', 'public/fonts'],
   ['public/icon-192.png', 'public/icon-192.png'],
   ['public/icon-512.png', 'public/icon-512.png'],
   ['public/apple-touch-icon.png', 'public/apple-touch-icon.png'],

@@ -10,14 +10,14 @@ import { CAR_CLASSES, LANDING_CLASSES, paths } from '../../lib/data';
   trail={[{ name: 'Thi thử', path: '/thi-thu' }]}
 >
   <section class="container-page pt-6">
-    <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Thi thử lý thuyết</h1>
+    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Thi thử lý thuyết</h1>
     <p class="mt-1 text-muted">Chọn hạng bằng. Mỗi hạng có 20 đề cố định và đề ngẫu nhiên, bấm giờ như thi thật.</p>
     <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {
         CAR_CLASSES.map((c) => (
           <li>
             <a href={paths.licenseClass(c.id)} class="card group flex items-center gap-4 p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="grid size-14 shrink-0 place-items-center rounded-2xl text-white bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-extrabold">
+              <span class="grid size-14 shrink-0 place-items-center rounded-2xl text-white bg-gradient-to-br from-brand-strong to-indigo-600 text-lg font-bold">
                 {c.id}
               </span>
               <span class="min-w-0 flex-1">

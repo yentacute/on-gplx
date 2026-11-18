@@ -1,7 +1,37 @@
 @import 'tailwindcss';
 
+/* Inter, self-hosted: Latin + Vietnamese subsets shared with the Expo web build (../public/fonts). */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-700.woff2') format('woff2');
+}
+
 @theme {
-  --font-sans: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
   /* Light theme: page background, card surface, raised controls. */
   --color-ink: #f4f7fc;
@@ -23,7 +53,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply bg-ink text-slate-900 antialiased;
+    @apply bg-ink font-sans text-slate-900 antialiased;
     background-image:
       radial-gradient(60rem 30rem at 50% -10rem, rgb(59 130 246 / 0.16), transparent 70%),
       radial-gradient(40rem 24rem at 100% 30rem, rgb(99 102 241 / 0.08), transparent 70%);

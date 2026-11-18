@@ -22,7 +22,7 @@ const shortcuts = [
 >
   <section class="container-page pt-10 text-center sm:pt-14">
     <p class="chip mx-auto"><Icon name="shield" size={12} /> Bộ 600 câu hỏi sát hạch áp dụng từ 2025</p>
-    <h1 class="mx-auto mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+    <h1 class="mx-auto mt-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
       Ôn thi lý thuyết lái xe{' '}
       <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">đậu ngay lần đầu</span>
     </h1>
@@ -39,7 +39,7 @@ const shortcuts = [
     <RoadmapCard client:idle chapters={chapters} criticalIds={CRITICAL_QUESTIONS.map((q) => q.id)} />
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 shadow-2xl shadow-blue-600/30 sm:p-7">
       <div class="grid size-11 place-items-center rounded-xl bg-white/15"><Icon name="clock" size={22} /></div>
-      <h2 class="mt-5 text-2xl font-extrabold tracking-tight sm:text-3xl">Thi thử online</h2>
+      <h2 class="mt-5 text-2xl font-bold tracking-tight sm:text-3xl">Thi thử online</h2>
       <p class="mt-2 max-w-xs text-sm text-blue-100">
         20 đề cố định và đề ngẫu nhiên cho từng hạng, bấm giờ và chấm điểm theo đúng cấu trúc đề thật.
       </p>
@@ -114,7 +114,7 @@ const shortcuts = [
         LANDING_CLASSES.map((c) => (
           <li>
             <a href={paths.licenseClass(c.id)} class="card block p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="text-2xl font-extrabold text-blue-600">{c.id}</span>
+              <span class="text-2xl font-bold text-blue-600">{c.id}</span>
               <span class="mt-1 block text-xs text-soft">{c.title}</span>
               <span class="mt-3 block text-[11px] text-muted">
                 {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}

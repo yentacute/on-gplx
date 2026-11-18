@@ -137,7 +137,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
           <p className="flex items-center gap-1.5 text-sm font-semibold text-blue-600">
             <Icon name="target" size={16} /> Lộ trình của bạn
           </p>
-          <h2 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Mục tiêu đậu hạng {classId}</h2>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Mục tiêu đậu hạng {classId}</h2>
           <p className="mt-1 text-sm text-muted">Làm theo 4 bước, tiến độ được lưu trên trình duyệt này.</p>
         </div>
         <ProgressRing percent={percent} />
