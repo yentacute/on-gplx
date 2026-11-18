@@ -1,83 +1,112 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { Icon } from './Icon';
-import { DEFAULT_CLASS, getAnswers, getExamScores, getLicenseClass, setLicenseClass, useStored } from '../lib/progress';
+import { DEFAULT_CLASS, getAnswers, getExamScores, getLicenseClass, getSaved, setLicenseClass, useStored, weakQuestionIds } from '../lib/progress';
 import type { LicenseClass } from '../lib/types';
 
-/** Class picker plus the exam facts for the chosen class, shown in the home hero. */
-export function ClassBar({ classes, total }: { classes: LicenseClass[]; total: number }) {
+/** "Bạn đang học hạng nào?": one chip per class; the choice drives the exam cards and the roadmap. */
+export function ClassChips({ classes }: { classes: LicenseClass[] }) {
   const selectedId = useStored(getLicenseClass, DEFAULT_CLASS);
-  const selected = classes.find((c) => c.id === selectedId) ?? classes[0]!;
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const close = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, []);
-
-  const facts = [
-    { value: selected.exam.questionCount, label: 'Câu/đề' },
-    { value: `${selected.exam.timeMinutes}'`, label: 'Thời gian' },
-    { value: `${selected.exam.passingScore}/${selected.exam.questionCount}`, label: 'Điểm đạt' },
-    { value: total, label: 'Tổng câu' },
-  ];
-
   return (
-    <div className="card mx-auto flex w-full max-w-2xl flex-col gap-2 p-2 sm:flex-row sm:items-center">
-      <div ref={ref} className="relative">
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-haspopup="listbox"
-          className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-br from-brand-strong to-indigo-600 px-3 text-white py-2.5 text-left font-bold shadow-lg shadow-blue-600/25 sm:w-48"
-        >
-          <span className="grid size-8 place-items-center rounded-lg bg-white/15">
-            <Icon name="car" size={18} />
-          </span>
-          <span className="flex-1">
-            <span className="block text-base leading-tight">Hạng {selected.id}</span>
-            <span className="block truncate text-[11px] font-medium text-white/75">{selected.title}</span>
-          </span>
-          <Icon name="chevron-down" size={18} className={`transition ${open ? 'rotate-180' : ''}`} />
-        </button>
-        {open && (
-          <ul
-            role="listbox"
-            className="absolute left-0 top-full z-50 mt-2 grid max-h-80 w-full min-w-64 grid-cols-1 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-2xl shadow-slate-900/15 sm:w-72"
+    <div className="-mx-4 -my-2 flex gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
+      {classes.map((c) => {
+        const on = c.id === selectedId;
+        return (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => setLicenseClass(c.id)}
+            aria-pressed={on}
+            className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-left transition ${
+              on ? 'border-brand bg-brand text-white shadow-lg shadow-blue-600/25' : 'border-line bg-surface text-slate-900 hover:border-brand/40'
+            }`}
           >
-            {classes.map((c) => (
-              <li key={c.id}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={c.id === selected.id}
-                  onClick={() => {
-                    setLicenseClass(c.id);
-                    setOpen(false);
-                  }}
-                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-raised ${c.id === selected.id ? 'bg-brand-soft' : ''}`}
-                >
-                  <span className="w-10 font-bold text-blue-600">{c.id}</span>
-                  <span className="flex-1 text-soft">{c.title}</span>
-                  {c.id === selected.id && <Icon name="check" size={16} className="text-blue-600" />}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <dl className="grid flex-1 grid-cols-4 text-center">
-        {facts.map((f) => (
-          <div key={f.label} className="rounded-lg py-1.5">
-            <dt className="order-2 text-[11px] text-muted">{f.label}</dt>
-            <dd className="text-base font-bold tabular-nums">{f.value}</dd>
-          </div>
-        ))}
-      </dl>
+            <span className="text-sm font-bold">{c.id}</span>
+            <span className={`text-xs ${on ? 'text-white/80' : 'text-muted'}`}>{c.title}</span>
+          </button>
+        );
+      })}
     </div>
   );
+}
+
+/** "Thi thử nhanh": the selected class's exam format and a one-tap random exam. */
+export function QuickExam({ classes }: { classes: LicenseClass[] }) {
+  const selectedId = useStored(getLicenseClass, DEFAULT_CLASS);
+  const cls = classes.find((c) => c.id === selectedId) ?? classes[0]!;
+  const base = `/thi-thu/hang-${cls.id.toLowerCase()}`;
+  const facts = [
+    { icon: 'clipboard' as const, label: `${cls.exam.questionCount} câu` },
+    { icon: 'clock' as const, label: `${cls.exam.timeMinutes} phút` },
+    { icon: 'target' as const, label: `Đạt ≥ ${cls.exam.passingScore}` },
+  ];
+  return (
+    <div className="grid gap-3 sm:grid-cols-[1.5fr_1fr]">
+      <div className="card relative overflow-hidden p-5 sm:p-6">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-blue-700">
+          <Icon name="car" size={14} /> Hạng {cls.id} · {cls.title}
+        </span>
+        <h3 className="mt-3 text-xl font-bold tracking-tight">Đề thi thử hạng {cls.id}</h3>
+        <p className="mt-1 text-sm text-muted">Cấu trúc như đề thật, sai câu điểm liệt là trượt.</p>
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {facts.map((f) => (
+            <li key={f.label} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-raised/60 px-3 py-1 text-xs font-semibold text-soft">
+              <Icon name={f.icon} size={14} className="text-blue-600" /> {f.label}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <a href={`${base}/de-1`} className="btn btn-primary">
+            Vào thi đề 1 <Icon name="arrow-right" size={16} />
+          </a>
+          <a href={base} className="btn btn-ghost">
+            Chọn đề khác
+          </a>
+        </div>
+      </div>
+      <a
+        href={`${base}/ngau-nhien`}
+        className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-slate-900 p-5 text-white shadow-xl shadow-slate-900/20 sm:p-6"
+      >
+        <span className="grid size-11 place-items-center rounded-2xl bg-white/10 text-amber-300">
+          <Icon name="zap" size={22} />
+        </span>
+        <span className="mt-6 block">
+          <span className="block text-lg font-bold">Đề ngẫu nhiên</span>
+          <span className="mt-1 block text-sm text-slate-300">Trộn câu mới mỗi lần, có 3 câu điểm liệt.</span>
+        </span>
+        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-300">
+          Bắt đầu <Icon name="arrow-right" size={16} className="transition group-hover:translate-x-0.5" />
+        </span>
+        <span className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-blue-500/20 blur-2xl" />
+      </a>
+    </div>
+  );
+}
+
+/** Overall progress line for the "Ôn tập" feature card. */
+export function OverallProgress({ total }: { total: number }) {
+  const answers = useStored(getAnswers, {});
+  const done = Object.keys(answers).length;
+  const percent = Math.round((done / total) * 100);
+  return (
+    <div className="mt-4">
+      <div className="flex justify-between text-xs font-medium text-white/80">
+        <span>
+          {done}/{total} câu đã làm
+        </span>
+        <span>{percent}%</span>
+      </div>
+      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/20">
+        <div className="h-full rounded-full bg-white" style={{ width: `${percent}%` }} />
+      </div>
+    </div>
+  );
+}
+
+/** Count of bookmarked questions. */
+export function SavedCount() {
+  const saved = useStored(getSaved, []);
+  return <>{saved.length ? `${saved.length} câu đã lưu để xem lại` : 'Lưu câu khó để xem lại sau'}</>;
 }
 
 type ChapterLite = { slug: string; numeral: string; name: string; ids: number[] };
@@ -89,7 +118,7 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
   const classId = useStored(getLicenseClass, DEFAULT_CLASS);
   const total = chapters.reduce((n, c) => n + c.ids.length, 0);
   const done = Object.keys(answers).length;
-  const wrong = Object.values(answers).filter((a) => !a.correct).length;
+  const wrong = weakQuestionIds(answers).length;
   const criticalDone = criticalIds.filter((id) => answers[id]?.correct).length;
   const passedExams = Object.values(scores).filter((s) => s.passed).length;
   const percent = total ? Math.round((done / total) * 100) : 0;
@@ -161,9 +190,14 @@ export function RoadmapCard({ chapters, criticalIds }: { chapters: ChapterLite[]
           </li>
         ))}
       </ol>
-      <a href={`/on-tap/${next.slug}`} className="btn btn-primary mt-5 w-full sm:w-auto">
-        {done ? 'Ôn tiếp' : 'Bắt đầu ôn'}: Chương {next.numeral} <Icon name="arrow-right" size={16} />
-      </a>
+      <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <a href={`/on-tap/${next.slug}`} className="btn btn-primary">
+          {done ? 'Ôn tiếp' : 'Bắt đầu ôn'}: Chương {next.numeral} <Icon name="arrow-right" size={16} />
+        </a>
+        <a href="/tien-do" className="btn btn-ghost">
+          <Icon name="chart" size={16} /> Xem tiến độ chi tiết
+        </a>
+      </div>
     </div>
   );
 }
@@ -193,16 +227,6 @@ const ProgressRing = ({ percent }: { percent: number }) => {
   );
 };
 
-/** The blue "Thi thử" card; its button follows the selected class. */
-export function ExamCta() {
-  const classId = useStored(getLicenseClass, DEFAULT_CLASS);
-  return (
-    <a href={`/thi-thu/hang-${classId.toLowerCase()}`} className="btn mt-6 bg-white text-brand-strong shadow-lg hover:bg-sky-50">
-      Thi thử hạng {classId} <Icon name="arrow-right" size={16} />
-    </a>
-  );
-}
-
 /** Answered-count badge for a chapter tile. */
 export function ChapterProgress({ ids }: { ids: number[] }) {
   const answers = useStored(getAnswers, {});
@@ -226,7 +250,7 @@ export function ChapterProgress({ ids }: { ids: number[] }) {
 /** Count of questions answered wrong, for the "Câu hay sai" tile. */
 export function WrongCount() {
   const answers = useStored(getAnswers, {});
-  const wrong = Object.values(answers).filter((a) => !a.correct).length;
+  const wrong = weakQuestionIds(answers).length;
   return <>{wrong ? `${wrong} câu cần luyện lại` : 'Chưa có câu sai'}</>;
 }
 

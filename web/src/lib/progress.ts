@@ -6,6 +6,9 @@ const KEYS = {
   licenseClass: 'gplx.class',
   answers: 'gplx.answers',
   exams: 'gplx.exams',
+  saved: 'gplx.saved',
+  time: 'gplx.time',
+  history: 'gplx.history',
 } as const;
 
 const CHANGE_EVENT = 'gplx:progress';
@@ -33,16 +36,33 @@ export const DEFAULT_CLASS = 'B';
 export const getLicenseClass = () => read<string>(KEYS.licenseClass, DEFAULT_CLASS);
 export const setLicenseClass = (id: string) => write(KEYS.licenseClass, id);
 
-/** Last answer picked for each question id, and whether it was right. */
-export type AnswerLog = Record<number, { picked: number; correct: boolean }>;
+/** Last answer picked for each question id, whether it was right, and how often it was ever wrong. */
+export type AnswerEntry = { picked: number; correct: boolean; wrong?: number; tries?: number };
+export type AnswerLog = Record<number, AnswerEntry>;
 export const getAnswers = () => read<AnswerLog>(KEYS.answers, {});
-export const recordAnswer = (questionId: number, picked: number, correct: boolean) =>
-  write(KEYS.answers, { ...getAnswers(), [questionId]: { picked, correct } });
+
+const nextEntry = (prev: AnswerEntry | undefined, picked: number, correct: boolean): AnswerEntry => ({
+  picked,
+  correct,
+  wrong: (prev?.wrong ?? 0) + (correct ? 0 : 1),
+  tries: (prev?.tries ?? 0) + 1,
+});
+export const recordAnswer = (questionId: number, picked: number, correct: boolean) => {
+  const log = getAnswers();
+  write(KEYS.answers, { ...log, [questionId]: nextEntry(log[questionId], picked, correct) });
+};
 export const recordAnswers = (entries: { id: number; picked: number; correct: boolean }[]) => {
   const log = getAnswers();
-  for (const { id, picked, correct } of entries) log[id] = { picked, correct };
+  for (const { id, picked, correct } of entries) log[id] = nextEntry(log[id], picked, correct);
   write(KEYS.answers, log);
 };
+
+/** Questions to drill: last answer wrong, or wrong at least twice. Most-missed first. */
+export const weakQuestionIds = (log: AnswerLog) =>
+  Object.entries(log)
+    .filter(([, a]) => !a.correct || (a.wrong ?? 0) >= 2)
+    .sort(([, a], [, b]) => (b.wrong ?? 1) - (a.wrong ?? 1))
+    .map(([id]) => Number(id));
 export const resetAnswers = (ids?: number[]) => {
   if (!ids) return write(KEYS.answers, {});
   const log = getAnswers();
@@ -54,6 +74,24 @@ export const resetAnswers = (ids?: number[]) => {
 export type ExamScore = { correct: number; total: number; passed: boolean; at: number };
 export const getExamScores = () => read<Record<string, ExamScore>>(KEYS.exams, {});
 export const recordExamScore = (key: string, score: ExamScore) => write(KEYS.exams, { ...getExamScores(), [key]: score });
+
+/** Bookmarked question ids, newest first. */
+export const getSaved = () => read<number[]>(KEYS.saved, []);
+export const toggleSaved = (id: number) => {
+  const saved = getSaved();
+  write(KEYS.saved, saved.includes(id) ? saved.filter((x) => x !== id) : [id, ...saved]);
+};
+
+/** Seconds spent on practice and exam screens. */
+export const getStudySeconds = () => read<number>(KEYS.time, 0);
+export const addStudySeconds = (seconds: number) => {
+  if (seconds > 0) write(KEYS.time, getStudySeconds() + Math.round(seconds));
+};
+
+/** Every submitted exam, newest first (last 50). */
+export type ExamAttempt = { key: string; title: string; correct: number; total: number; passed: boolean; at: number; seconds: number };
+export const getExamHistory = () => read<ExamAttempt[]>(KEYS.history, []);
+export const recordExamAttempt = (attempt: ExamAttempt) => write(KEYS.history, [attempt, ...getExamHistory()].slice(0, 50));
 
 /** Re-renders when progress changes, in this tab or another one. Returns `fallback` until mounted. */
 export const useStored = <T,>(get: () => T, fallback: T): T => {

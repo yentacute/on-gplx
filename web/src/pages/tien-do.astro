@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import ReviewPlan from '../components/ReviewPlan';
+import { CAR_CLASSES, CHAPTERS, CRITICAL_QUESTIONS } from '../lib/data';
+
+const chapters = CHAPTERS.map((c) => ({ slug: c.slug, numeral: c.numeral, name: c.name, ids: c.questionIds }));
+---
+
+<Base
+  title="Tiến độ ôn thi của bạn"
+  description="Mức sẵn sàng thi, việc cần ôn tiếp, thời gian ôn và lịch sử thi thử, lưu trên trình duyệt này."
+  noindex
+  trail={[{ name: 'Tiến độ', path: '/tien-do' }]}
+>
+  <section class="container-page pt-5">
+    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Tiến độ của bạn</h1>
+    <p class="mt-1 text-sm text-muted">Tính từ các câu bạn đã làm và các đề đã thi trên trình duyệt này.</p>
+    <div class="mt-5">
+      <ReviewPlan client:load classes={CAR_CLASSES} chapters={chapters} criticalIds={CRITICAL_QUESTIONS.map((q) => q.id)} />
+    </div>
+  </section>
+</Base>

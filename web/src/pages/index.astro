@@ -1,17 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { ClassBar, RoadmapCard, ExamCta, ChapterProgress } from '../components/HomeIslands';
-import { CAR_CLASSES, CHAPTERS, CRITICAL_QUESTIONS, LANDING_CLASSES, QUESTIONS, SIGNS, paths } from '../lib/data';
+import { ClassChips, QuickExam, RoadmapCard, OverallProgress, ChapterProgress, WrongCount, SavedCount } from '../components/HomeIslands';
+import { CAR_CLASSES, CHAPTERS, CRITICAL_QUESTIONS, QUESTIONS, SIGNS, paths } from '../lib/data';
 import { TONES } from '../lib/icons';
 import { HOME_FAQ, faqLd } from '../lib/faq';
 
 const chapters = CHAPTERS.map((c) => ({ slug: c.slug, numeral: c.numeral, name: c.name, ids: c.questionIds }));
-const shortcuts = [
-  { href: '/on-tap', icon: 'book', tone: TONES.emerald, title: 'Ôn tập câu hỏi', detail: 'Toàn bộ 600 câu theo chương' },
+const saHinh = CHAPTERS.find((c) => c.slug === 'sa-hinh');
+const tiles = [
   { href: '/on-tap/cau-diem-liet', icon: 'alert', tone: TONES.red, title: 'Câu điểm liệt', detail: `${CRITICAL_QUESTIONS.length} câu bắt buộc đúng` },
-  { href: '/bien-bao', icon: 'sign', tone: TONES.amber, title: 'Biển báo', detail: `Tra cứu ${SIGNS.length} biển và vạch kẻ` },
+  { href: '/on-tap/cau-sai', icon: 'refresh', tone: TONES.amber, title: 'Câu hay sai', detail: null },
+  { href: '/bien-bao', icon: 'sign', tone: TONES.violet, title: 'Biển báo', detail: `Tra cứu ${SIGNS.length} biển` },
   { href: '/meo-ghi-nho', icon: 'bulb', tone: TONES.sky, title: 'Mẹo ghi nhớ', detail: 'Mẹo làm nhanh, dễ nhớ' },
+  ...(saHinh ? [{ href: paths.practice(saHinh.slug), icon: 'cross', tone: TONES.teal, title: 'Sa hình', detail: `${saHinh.questionIds.length} câu tình huống` } as const] : []),
+  { href: '/600-cau-hoi', icon: 'clipboard', tone: TONES.emerald, title: '600 câu có đáp án', detail: 'Xem nhanh cả bộ đề' },
 ] as const;
 ---
 
@@ -20,73 +23,130 @@ const shortcuts = [
   description="Ôn thi lý thuyết bằng lái xe ô tô hạng B, C1, C, D: 600 câu hỏi có đáp án và giải thích, 60 câu điểm liệt, thi thử bấm giờ chấm điểm như thi thật, tra cứu biển báo. Miễn phí."
   jsonLd={[faqLd(HOME_FAQ)]}
 >
-  <section class="container-page pt-10 text-center sm:pt-14">
-    <p class="chip mx-auto"><Icon name="shield" size={12} /> Bộ 600 câu hỏi sát hạch áp dụng từ 2025</p>
-    <h1 class="mx-auto mt-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
-      Ôn thi lý thuyết lái xe{' '}
-      <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">đậu ngay lần đầu</span>
-    </h1>
-    <p class="mx-auto mt-3 max-w-xl text-muted">
-      600 câu có đáp án và giải thích, thi thử bấm giờ như thi thật. Miễn phí, không cần đăng ký.
-    </p>
-    <!-- Above the cards below: their backdrop blur makes stacking contexts that would cover the class list. -->
-    <div class="relative z-30 mt-7">
-      <ClassBar client:load classes={CAR_CLASSES} total={QUESTIONS.length} />
-    </div>
-  </section>
-
-  <section class="container-page mt-8 grid gap-4 lg:grid-cols-[1.45fr_1fr]">
-    <RoadmapCard client:idle chapters={chapters} criticalIds={CRITICAL_QUESTIONS.map((q) => q.id)} />
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-strong via-blue-600 to-indigo-700 text-white p-6 shadow-2xl shadow-blue-600/30 sm:p-7">
-      <div class="grid size-11 place-items-center rounded-xl bg-white/15"><Icon name="clock" size={22} /></div>
-      <h2 class="mt-5 text-2xl font-bold tracking-tight sm:text-3xl">Thi thử online</h2>
-      <p class="mt-2 max-w-xs text-sm text-blue-100">
-        20 đề cố định và đề ngẫu nhiên cho từng hạng, bấm giờ và chấm điểm theo đúng cấu trúc đề thật.
-      </p>
-      <ExamCta client:idle />
-      <svg viewBox="0 0 200 200" class="pointer-events-none absolute -bottom-10 -right-8 w-52 text-white/10 sm:w-60" aria-hidden="true">
-        <circle cx="110" cy="110" r="70" fill="none" stroke="currentColor" stroke-width="14"></circle>
-        <path d="M110 70v40l26 16" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"></path>
-        <rect x="92" y="20" width="36" height="18" rx="6" fill="currentColor"></rect>
+  <!-- Hero banner -->
+  <section class="container-page pt-5 sm:pt-8">
+    <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-600 to-indigo-700 px-5 py-7 text-white shadow-2xl shadow-blue-600/25 sm:px-10 sm:py-12">
+      <div class="relative z-10 max-w-xl">
+        <p class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
+          <Icon name="shield" size={13} /> Bộ 600 câu sát hạch áp dụng từ 2025
+        </p>
+        <h1 class="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-[2.6rem]">
+          Ôn thi lý thuyết lái xe, đậu ngay lần đầu
+        </h1>
+        <p class="mt-3 text-sm text-blue-100 sm:text-base">
+          600 câu có đáp án và giải thích, thi thử bấm giờ như thi thật. Miễn phí, không cần đăng ký.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-2">
+          <a href="/on-tap" class="btn bg-white text-blue-700 shadow-lg hover:bg-blue-50">
+            <Icon name="book" size={16} /> Bắt đầu ôn tập
+          </a>
+          <a href="/thi-thu" class="btn bg-white/15 text-white ring-1 ring-white/30 hover:bg-white/25">
+            <Icon name="clock" size={16} /> Thi thử
+          </a>
+        </div>
+      </div>
+      <svg viewBox="0 0 240 200" class="pointer-events-none absolute -bottom-6 right-6 hidden w-80 text-white/10 sm:block" aria-hidden="true">
+        <path d="M200 140h20v-40l-26-52a20 20 0 0 0-18-11H64a20 20 0 0 0-18 11L20 100v40h20" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="round"></path>
+        <circle cx="70" cy="140" r="22" fill="currentColor"></circle>
+        <circle cx="170" cy="140" r="22" fill="currentColor"></circle>
+        <path d="M20 100h200" stroke="currentColor" stroke-width="12"></path>
       </svg>
     </div>
   </section>
 
-  <section class="container-page mt-4">
-    <ul class="card grid grid-cols-2 divide-line overflow-hidden lg:grid-cols-4 lg:divide-x">
+  <!-- Class picker -->
+  <section class="container-page mt-7">
+    <h2 class="section-title">Bạn đang học hạng nào?</h2>
+    <div class="mt-3">
+      <ClassChips client:load classes={CAR_CLASSES} />
+    </div>
+  </section>
+
+  <!-- What to study today -->
+  <section class="container-page mt-8">
+    <h2 class="section-title">Hôm nay bạn muốn học gì?</h2>
+    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+      <a href="/on-tap" class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-5 text-white shadow-xl shadow-emerald-600/20 sm:p-6">
+        <span class="grid size-11 place-items-center rounded-2xl bg-white/20"><Icon name="book" size={22} /></span>
+        <span class="mt-4 block text-xl font-bold">Ôn tập 600 câu</span>
+        <span class="mt-1 block text-sm text-emerald-50">Theo 6 chương, có giải thích từng câu</span>
+        <OverallProgress client:idle total={QUESTIONS.length} />
+        <span class="absolute right-5 top-5 grid size-9 place-items-center rounded-full bg-white/20 transition group-hover:translate-x-0.5">
+          <Icon name="arrow-right" size={16} />
+        </span>
+      </a>
+      <a href="/thi-thu" class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 p-5 text-white shadow-xl shadow-blue-600/20 sm:p-6">
+        <span class="grid size-11 place-items-center rounded-2xl bg-white/20"><Icon name="clock" size={22} /></span>
+        <span class="mt-4 block text-xl font-bold">Thi thử có bấm giờ</span>
+        <span class="mt-1 block text-sm text-blue-100">20 đề cố định và đề ngẫu nhiên cho từng hạng</span>
+        <span class="mt-4 flex flex-wrap gap-1.5 text-xs font-semibold">
+          <span class="rounded-full bg-white/15 px-2.5 py-1">Chấm điểm ngay</span>
+          <span class="rounded-full bg-white/15 px-2.5 py-1">Xem lại câu sai</span>
+        </span>
+        <span class="absolute right-5 top-5 grid size-9 place-items-center rounded-full bg-white/20 transition group-hover:translate-x-0.5">
+          <Icon name="arrow-right" size={16} />
+        </span>
+      </a>
+    </div>
+
+    <ul class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {
-        shortcuts.map((s) => (
+        tiles.map((t) => (
           <li>
-            <a href={s.href} class="group flex h-full items-center gap-3 p-4 transition hover:bg-raised/60">
-              <span class={`grid size-11 shrink-0 place-items-center rounded-xl ${s.tone}`}>
-                <Icon name={s.icon} size={20} />
+            <a href={t.href} class="tile group h-full">
+              <span class={`grid size-11 shrink-0 place-items-center rounded-2xl ${t.tone}`}>
+                <Icon name={t.icon} size={20} />
               </span>
               <span class="min-w-0 flex-1">
-                <span class="block text-sm font-bold">{s.title}</span>
-                <span class="block text-xs text-muted">{s.detail}</span>
+                <span class="block text-[15px] font-bold">{t.title}</span>
+                <span class="block truncate text-xs text-muted">{t.detail ?? <WrongCount client:idle />}</span>
               </span>
-              <Icon name="arrow-right" size={16} class="hidden text-muted transition group-hover:translate-x-0.5 sm:block" />
+              <span class="tile-arrow group-hover:bg-brand group-hover:text-white">
+                <Icon name="arrow-right" size={15} />
+              </span>
             </a>
           </li>
         ))
       }
     </ul>
+
+    <a href="/on-tap/cau-da-luu" class="tile group mt-3">
+      <span class="grid size-11 shrink-0 place-items-center rounded-2xl bg-amber-400/20 text-amber-700">
+        <Icon name="bookmark" size={20} />
+      </span>
+      <span class="min-w-0 flex-1">
+        <span class="block text-[15px] font-bold">Câu đã lưu</span>
+        <span class="block truncate text-xs text-muted"><SavedCount client:idle /></span>
+      </span>
+      <span class="tile-arrow group-hover:bg-brand group-hover:text-white"><Icon name="arrow-right" size={15} /></span>
+    </a>
   </section>
 
-  <section class="container-page mt-14">
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <p class="text-sm font-semibold text-blue-600">Ôn theo chương</p>
-        <h2 class="mt-1 text-2xl font-bold tracking-tight">6 chương của bộ 600 câu</h2>
-      </div>
-      <a href="/600-cau-hoi" class="hidden text-sm font-semibold text-blue-600 hover:text-blue-700 sm:block">Xem cả 600 câu →</a>
+  <!-- Quick exam for the selected class -->
+  <section class="container-page mt-8">
+    <h2 class="section-title">Thi thử nhanh</h2>
+    <div class="mt-3">
+      <QuickExam client:idle classes={CAR_CLASSES} />
     </div>
-    <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+  </section>
+
+  <!-- Roadmap -->
+  <section class="container-page mt-8">
+    <RoadmapCard client:idle chapters={chapters} criticalIds={CRITICAL_QUESTIONS.map((q) => q.id)} />
+  </section>
+
+  <!-- Chapters -->
+  <section class="container-page mt-10">
+    <div class="flex items-end justify-between gap-4">
+      <h2 class="section-title">Ôn theo 6 chương</h2>
+      <a href="/600-cau-hoi" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Xem cả 600 câu</a>
+    </div>
+    <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {
         CHAPTERS.map((c) => (
-          <li class="card group relative p-5 transition hover:border-brand/40">
+          <li class="card group relative p-5 transition hover:-translate-y-0.5 hover:border-brand/40">
             <div class="flex items-start gap-3">
-              <span class={`grid size-11 shrink-0 place-items-center rounded-xl ${TONES[c.tone]}`}>
+              <span class={`grid size-11 shrink-0 place-items-center rounded-2xl ${TONES[c.tone]}`}>
                 <Icon name={c.icon as any} size={20} />
               </span>
               <div class="min-w-0">
@@ -106,30 +166,10 @@ const shortcuts = [
     </ul>
   </section>
 
-  <section class="container-page mt-14">
-    <p class="text-sm font-semibold text-blue-600">Thi thử theo hạng bằng</p>
-    <h2 class="mt-1 text-2xl font-bold tracking-tight">Chọn hạng để vào đề</h2>
-    <ul class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-      {
-        LANDING_CLASSES.map((c) => (
-          <li>
-            <a href={paths.licenseClass(c.id)} class="card block p-4 transition hover:border-brand/40 hover:bg-raised/60">
-              <span class="text-2xl font-bold text-blue-600">{c.id}</span>
-              <span class="mt-1 block text-xs text-soft">{c.title}</span>
-              <span class="mt-3 block text-[11px] text-muted">
-                {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="container-page mt-14 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
+  <!-- FAQ -->
+  <section class="container-page mt-10 grid gap-6 lg:grid-cols-[1fr_1.5fr]">
     <div>
-      <p class="text-sm font-semibold text-blue-600">Hỏi đáp</p>
-      <h2 class="mt-1 text-2xl font-bold tracking-tight">Câu hỏi thường gặp về thi lý thuyết</h2>
+      <h2 class="section-title">Câu hỏi thường gặp</h2>
       <p class="mt-2 text-sm text-muted">
         Thi lý thuyết là bài đầu tiên khi thi bằng lái ô tô. Đề lấy từ bộ 600 câu, có câu điểm liệt, sai một câu điểm liệt là trượt.
       </p>
@@ -137,7 +177,7 @@ const shortcuts = [
     <div class="space-y-2">
       {
         HOME_FAQ.map((f) => (
-          <details class="card group p-4 open:bg-raised/60">
+          <details class="card group rounded-2xl p-4 open:bg-white">
             <summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
               {f.question}
               <Icon name="chevron-down" size={18} class="shrink-0 text-muted transition group-open:rotate-180" />
