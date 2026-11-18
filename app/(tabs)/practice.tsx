@@ -3,6 +3,7 @@ import { ScrollView, Text } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { MenuCard } from '@/components/MenuCard';
 import { LinkChips } from '@/components/seo/ContentPage';
+import { WebOnly } from '@/components/seo/WebOnly';
 import { TIP_SECTIONS } from '@/data/tips';
 import { TOPIC_META } from '@/data/topics';
 import { routeMetadata } from '@/seo/pages';
@@ -61,13 +62,15 @@ const PracticeScreen = () => {
         badge={`${TIP_SECTIONS.length} nhóm`}
         onPress={() => router.push('/tips')}
       />
-      <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Tra cứu đáp án</Text>
-      <LinkChips
-        links={[
-          { name: '600 câu hỏi có đáp án', path: paths.allQuestions },
-          { name: '60 câu điểm liệt', path: paths.critical },
-        ]}
-      />
+      <WebOnly>
+        <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Tra cứu đáp án</Text>
+        <LinkChips
+          links={[
+            { name: '600 câu hỏi có đáp án', path: paths.allQuestions },
+            { name: '60 câu điểm liệt', path: paths.critical },
+          ]}
+        />
+      </WebOnly>
     </ScrollView>
   );
 };
