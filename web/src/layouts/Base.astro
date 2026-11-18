@@ -164,12 +164,12 @@ const active = (match: RegExp) => match.test(path);
     </main>
 
     {
-      zaloUrl && !app && (
+      zaloUrl && (
         <a
           href={zaloUrl}
           target="_blank"
           rel="noopener"
-          class:list={['zalo-float', chatEnabled && path !== '/tro-chuyen' && 'zalo-float-stacked']}
+          class:list={['zalo-float', chatEnabled && path !== '/tro-chuyen' && 'zalo-float-stacked', app && 'zalo-float-app']}
           aria-label="Nhắn Zalo để được hỗ trợ ôn luyện"
         >
           <span class="zalo-float-icon" aria-hidden="true">Zalo</span>
