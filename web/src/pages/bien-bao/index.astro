@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import SignBrowser from '../../components/SignBrowser';
+import PageHero from '../../components/PageHero.astro';
 import { SIGNS, SIGN_GROUP_LABEL, SIGN_GROUP_ORDER, paths, signLabel } from '../../lib/data';
 
 const signs = SIGNS.map((s) => ({ ...s, href: paths.sign(s) }));
@@ -12,10 +13,22 @@ const groups = SIGN_GROUP_ORDER.map((id) => ({ id, label: SIGN_GROUP_LABEL[id] }
   description="Tra cứu biển báo cấm, biển nguy hiểm, biển hiệu lệnh, biển chỉ dẫn, biển phụ và vạch kẻ đường theo QCVN 41:2024, có hình và ý nghĩa từng biển."
   trail={[{ name: 'Biển báo', path: '/bien-bao' }]}
 >
-  <section class="container-page pt-4">
-    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Biển báo giao thông</h1>
-    <p class="mt-1 text-muted">{SIGNS.length} biển báo và vạch kẻ đường. Bấm vào biển để xem ý nghĩa.</p>
-    <div class="mt-2">
+  <section class="container-page exam-page">
+    <PageHero
+      kicker="TRA CỨU BIỂN BÁO"
+      kickerIcon="sign"
+      title="Biển báo giao thông"
+      highlight="nhìn hình là nhớ nghĩa"
+      lead={`${SIGNS.length} biển báo và vạch kẻ đường theo QCVN 41:2024. Tìm theo tên hoặc số hiệu, bấm vào biển để xem ý nghĩa.`}
+      facts={[
+        { icon: 'search', label: 'Tìm nhanh' },
+        { icon: 'grid', label: `${groups.length} nhóm biển` },
+        { icon: 'eye', label: 'Có hình minh họa' },
+      ]}
+      ringIcon="sign"
+      ticket={{ label: 'MẸO NHỚ BIỂN', icon: 'bulb', title: 'Tròn viền đỏ: cấm<br />Tam giác vàng: nguy hiểm', note: 'Tròn nền xanh là biển hiệu lệnh' }}
+    />
+    <div class="mt-4">
       <SignBrowser client:load signs={signs} groups={groups} />
     </div>
     <noscript>

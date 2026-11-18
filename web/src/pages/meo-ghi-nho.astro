@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
 import { TIPS, paths } from '../lib/data';
 
 const KIND = {
@@ -15,10 +16,22 @@ const KIND = {
   description="Mẹo làm nhanh 600 câu lý thuyết lái xe: cách đọc phương án, nhóm câu điểm liệt, mẹo biển báo, sa hình và các con số hay gặp."
   trail={[{ name: 'Mẹo ghi nhớ', path: '/meo-ghi-nho' }]}
 >
-  <section class="container-page pt-4">
-    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Mẹo ghi nhớ</h1>
-    <p class="mt-1 max-w-2xl text-muted">Mẹo giúp kiểm tra lại đáp án nhanh hơn. Hiểu câu hỏi vẫn là chính, mẹo chỉ để chắc tay.</p>
-    <nav class="mt-5 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" aria-label="Nhóm mẹo">
+  <section class="container-page exam-page">
+    <PageHero
+      kicker="HỌC NHANH HƠN"
+      kickerIcon="bulb"
+      title="Mẹo ghi nhớ"
+      highlight="chắc tay khi làm bài"
+      lead="Mẹo giúp kiểm tra lại đáp án nhanh hơn. Hiểu câu hỏi vẫn là chính, mẹo chỉ để chắc tay."
+      facts={[
+        { icon: 'grid', label: `${TIPS.length} nhóm mẹo` },
+        { icon: 'alert', label: 'Mẹo câu điểm liệt' },
+        { icon: 'sign', label: 'Mẹo biển báo, sa hình' },
+      ]}
+      ringIcon="bulb"
+      ticket={{ label: 'NHỚ NHANH', icon: 'zap', title: 'Đọc kỹ câu hỏi<br />rồi mới dùng mẹo', note: 'Mỗi mẹo có câu hỏi ví dụ đi kèm' }}
+    />
+    <nav class="mt-6 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" aria-label="Nhóm mẹo">
       {TIPS.map((s) => <a href={`#${s.id}`} class="shrink-0 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-soft hover:text-slate-900">{s.short}</a>)}
     </nav>
     {
