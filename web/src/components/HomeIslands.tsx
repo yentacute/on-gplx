@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import type { IconName } from '../lib/icons';
+import type { LicenseClass } from '../lib/types';
 import { Icon } from './Icon';
 import { DEFAULT_CLASS, getAnswers, getExamScores, getLicenseClass, getSaved, setLicenseClass, useStored } from '../lib/progress';
 
@@ -177,4 +179,80 @@ export function RememberClass({ id }: { id: string }) {
 export function SavedCount() {
   const saved = useStored(getSaved, []);
   return <>{saved.length ? `${saved.length} câu đã lưu` : 'Bấm lưu ở câu khó để xem lại'}</>;
+}
+
+const MAIN_CLASSES = ['B', 'C1', 'C', 'D1', 'D'];
+const classIcon = (id: string): IconName => (id.startsWith('D') ? 'bus' : id.startsWith('C') ? 'truck' : 'car');
+
+/** "Bạn đang học hạng nào?": icon tiles for the common classes; "Tất cả" opens the rest. */
+export function ClassPicker({ classes }: { classes: LicenseClass[] }) {
+  const selectedId = useStored(getLicenseClass, DEFAULT_CLASS);
+  const [showAll, setShowAll] = useState(false);
+  const main = classes.filter((c) => MAIN_CLASSES.includes(c.id));
+  const others = classes.filter((c) => !MAIN_CLASSES.includes(c.id));
+  const otherSelected = others.some((c) => c.id === selectedId);
+  const selected = classes.find((c) => c.id === selectedId) ?? main[0];
+  return (
+    <div>
+      <div className="hub-classes">
+        {main.map((c) => (
+          <button key={c.id} type="button" onClick={() => setLicenseClass(c.id)} aria-pressed={c.id === selectedId} title={c.title} className="hub-class">
+            <Icon name={classIcon(c.id)} size={22} />
+            <span>{c.id}</span>
+          </button>
+        ))}
+        <button type="button" onClick={() => setShowAll((v) => !v)} aria-expanded={showAll} aria-pressed={otherSelected} className="hub-class">
+          <Icon name="dots" size={22} />
+          <span>{otherSelected ? selectedId : 'Tất cả'}</span>
+        </button>
+      </div>
+      {showAll && (
+        <div className="hub-class-more">
+          {others.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={c.id === selectedId}
+              onClick={() => {
+                setLicenseClass(c.id);
+                setShowAll(false);
+              }}
+            >
+              <b>{c.id}</b> {c.title}
+            </button>
+          ))}
+        </div>
+      )}
+      {selected && (
+        <p className="hub-class-note">
+          Hạng <b>{selected.id}</b> · {selected.title} · {selected.exam.questionCount} câu, {selected.exam.timeMinutes} phút, đạt{' '}
+          {selected.exam.passingScore}/{selected.exam.questionCount}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Small progress line inside the "Ôn tập" feature card. */
+export function StudyProgress({ total }: { total: number }) {
+  const answers = useStored(getAnswers, {});
+  const done = Object.keys(answers).length;
+  return (
+    <span className="hub-feature-progress">
+      <span style={{ width: `${Math.round((done / total) * 100)}%` }} />
+      <small>
+        {done}/{total} câu đã làm
+      </small>
+    </span>
+  );
+}
+
+/** "Thi thử" feature card link that follows the selected class. */
+export function ExamLink() {
+  const classId = useStored(getLicenseClass, DEFAULT_CLASS);
+  return (
+    <a href={`/thi-thu/hang-${classId.toLowerCase()}`} className="hub-feature-button hub-feature-button-solid">
+      Thi hạng {classId} <Icon name="arrow-right" size={17} />
+    </a>
+  );
 }

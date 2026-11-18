@@ -1,17 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { RoadmapCard, ExamCta, ChapterProgress } from '../components/HomeIslands';
-import { CHAPTERS, CRITICAL_QUESTIONS, SIGNS, paths } from '../lib/data';
+import { RoadmapCard, ExamCta, ChapterProgress, ClassPicker, StudyProgress, ExamLink, WrongCount, SavedCount } from '../components/HomeIslands';
+import { CAR_CLASSES, CHAPTERS, CRITICAL_QUESTIONS, QUESTIONS, SIGNS, TIPS, paths } from '../lib/data';
 import { TONES } from '../lib/icons';
 import { HOME_FAQ, faqLd } from '../lib/faq';
 
 const chapters = CHAPTERS.map((c) => ({ slug: c.slug, numeral: c.numeral, name: c.name, ids: c.questionIds }));
-const shortcuts = [
-  { href: '/on-tap', icon: 'book', accent: 'blue', title: 'Ôn 600 câu hỏi', detail: 'Học theo chương, xem giải thích', label: 'HỌC LÝ THUYẾT', action: 'Bắt đầu ôn' },
-  { href: '/cau-diem-liet', icon: 'alert', accent: 'red', title: 'Câu điểm liệt', detail: `${CRITICAL_QUESTIONS.length} câu quan trọng cần nắm chắc`, label: 'CẦN NẮM CHẮC', action: 'Ôn câu điểm liệt' },
-  { href: '/bien-bao', icon: 'sign', accent: 'green', title: 'Biển báo giao thông', detail: `Tra cứu ${SIGNS.length} biển và vạch kẻ`, label: 'TRA CỨU NHANH', action: 'Xem biển báo' },
-  { href: '/meo-ghi-nho', icon: 'bulb', accent: 'orange', title: 'Mẹo ghi nhớ', detail: 'Gợi ý ngắn, dễ nhớ và dễ áp dụng', label: 'HỌC NHANH HƠN', action: 'Xem mẹo học' },
+const tiles = [
+  { href: '/on-tap/cau-diem-liet', icon: 'alert', tone: 'red', title: `${CRITICAL_QUESTIONS.length} câu điểm liệt`, detail: 'Bắt buộc phải đúng' },
+  { href: '/on-tap', icon: 'book', tone: 'blue', title: 'Lý thuyết theo chương', detail: `${CHAPTERS.length} chương, học từng chủ đề` },
+  { href: '/bien-bao', icon: 'sign', tone: 'amber', title: 'Biển báo', detail: `Tra cứu ${SIGNS.length} biển` },
+  { href: '/on-tap/cau-sai', icon: 'refresh', tone: 'violet', title: 'Câu hay sai', detail: null },
+  { href: '/meo-ghi-nho', icon: 'bulb', tone: 'green', title: 'Mẹo ghi nhớ', detail: 'Mẹo làm nhanh, dễ nhớ' },
+  { href: '/600-cau-hoi', icon: 'clipboard', tone: 'sky', title: '600 câu có đáp án', detail: 'Xem nhanh cả bộ đề' },
 ] as const;
 ---
 
@@ -37,9 +39,62 @@ const shortcuts = [
     </div>
   </section>
 
-  <section class="container-page home-section home-activities-section">
-    <div class="home-section-heading"><div><p class="home-kicker">HỌC THEO CÁCH CỦA BẠN</p><h2>Hôm nay bạn muốn học gì?</h2><p>Chọn một nội dung và bắt đầu ngay.</p></div></div>
-    <ul class="home-activity-grid">{shortcuts.map((s) => <li><a href={s.href} class="home-activity-card" data-accent={s.accent}><span class="home-activity-icon"><Icon name={s.icon} size={27} /></span><span class="home-activity-label">{s.label}</span><strong>{s.title}</strong><span class="home-activity-detail">{s.detail}</span><span class="home-activity-action">{s.action} <Icon name="arrow-right" size={16} /></span></a></li>)}</ul>
+  <section class="container-page hub" aria-label="Chọn nội dung học">
+    <div class="hub-head">
+      <h2>Bạn đang học hạng nào?</h2>
+      <a href="/thi-thu">Chọn hạng khác <Icon name="chevron-right" size={15} /></a>
+    </div>
+    <ClassPicker client:load classes={CAR_CLASSES} />
+
+    <div class="hub-head hub-head-spaced">
+      <div>
+        <h2>Hôm nay bạn muốn học gì?</h2>
+        <p>Chọn nội dung và bắt đầu ôn thi ngay.</p>
+      </div>
+    </div>
+    <div class="hub-features">
+      <a href="/on-tap" class="hub-feature hub-feature-primary">
+        <span class="hub-feature-art" aria-hidden="true"><Icon name="book" size={86} /></span>
+        <strong>{QUESTIONS.length} câu lý thuyết</strong>
+        <small>Đáp án kèm giải thích dễ nhớ</small>
+        <StudyProgress client:idle total={QUESTIONS.length} />
+        <span class="hub-feature-button">Ôn ngay <Icon name="arrow-right" size={17} /></span>
+      </a>
+      <div class="hub-feature hub-feature-light">
+        <span class="hub-feature-top">
+          <span class="hub-feature-icon"><Icon name="clock" size={22} /></span>
+          <span class="hub-feature-tag"><Icon name="chart" size={13} /> Bấm giờ, chấm điểm</span>
+        </span>
+        <strong>Thi thử như thi thật</strong>
+        <small>20 đề cố định và đề ngẫu nhiên</small>
+        <ExamLink client:idle />
+      </div>
+    </div>
+
+    <ul class="hub-tiles">
+      {
+        tiles.map((t) => (
+          <li>
+            <a href={t.href} class="hub-tile" data-tone={t.tone}>
+              <span class="hub-tile-icon"><Icon name={t.icon} size={21} /></span>
+              <span class="hub-tile-text">
+                <strong>{t.title}</strong>
+                <small>{t.detail ?? <WrongCount client:idle />}</small>
+              </span>
+              <span class="hub-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href="/on-tap/cau-da-luu" class="hub-tile hub-tile-wide" data-tone="blue">
+      <span class="hub-tile-icon"><Icon name="bookmark" size={21} /></span>
+      <span class="hub-tile-text">
+        <strong>Câu đã lưu</strong>
+        <small><SavedCount client:idle /></small>
+      </span>
+      <span class="hub-tile-arrow"><Icon name="arrow-right" size={15} /></span>
+    </a>
   </section>
 
   <section class="container-page home-section home-plan-section" aria-label="Lộ trình ôn tập và thi thử">

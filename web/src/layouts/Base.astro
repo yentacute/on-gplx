@@ -104,7 +104,7 @@ const active = (match: RegExp) => match.test(path);
     </script>
   </head>
   <body class="min-h-dvh font-sans">
-    <header class="sticky top-0 z-40 border-b border-line/70 bg-white/80 backdrop-blur-md">
+    <header class:list={["sticky top-0 z-40 border-b border-line/70 bg-white/80 backdrop-blur-md", app && "hidden"]}>
       <div class="container-page flex h-16 items-center gap-4">
         <a href="/" class="flex shrink-0 items-center gap-2.5 font-bold tracking-tight">
           <img src="/icon-192.png" alt="" width="34" height="34" class="rounded-xl shadow-sm" />
@@ -164,12 +164,12 @@ const active = (match: RegExp) => match.test(path);
     </main>
 
     {
-      zaloUrl && (
+      zaloUrl && path === '/' && (
         <a
           href={zaloUrl}
           target="_blank"
           rel="noopener"
-          class:list={['zalo-float', chatEnabled && path !== '/tro-chuyen' && 'zalo-float-stacked', app && 'zalo-float-app']}
+          class:list={['zalo-float', chatEnabled && 'zalo-float-stacked']}
           aria-label="Nhắn Zalo để được hỗ trợ ôn luyện"
         >
           <span class="zalo-float-icon" aria-hidden="true">Zalo</span>
@@ -181,7 +181,7 @@ const active = (match: RegExp) => match.test(path);
       )
     }
 
-    {chatEnabled && path !== '/tro-chuyen' && <ChatSidebar client:load url={import.meta.env.PUBLIC_SUPABASE_URL} publishableKey={import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY} />}
+    {chatEnabled && path === '/' && <ChatSidebar client:load url={import.meta.env.PUBLIC_SUPABASE_URL} publishableKey={import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY} />}
 
     {
       !app && (
