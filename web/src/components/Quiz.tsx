@@ -59,7 +59,6 @@ type Status = 'right' | 'wrong' | 'picked' | 'empty';
 export default function Quiz({ title, subtitle, backHref, ids, source, exam, moreHref, randomFor }: Props) {
   const onlyWrong = source === 'wrong';
   const saved = useStored(getSaved, []);
-  const log = useStored(getAnswers, {});
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [picked, setPicked] = useState<Record<number, number>>({});
   const [index, setIndex] = useState(0);
@@ -336,29 +335,26 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
         {/* Question */}
         <article className="card min-w-0 p-4 sm:p-6">
           <div className="flex items-start gap-2">
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-              <span className="max-w-full truncate rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-semibold text-blue-700">{q.chapter}</span>
+            <h2 className="min-w-0 flex-1 text-[17px] font-semibold leading-relaxed sm:text-lg">
+              <span className="mr-2 inline-block -translate-y-px rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs font-bold text-white">Câu {index + 1}</span>
               {q.critical && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-1 text-[11px] font-semibold text-red-600">
-                  <Icon name="alert" size={12} /> Điểm liệt
-                </span>
+                <span className="mr-2 inline-block -translate-y-px rounded-full bg-red-500/15 px-2.5 py-0.5 align-middle text-xs font-semibold text-red-600">Điểm liệt</span>
               )}
-            </div>
-            <button
-              type="button"
-              onClick={() => toggleSaved(q.id)}
-              aria-pressed={saved.includes(q.id)}
-              aria-label={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
-              title={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
-              className={`grid size-9 shrink-0 place-items-center rounded-full border transition ${saved.includes(q.id) ? 'border-amber-400/50 bg-amber-400/20 text-amber-600' : 'border-line text-muted hover:bg-raised hover:text-slate-900'}`}
-            >
-              <Icon name="bookmark" size={16} className={saved.includes(q.id) ? 'fill-current' : ''} />
-            </button>
+              {q.text}
+            </h2>
+            {!isExam && (
+              <button
+                type="button"
+                onClick={() => toggleSaved(q.id)}
+                aria-pressed={saved.includes(q.id)}
+                aria-label={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+                title={saved.includes(q.id) ? 'Bỏ lưu câu này' : 'Lưu câu này để ôn lại'}
+                className={`grid size-9 shrink-0 place-items-center rounded-full border transition ${saved.includes(q.id) ? 'border-amber-400/50 bg-amber-400/20 text-amber-600' : 'border-line text-muted hover:bg-raised hover:text-slate-900'}`}
+              >
+                <Icon name="bookmark" size={16} className={saved.includes(q.id) ? 'fill-current' : ''} />
+              </button>
+            )}
           </div>
-          <h2 className="mt-3 text-[17px] font-semibold leading-relaxed sm:text-lg">
-            <span className="mr-2 inline-block -translate-y-px rounded-full bg-brand px-2.5 py-0.5 align-middle text-xs font-bold text-white">Câu {index + 1}</span>
-            {q.text}
-          </h2>
           {q.image && (
             <img
               src={q.image}
@@ -404,13 +400,6 @@ export default function Quiz({ title, subtitle, backHref, ids, source, exam, mor
             })}
           </ul>
 
-          {!isExam && answeredNow && log[q.id]?.tries ? (
-            <p className="mt-4 rounded-xl bg-raised/70 px-3.5 py-2.5 text-xs text-soft">
-              Bạn đã trả lời câu này <b className="text-slate-900">{log[q.id]!.tries} lần</b>:{' '}
-              <b className="text-emerald-600">{log[q.id]!.tries! - (log[q.id]!.wrong ?? 0)} lần đúng</b> và{' '}
-              <b className="text-red-600">{log[q.id]!.wrong ?? 0} lần sai</b>.
-            </p>
-          ) : null}
 
           {reveal && (answeredNow || reviewing) && q.hint && (
             <div className="mt-4 rounded-2xl border border-line border-l-4 border-l-brand bg-white p-4 text-sm leading-relaxed text-soft shadow-sm">
