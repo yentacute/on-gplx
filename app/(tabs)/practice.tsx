@@ -4,6 +4,7 @@ import { useQuestions } from '@/api/queries';
 import { MenuCard } from '@/components/MenuCard';
 import { TIP_SECTIONS } from '@/data/tips';
 import { TOPIC_META } from '@/data/topics';
+import { routeMetadata } from '@/seo/pages';
 import { useSettings } from '@/store/settings';
 import type { QuizMode } from '@/types';
 
@@ -61,5 +62,7 @@ const PracticeScreen = () => {
     </ScrollView>
   );
 };
+
+export const generateMetadata = routeMetadata('/practice');
 
 export default PracticeScreen;

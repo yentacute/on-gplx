@@ -20,6 +20,8 @@ const TEXT_SIZES: Record<string, [fontSize: number, lineHeight: number]> = {
 };
 
 const addStyle = (css: string) => {
+  // Static rendering runs this module in Node, where there is no document.
+  if (typeof document === 'undefined') return;
   const style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);

@@ -1,6 +1,7 @@
 import '@/theme/setup';
 import '../global.css';
 import { Provider as AntdProvider } from '@ant-design/react-native';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -12,17 +13,27 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HeaderBackButton } from '@/components/HeaderBackButton';
 import { StartupScreen } from '@/components/StartupScreen';
 import { useTrackPageViews } from '@/hooks/useTrackPageViews';
+import { RouteSeo } from '@/seo/RouteSeo';
 import { INTER } from '@/theme/inter';
 
 SplashScreen.preventAutoHideAsync();
 
 const backButton = () => <HeaderBackButton />;
+
+// Head tags only render inside a focused screen, so each screen gets them here.
+const withRouteSeo = ({ children }: { children: ReactNode }) => (
+  <>
+    <RouteSeo />
+    {children}
+  </>
+);
 
 const RootLayout = () => {
   const [fontsLoaded, fontError] = useFonts({
@@ -30,9 +41,13 @@ const RootLayout = () => {
     [INTER.medium]: Inter_500Medium,
     [INTER.semibold]: Inter_600SemiBold,
     [INTER.bold]: Inter_700Bold,
+    // Registered here so static web pages render icon glyphs, matching the client.
+    ...Ionicons.font,
   });
-  // Carry on with system fonts if Inter fails to load.
-  const ready = fontsLoaded || fontError !== null;
+  // Carry on with system fonts if Inter fails to load. On web, Inter comes from @font-face
+  // (theme/setup.web.ts), so render straight away: the static HTML is the full page and the
+  // first client render must match it for hydration.
+  const ready = Platform.OS === 'web' || fontsLoaded || fontError !== null;
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -52,7 +67,7 @@ const RootLayout = () => {
         <QueryClientProvider client={queryClient}>
           <AntdProvider>
             <StatusBar style="dark" />
-            <Stack>
+            <Stack screenLayout={withRouteSeo}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="quiz" options={{ title: 'Làm bài', headerLeft: backButton }} />
               <Stack.Screen name="tips" options={{ title: 'Mẹo ghi nhớ', headerLeft: backButton }} />

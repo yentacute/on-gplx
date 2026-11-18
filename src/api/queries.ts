@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchQuestions, fetchSigns } from '@/api/client';
+import { SIGNS, questionsForClass } from '@/data';
 import { useSettings } from '@/store/settings';
 import type { ExamVersion, LicenseClassId } from '@/types';
 
@@ -13,8 +14,10 @@ export const useQuestions = () => {
   return useQuery({
     queryKey: queryKeys.questions(licenseClass, version),
     queryFn: () => fetchQuestions(licenseClass, version),
+    // Bundled data: render it on the first pass so static web pages ship real content.
+    initialData: () => questionsForClass(licenseClass),
     staleTime: 60 * 60 * 1000,
   });
 };
 
-export const useSigns = () => useQuery({ queryKey: queryKeys.signs, queryFn: fetchSigns, staleTime: Infinity });
+export const useSigns = () => useQuery({ queryKey: queryKeys.signs, queryFn: fetchSigns, initialData: SIGNS, staleTime: Infinity });

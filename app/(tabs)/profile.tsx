@@ -4,10 +4,11 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 import { MenuCard } from '@/components/MenuCard';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
 import { useResetProgress } from '@/hooks/useResetProgress';
+import { routeMetadata } from '@/seo/pages';
 import { useSettings } from '@/store/settings';
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
+  <Text role="heading" aria-level={2} className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
 );
 
 const ProfileScreen = () => {
@@ -56,5 +57,7 @@ const ProfileScreen = () => {
     </ScrollView>
   );
 };
+
+export const generateMetadata = routeMetadata('/profile');
 
 export default ProfileScreen;

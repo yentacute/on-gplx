@@ -3,6 +3,7 @@ import { ScrollView, Text } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { MenuCard } from '@/components/MenuCard';
 import { TOPIC_META } from '@/data/topics';
+import { routeMetadata } from '@/seo/pages';
 
 const TopicsScreen = () => {
   const router = useRouter();
@@ -28,5 +29,7 @@ const TopicsScreen = () => {
     </ScrollView>
   );
 };
+
+export const generateMetadata = routeMetadata('/topics');
 
 export default TopicsScreen;

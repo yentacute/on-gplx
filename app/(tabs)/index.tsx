@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useQuestions } from '@/api/queries';
 import { classHasQuestions } from '@/data';
 import { LICENSE_CLASSES } from '@/data/licenseClasses';
+import { routeMetadata } from '@/seo/pages';
 import { useSettings } from '@/store/settings';
 import type { LicenseClass, LicenseClassId } from '@/types';
 
@@ -17,7 +18,7 @@ const SHORTCUTS: { href: Href; title: string; icon: IconName; color: string }[] 
 ];
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <Text className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
+  <Text role="heading" aria-level={2} className="mt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{children}</Text>
 );
 
 const HeroStat = ({
@@ -157,5 +158,7 @@ const HomeScreen = () => {
     </ScrollView>
   );
 };
+
+export const generateMetadata = routeMetadata('/');
 
 export default HomeScreen;
