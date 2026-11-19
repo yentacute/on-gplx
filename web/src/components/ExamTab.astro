@@ -1,0 +1,95 @@
+---
+// The Thi thử screen for one class, shared by /thi-thu (learner's default class) and /thi-thu/hang-x.
+import Icon from './Icon.astro';
+import { ExamClassSwitch } from './HomeIslands';
+import { ExamCellStatus, ExamHeroProgress, ExamRevealToggle } from './ExamIslands';
+import { CAR_CLASSES, CHAPTERS, fixedExams, paths } from '../lib/data';
+import { classFaq } from '../lib/faq';
+import type { LicenseClass } from '../lib/types';
+
+type Props = { c: LicenseClass };
+const { c } = Astro.props;
+const exams = fixedExams(c);
+const faq = classFaq(c);
+const heading = `Thi thử lý thuyết lái xe hạng ${c.id}`;
+---
+
+  <section class="container-page exam-class-page">
+    <div class="xt">
+      <ExamClassSwitch client:load classes={CAR_CLASSES} currentId={c.id} hrefPattern="/thi-thu/hang-{id}" />
+      <div class="xt-hero">
+        <div class="xt-hero-head">
+          <div class="min-w-0">
+            <h1>{heading}</h1>
+            <p>Hạng {c.id} · {exams.length} đề · sai câu điểm liệt là trượt</p>
+          </div>
+          <ExamHeroProgress client:load classId={c.id} examIds={exams.map((e) => e.id)} examHref={paths.exam(c.id, 0).replace(/0$/, '{id}')} />
+        </div>
+        <ul class="xt-hero-chips">
+          <li><Icon name="file" size={13} /> {c.exam.questionCount} câu</li>
+          <li><Icon name="clock" size={13} /> {c.exam.timeMinutes} phút</li>
+          <li><Icon name="check" size={13} /> Đạt {c.exam.passingScore}/{c.exam.questionCount}</li>
+        </ul>
+      </div>
+
+      <a href={paths.exam(c.id, 'ngau-nhien')} class="xt-row">
+        <span class="xt-row-icon"><Icon name="shuffle" size={20} /></span>
+        <span class="min-w-0 flex-1"><strong>Đề ngẫu nhiên</strong><small>Mỗi lần một đề mới, cùng cấu trúc</small></span>
+        <span class="xt-pill">{c.exam.timeMinutes} phút</span>
+        <Icon name="chevron-right" size={18} class="text-muted" />
+      </a>
+
+      <p class="xt-label">Xem đáp án</p>
+      <ExamRevealToggle client:load />
+
+      <h2 class="xt-label">Danh sách đề thi</h2>
+      <ul class="xt-grid">
+        {
+          exams.map((e) => (
+            <li>
+              <a href={paths.exam(c.id, e.id)} class="xt-cell">
+                <strong>Đề {e.id}</strong>
+                <ExamCellStatus client:visible examKey={`${c.id}-${e.id}`} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="exam-info-grid">
+      <div class="exam-info-card">
+        <h2 class="text-lg font-bold">Cấu trúc đề thi hạng {c.id}</h2>
+        <p class="mt-2 text-sm leading-relaxed text-soft">
+          Đề gồm {c.exam.questionCount} câu lấy từ bộ 600 câu hỏi, chia theo 6 chương. Mỗi đề có câu điểm liệt: trả lời sai
+          một câu điểm liệt là trượt ngay. Ôn trước theo từng chương:
+        </p>
+        <ul class="mt-3 space-y-1.5 text-sm">
+          {
+            CHAPTERS.map((ch) => (
+              <li>
+                <a href={paths.chapter(ch)} class="text-blue-600 hover:underline">
+                  Chương {ch.numeral}. {ch.name}
+                </a>
+                <span class="text-muted"> ({ch.questionIds.length} câu)</span>
+              </li>
+            ))
+          }
+          <li><a href="/cau-diem-liet" class="text-blue-600 hover:underline">60 câu điểm liệt</a></li>
+        </ul>
+      </div>
+      <div class="exam-faq-list">
+        {
+          faq.map((f) => (
+            <details class="card group p-4">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold">
+                {f.question}
+                <Icon name="chevron-down" size={18} class="shrink-0 text-muted transition group-open:rotate-180" />
+              </summary>
+              <p class="mt-2 text-sm leading-relaxed text-soft">{f.answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>

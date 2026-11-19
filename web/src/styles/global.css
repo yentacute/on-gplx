@@ -443,3 +443,48 @@
 .xt-class-list .xt-row { margin-top: 0; margin-bottom: 10px; }
 .xt-row-icon-blue { background: #dbeafe; color: #1d4ed8; font-size: .95rem; }
 @media (max-width: 767px) { .xt-class-list { grid-template-columns: 1fr; } }
+
+/* "Tất cả" class picker popup on the home page. */
+.hub-sheet-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: #0f172a80; animation: hub-fade .15s ease-out; }
+.hub-sheet { width: min(100%, 440px); max-height: 80dvh; overflow-y: auto; border-radius: 22px; padding: 16px; background: #fff; box-shadow: 0 24px 60px -20px #0f172a66; }
+.hub-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.hub-sheet-head h3 { color: #142d50; font-size: 1.05rem; font-weight: 800; }
+.hub-sheet-head button { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 999px; background: #f1f5f9; color: #475569; }
+.hub-sheet-list { display: grid; gap: 8px; }
+.hub-sheet-list button { display: flex; width: 100%; align-items: center; gap: 12px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 12px; background: #fff; text-align: left; transition: border-color .15s, background .15s; }
+.hub-sheet-list button:hover { border-color: #93b4ec; }
+.hub-sheet-list button[aria-pressed='true'] { border-color: #2563eb; background: #eff6ff; }
+.hub-sheet-list strong { display: block; color: #0f172a; font-size: .9rem; }
+.hub-sheet-list small { display: block; margin-top: 1px; color: #64748b; font-size: .76rem; }
+.hub-sheet-id { display: grid; min-width: 44px; height: 40px; flex: none; place-items: center; border-radius: 12px; background: #dbeafe; color: #1d4ed8; font-size: .85rem; font-weight: 800; }
+@keyframes hub-fade { from { opacity: 0; } }
+@keyframes hub-rise { from { transform: translateY(24px); } }
+@media (max-width: 767px) {
+  .hub-sheet-backdrop { place-items: end stretch; padding: 0; }
+  .hub-sheet { width: 100%; border-radius: 22px 22px 0 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); animation: hub-rise .2s ease-out; }
+}
+@media (prefers-reduced-motion: reduce) { .hub-sheet-backdrop, .hub-sheet { animation: none; } }
+.xt-classes { margin-bottom: 14px; }
+.xt-classes a.hub-class { text-decoration: none; }
+
+/* Chat page on phones: the room fills the screen between the header and the bottom tab bar;
+   only the message list scrolls and the compose box stays in view. */
+@media (max-width: 767px) {
+  .community-page { display: flex; height: calc(100dvh - 64px - 36px - 96px - env(safe-area-inset-bottom)); min-height: 360px; flex-direction: column; padding-top: 8px; }
+  .community-intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0; padding: 0; border: 0; }
+  .community-layout { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+  .community-page .community-chat { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+  .community-page .community-chat-header { flex: none; padding: 10px 12px; }
+  .community-page .community-chat-icon { width: 34px; height: 34px; }
+  .community-page .community-feed { min-height: 0; height: auto; flex: 1; padding: 12px; }
+  .community-page .community-compose { flex: none; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'name name' 'msg send' 'notice notice'; gap: 6px 8px; padding: 10px 12px; }
+  .community-page .community-compose label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .community-page .community-compose input { grid-area: name; padding: 8px 11px; }
+  .community-page .community-compose textarea { grid-area: msg; height: 44px; min-height: 44px; resize: none; padding: 10px 11px; }
+  .community-page .community-compose-footer { display: contents; }
+  .community-page .community-compose-footer > span { display: none; }
+  .community-page .community-compose-footer .btn { grid-area: send; align-self: stretch; padding: 0 14px; font-size: .82rem; }
+  .community-page .community-notice { grid-area: notice; }
+}
+@media (max-width: 767px) { body:has(.community-page) > footer { display: none; } }
+@media (max-width: 767px) { .community-page .community-compose textarea::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
