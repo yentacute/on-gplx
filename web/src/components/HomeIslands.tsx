@@ -206,29 +206,88 @@ export function ClassPicker({ classes }: { classes: LicenseClass[] }) {
           <span>{otherSelected ? selectedId : 'Tất cả'}</span>
         </button>
       </div>
-      {showAll && (
-        <div className="hub-class-more">
-          {others.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={c.id === selectedId}
-              onClick={() => {
-                setLicenseClass(c.id);
-                setShowAll(false);
-              }}
-            >
-              <b>{c.id}</b> {c.title}
-            </button>
-          ))}
-        </div>
-      )}
+      {showAll && <ClassSheet classes={others} selectedId={selectedId} onPick={setLicenseClass} onClose={() => setShowAll(false)} />}
       {selected && (
         <p className="hub-class-note">
           Hạng <b>{selected.id}</b> · {selected.title} · {selected.exam.questionCount} câu, {selected.exam.timeMinutes} phút, đạt{' '}
           {selected.exam.passingScore}/{selected.exam.questionCount}
         </p>
       )}
+    </div>
+  );
+}
+
+/** Class row on the Thi thử screen: each class opens its own exam page; "Tất cả" opens the popup. */
+export function ExamClassSwitch({ classes, currentId, hrefPattern }: { classes: LicenseClass[]; currentId: string; hrefPattern: string }) {
+  const [showAll, setShowAll] = useState(false);
+  const main = classes.filter((c) => MAIN_CLASSES.includes(c.id));
+  const others = classes.filter((c) => !MAIN_CLASSES.includes(c.id));
+  const otherSelected = others.some((c) => c.id === currentId);
+  const href = (id: string) => hrefPattern.replace('{id}', id.toLowerCase());
+  return (
+    <div className="hub-classes xt-classes">
+      {main.map((c) => (
+        <a key={c.id} href={href(c.id)} aria-current={c.id === currentId ? 'page' : undefined} aria-pressed={c.id === currentId} title={c.title} className="hub-class">
+          <Icon name={classIcon(c.id)} size={22} />
+          <span>{c.id}</span>
+        </a>
+      ))}
+      <button type="button" onClick={() => setShowAll(true)} aria-pressed={otherSelected} className="hub-class">
+        <Icon name="dots" size={22} />
+        <span>{otherSelected ? currentId : 'Tất cả'}</span>
+      </button>
+      {showAll && (
+        <ClassSheet classes={others} selectedId={currentId} onPick={(id) => (window.location.href = href(id))} onClose={() => setShowAll(false)} />
+      )}
+    </div>
+  );
+}
+
+/** Popup listing the less common classes: a bottom sheet on phones, a centered dialog on larger screens. */
+function ClassSheet({ classes, selectedId, onPick, onClose }: { classes: LicenseClass[]; selectedId: string; onPick: (id: string) => void; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = overflow;
+    };
+  }, [onClose]);
+  return (
+    <div className="hub-sheet-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="hub-sheet" role="dialog" aria-modal="true" aria-labelledby="hub-sheet-title">
+        <div className="hub-sheet-head">
+          <h3 id="hub-sheet-title">Chọn hạng khác</h3>
+          <button type="button" onClick={onClose} aria-label="Đóng">
+            <Icon name="x" size={20} />
+          </button>
+        </div>
+        <ul className="hub-sheet-list">
+          {classes.map((c) => (
+            <li key={c.id}>
+              <button
+                type="button"
+                aria-pressed={c.id === selectedId}
+                onClick={() => {
+                  onPick(c.id);
+                  onClose();
+                }}
+              >
+                <span className="hub-sheet-id">{c.id}</span>
+                <span className="min-w-0 flex-1">
+                  <strong>{c.title}</strong>
+                  <small>
+                    {c.exam.questionCount} câu · {c.exam.timeMinutes} phút · đạt {c.exam.passingScore}/{c.exam.questionCount}
+                  </small>
+                </span>
+                {c.id === selectedId && <Icon name="check" size={18} className="text-blue-600" />}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
