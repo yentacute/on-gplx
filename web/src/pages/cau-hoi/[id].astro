@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import QuestionBlock from '../../components/QuestionBlock.astro';
-import { QUESTIONS, chapterOf, clip, paths } from '../../lib/data';
+import { LANDING_CLASSES, QUESTIONS, chapterOf, clip, paths, questionById } from '../../lib/data';
 import type { Question } from '../../lib/types';
 
 export const getStaticPaths = () => QUESTIONS.map((q, i) => ({ params: { id: String(q.id) }, props: { q, prev: QUESTIONS[i - 1], next: QUESTIONS[i + 1] } }));
@@ -10,6 +10,17 @@ export const getStaticPaths = () => QUESTIONS.map((q, i) => ({ params: { id: Str
 const { q, prev, next } = Astro.props as { q: Question; prev?: Question; next?: Question };
 const chapter = chapterOf(q);
 const answer = q.options[q.answer] ?? '';
+const answerLetter = ['A', 'B', 'C', 'D'][q.answer] ?? '';
+// Which car classes include this question, linked to their exam pages.
+const examClasses = LANDING_CLASSES.filter((c) => q.classes.includes(c.id));
+// The questions that follow this one in its chapter (wrapping around), so every question page links
+// to a few others with real anchor text instead of standing alone behind prev/next buttons.
+const RELATED_COUNT = 6;
+const chapterIds = chapter.questionIds;
+const position = chapterIds.indexOf(q.id);
+const related = Array.from({ length: Math.min(RELATED_COUNT, chapterIds.length - 1) }, (_, i) =>
+  questionById(chapterIds[(position + 1 + i) % chapterIds.length]!),
+).filter((r): r is Question => Boolean(r) && r!.id !== q.id && r!.id !== prev?.id && r!.id !== next?.id);
 const site = Astro.site!.origin;
 const qaLd = {
   '@context': 'https://schema.org',
@@ -44,5 +55,57 @@ const qaLd = {
       <a href={paths.practice(chapter.slug)} class="btn btn-primary">Luyện chương này</a>
       {next ? <a href={paths.question(next.id)} class="btn btn-ghost">Câu {next.id} <Icon name="arrow-right" size={16} /></a> : <span></span>}
     </nav>
+
+    <section class="card mt-6 p-4 sm:p-5" aria-labelledby="ghi-nho">
+      <h2 id="ghi-nho" class="font-semibold">Ghi nhớ câu {q.id}</h2>
+      <ul class="mt-2 space-y-1.5 text-sm leading-relaxed text-soft">
+        <li>Đáp án đúng: <strong class="text-emerald-700">{answerLetter}. {answer}</strong></li>
+        {
+          q.critical ? (
+            <li>
+              Đây là <a href={paths.critical} class="font-semibold text-red-600 hover:underline">câu điểm liệt</a>: trả lời sai câu này
+              là trượt bài thi lý thuyết dù đủ điểm các câu khác.
+            </li>
+          ) : (
+            <li>Câu thường, không phải câu điểm liệt. Trả lời đúng được 1 điểm.</li>
+          )
+        }
+        <li>
+          Thuộc <a href={paths.chapter(chapter)} class="text-blue-600 hover:underline">Chương {chapter.numeral}. {chapter.name}</a>
+          ({chapter.range}, {chapter.questionIds.length} câu).
+        </li>
+        {
+          examClasses.length > 0 && (
+            <li>
+              Có trong đề thi lý thuyết hạng{' '}
+              {examClasses.map((c, i) => (
+                <>
+                  {i > 0 && ', '}
+                  <a href={paths.licenseClass(c.id)} class="text-blue-600 hover:underline">{c.id}</a>
+                </>
+              ))}
+              .
+            </li>
+          )
+        }
+      </ul>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="mt-6" aria-labelledby="cau-lien-quan">
+          <h2 id="cau-lien-quan" class="font-semibold">Câu hỏi khác trong chương {chapter.numeral}</h2>
+          <ul class="mt-2 divide-y divide-line rounded-xl border border-line bg-white text-sm">
+            {related.map((r) => (
+              <li>
+                <a href={paths.question(r.id)} class="block px-4 py-2.5 hover:text-blue-600">
+                  <span class="font-semibold">Câu {r.id}:</span> {clip(r.text, 110)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
   </section>
 </Base>
